@@ -121,6 +121,7 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 | `.is-punch` | `.rr-dock` | 산 순간: 독 상자가 통째로 부풀었다 움츠러듦(`--rr-dock-scale`) |
 | `.is-punch` | `.rr-dock__item` | 산 순간: 그 칸의 툴팁이 제 펀치를 침(독과 따로) |
 | `.is-shake` | `.rr-dockwrap` 또는 `.rr-dock` | 산 순간: 독 + 게이지가 한 덩어리로 떪. `data-rr-shake="a\|b\|c"`로 궤적, `--rr-shake-flip-x` `-y`로 방향 |
+| `.is-changed` | `.rr-price` | 산 순간: 그 칸의 값이 사라졌다가 아래에서 솟아 4px 지나쳤다 앉음(새 값은 붙이기 전에 써 둡니다) |
 | `.is-boom` | `.rr-dock` | 큰 버튼이 내려앉을 때: 독이 통째로 눌렸다 늘어남 |
 | `.is-leaving` | `.rr-notice` `.rr-side` `.rr-msgbox` | 퇴장 연출 |
 | `.is-entering` `.is-leaving` | `.rr-track` `.rr-dock__item` | 게이지·독 버튼의 등장/퇴장 (`RR.dock.swap`이 붙였다 뗍니다) |
@@ -145,8 +146,9 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 
 ```js
 RR.open('#settings');  RR.close('#settings');
-RR.purchase(button, { level: 3 });        // 구매 효과 전부: 버튼의 펀치 · 독 상자의 부풂 · 독+게이지의 떨림 · 툴팁의 펀치(넷이 각자) + 폭발 + 레벨 표 + 집중선
-RR.burst(el, { stars: 9, dots: 8, squares: 0 });
+RR.purchase(button, { level: 3 });        // 구매 효과 전부: 버튼의 펀치 · 독 상자의 부풂 · 독+게이지의 떨림 · 툴팁의 펀치 · 값 표시의 바뀜(각자) + 폭발 + 레벨 표 + 집중선
+                                           //   끄기: { punch: false } { shake: false } { focus: false } { price: false }
+RR.burst(el, { streaks: 28, stars: 11, dots: 9, squares: 0 });   // 폭발만: 튀어나가는 가닥 · 충격파 원 둘 · 포물선으로 떨어지는 별 · 흩어지는 점
 RR.levelTag(el, 'Lv.3');
 RR.shake(dockwrap);                        // 떨림만(크기·기울기 없이). 부를 때마다 궤적과 방향이 달라짐. RR.jolt 는 예전 이름
 RR.focus(button);                          // 집중선: 버튼에서 화면 끝까지 뻗는 가는 방사선(무대 .rr-stage 안에서만)
@@ -173,6 +175,7 @@ RR.cursor.enable();                        // 문짝이 도는 따라다니는 �
 - **본문 글꼴** — 원본 크레딧에 적힌 Noto Sans CJK와 같은 계열인 Noto Sans KR(웹폰트)입니다. 인터넷이 없으면 맑은 고딕으로 대신 보입니다(`css/fonts.css` 참고).
 - **아이콘** — 원본 이미지를 쓰지 않고 다시 그린 벡터입니다. 영상 프레임 여러 장을 겹쳐 평균 낸 그림에 도형(선·원·다각형)의 수치를 맞춰 넣는 방식으로 그렸고, 독·카드·목록에서 원본과 위치·크기가 1px 안쪽으로 맞습니다. 다만 1080p 영상의 해상도보다 작은 세부(선 끝의 둥글기 등)는 추정입니다.
 - **배경** — 군중과 회전문은 분위기만 옮긴 정지 그림이며, 게임 플레이는 구현하지 않았습니다.
+- **폭발의 가닥** — 원본의 가닥은 지나는 자리의 색을 뒤집습니다(흰 바탕에서는 검게, 검은 버튼 위에서는 희게). 키트에서는 늘 검은 선이라 검은 버튼 위를 지나는 동안에는 보이지 않습니다. 유난히 굵은 가닥이 두 줄로 갈라져 보이는 것도 옮기지 않았습니다. 방향·빠르기·수명은 원본처럼 살 때마다 무작위입니다.
 - **영상에서 볼 수 없던 움직임** — 구매로 게이지의 단계가 오를 때 막대와 표지가 움직이는 모습은 원본 영상에서 늘 툴팁에 가려 있습니다. 게이지가 열릴 때 계측한 것과 같은 감속으로 움직이게 했습니다(추정).
 - **문구** — 영상에 나온 것은 그대로, 영상에 없는 툴팁 일부는 같은 말투로 채웠습니다.
 - **키보드 포커스 표시** — 원본에는 없지만 접근성을 위해 넣었습니다.

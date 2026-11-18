@@ -485,11 +485,46 @@
 
 /* ── 구매 효과 ─────────────────────────────────────────────────────────── */
 
+/* 상단 알림이 내리꽂힐 때 둘레에 튀는 방사선 그림 */
 @keyframes rr-spikes {
   0%   { opacity: 1; transform: scale(0.42); }
   38%  { opacity: 1; transform: scale(1); }
   70%  { opacity: 0.7; transform: scale(1.04); }
   100% { opacity: 0; transform: scale(1.06); }
+}
+
+/* 가닥 — 버튼에서 사방으로 튀어나가는 굵은 선(원본을 한 가닥씩 계측). 저항을 받으며 느려지는 입자의 자취입니다.
+   --rr-streak 는 남은 빠르기 e^(-t/182ms) 로, 한 프레임에 0.9125배씩 줄어듭니다(아래는 두 프레임 간격).
+     입자의 자리 = 24 + 271k(1 - e) px      길이 = 85k·e px      (k = 가닥마다 다른 빠르기 0.6~1.2, 지름 80px 버튼 기준)
+   처음 세 프레임은 꼬리가 버튼에 가려 가장자리에 붙은 채 길어지기만 하고, 그 뒤로는 떨어져 나가 느려지는 만큼 짧아집니다.
+   수명은 빠르기에 비례하고(300ms × k), 마지막 두 프레임에 가늘어지며 사라집니다(rr-streak-out). */
+@property --rr-streak { syntax: "<number>"; inherits: false; initial-value: 1; }
+@keyframes rr-streak {
+  0%     { --rr-streak: 1; }
+  8.33%  { --rr-streak: 0.8327; }
+  16.67% { --rr-streak: 0.6933; }
+  25%    { --rr-streak: 0.5773; }
+  33.33% { --rr-streak: 0.4807; }
+  41.67% { --rr-streak: 0.4003; }
+  50%    { --rr-streak: 0.3333; }
+  58.33% { --rr-streak: 0.2775; }
+  66.67% { --rr-streak: 0.2311; }
+  75%    { --rr-streak: 0.1924; }
+  83.33% { --rr-streak: 0.1602; }
+  91.67% { --rr-streak: 0.1334; }
+  100%   { --rr-streak: 0.1111; }
+}
+@keyframes rr-streak-out {
+  0%, 86% { scale: 1 1; }
+  100%    { scale: 1 0; }
+}
+
+/* 산 버튼의 값 표시가 새 값으로 바뀜 (두 구매를 한 프레임씩 계측): 헌 값은 누른 프레임에 바로 사라지고, 새 값이
+   44px 아래에서 솟아 4.3px 지나쳤다가(183~200ms) 350ms 에 앉습니다. 궤적은 한 프레임 먼저 출발한 367ms 짜리
+   easeOutBack(--rr-ease-pop)과 0.5px 안에서 겹칩니다. 투명도는 rr-fade-in 이 따로 맡아 38ms 부터 197ms 까지 또렷해지므로
+   눈에는 10px 쯤 아래에서 흐릿하게 떠오르는 것으로 보입니다(dock.css 의 .rr-price.is-changed). */
+@keyframes rr-price-in {
+  from { transform: translateY(44px); }
 }
 
 /* 집중선 (283ms, 한 프레임씩 계측): 나타난 프레임이 가장 진하고, 200ms 에 절반쯤으로 옅어진 뒤 빠르게 사라집니다.
@@ -503,43 +538,76 @@
   100% { opacity: 0; }
 }
 
-/* 충격파 (한 프레임씩 계측): 반지름이 --_r0 에서 --_r1 까지 감속하며 퍼지고, 선은 6px 에서 가늘어집니다.
-   inset 은 선의 바깥 가장자리이므로 선 굵기의 절반을 더해 선의 중심이 계측한 반지름에 오게 합니다.
-   빠른 원(300ms): 40 → 65(50ms) → 87(100ms) → 105(150ms) → 119(200ms) → 129(250ms) → 138px */
+/* 충격파 (원의 중심을 맞춰 한 프레임씩 계측). 두 원 모두 반지름은 easeOutCubic 하나로 퍼집니다(rr-ring-grow):
+     느린 원  50ms 에 39.7px(버튼 가장자리)에서 나와 442ms 동안 91px 까지 — 다 가기 전(433ms)에 옅어져 사라집니다
+     빠른 원  83ms 에 36.6px 에서 나와 608ms 동안 149px 까지 — 140ms 쯤 느린 원을 앞지르고 667ms 에 사라집니다
+   선의 굵기와 진하기는 따로 변합니다(rr-ring-slow / -fast): 굵게 나와 가늘어지고, 가늘어진 뒤에 옅어집니다.
+   반지름(선의 중심)과 굵기를 등록된 변수에 실어 두고 fx.css 가 그 둘로 원의 바깥 가장자리를 잡습니다. */
+@property --rr-ring-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --rr-ring-w { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes rr-ring-grow {
+  from { --rr-ring-r: var(--_r0); }
+  to   { --rr-ring-r: var(--_r1); }
+}
+/* 빠른 원 (583ms, 0% = 누른 뒤 83ms) */
 @keyframes rr-ring-fast {
-  0%    { opacity: 1;   border-width: 6px;   inset: calc(var(--_r0) * -1 - 3px); }
-  16.7% { opacity: 1;   border-width: 5px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.255) * -1 - 2.5px); }
-  33.3% { opacity: 1;   border-width: 4px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.48) * -1 - 2px); }
-  50%   { opacity: 1;   border-width: 3.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.663) * -1 - 1.75px); }
-  66.7% { opacity: 0.9; border-width: 3px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.806) * -1 - 1.5px); }
-  83.3% { opacity: 0.7; border-width: 2.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.908) * -1 - 1.25px); }
-  94.4% { opacity: 0.5; border-width: 2px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.969) * -1 - 1px); }
-  100%  { opacity: 0;   border-width: 2px;   inset: calc(var(--_r1) * -1 - 1px); }
+  0%    { opacity: 1;    --rr-ring-w: 7.5px; }
+  2.9%  { opacity: 1;    --rr-ring-w: 7.5px; }
+  14.3% { opacity: 1;    --rr-ring-w: 4.1px; }
+  25.7% { opacity: 1;    --rr-ring-w: 2.9px; }
+  31.4% { opacity: 1;    --rr-ring-w: 2.2px; }
+  37.1% { opacity: 1;    --rr-ring-w: 2px; }
+  42.9% { opacity: 1;    --rr-ring-w: 1.6px; }
+  48.6% { opacity: 1;    --rr-ring-w: 1.45px; }
+  54.3% { opacity: 0.6;  --rr-ring-w: 1.45px; }
+  65.7% { opacity: 0.42; --rr-ring-w: 1.45px; }
+  77.1% { opacity: 0.28; --rr-ring-w: 1.45px; }
+  88.6% { opacity: 0.14; --rr-ring-w: 1.45px; }
+  100%  { opacity: 0;    --rr-ring-w: 1.45px; }
 }
-/* 느린 원(283ms): 43 → 58.5(50ms) → 71(100ms) → 80(150ms) → 86(200ms) → 91(250ms) → 93px, 100ms 뒤부터 옅어집니다 */
+/* 느린 원 (383ms, 0% = 누른 뒤 50ms) */
 @keyframes rr-ring-slow {
-  0%    { opacity: 1;    border-width: 6px;   inset: calc(var(--_r0) * -1 - 3px); }
-  17.6% { opacity: 1;    border-width: 5px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.31) * -1 - 2.5px); }
-  35.3% { opacity: 1;    border-width: 3.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.56) * -1 - 1.75px); }
-  52.9% { opacity: 0.8;  border-width: 2.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.74) * -1 - 1.25px); }
-  70.6% { opacity: 0.6;  border-width: 2px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.86) * -1 - 1px); }
-  88.2% { opacity: 0.45; border-width: 1.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.96) * -1 - 0.75px); }
-  100%  { opacity: 0;    border-width: 1.5px; inset: calc(var(--_r1) * -1 - 0.75px); }
+  0%    { opacity: 1;    --rr-ring-w: 8.5px; }
+  4.3%  { opacity: 1;    --rr-ring-w: 6.4px; }
+  8.7%  { opacity: 1;    --rr-ring-w: 5.2px; }
+  13%   { opacity: 1;    --rr-ring-w: 4.4px; }
+  30.4% { opacity: 1;    --rr-ring-w: 2.6px; }
+  39.1% { opacity: 1;    --rr-ring-w: 1.9px; }
+  47.8% { opacity: 1;    --rr-ring-w: 1.35px; }
+  56.5% { opacity: 1;    --rr-ring-w: 1.35px; }
+  65.2% { opacity: 0.52; --rr-ring-w: 1.35px; }
+  73.9% { opacity: 0.44; --rr-ring-w: 1.35px; }
+  82.6% { opacity: 0.37; --rr-ring-w: 1.35px; }
+  91.3% { opacity: 0.22; --rr-ring-w: 1.35px; }
+  100%  { opacity: 0;    --rr-ring-w: 1.35px; }
 }
 
-@keyframes rr-star {
-  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(0.4); }
-  12%  { opacity: 1; transform: translate(calc(var(--dx) * 0.45), calc(var(--dy) * 0.45)) rotate(calc(var(--rot) * 0.4)) scale(1); }
-  60%  { opacity: 1; }
-  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.9); }
+/* 별과 점의 비행(원본에서 하나씩 따라가며 계측). 둘 다 감속 없이 일정한 빠르기로 날아가고(rr-fly: --dx, --dy 만큼),
+   별에는 거기에 중력(900px/s²)이 더해져 포물선을 그립니다(rr-fall: --fall 만큼. fx.css 에서 시간의 제곱으로 틉니다).
+   값을 등록된 변수에 실어 translate 에서 더하는 까닭: 옆으로 가는 것과 떨어지는 것의 빠르기 곡선이 달라서입니다. */
+@property --rr-fly-x { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --rr-fly-y { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --rr-fall  { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes rr-fly {
+  to { --rr-fly-x: var(--dx); --rr-fly-y: var(--dy); }
 }
-
-/* 점: 옆으로는 일정하게, 위아래로는 솟았다 떨어지는 포물선 */
-@keyframes rr-dot {
-  0%   { opacity: 1; transform: translate(0, 0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.5, 1); }
-  30%  { opacity: 1; transform: translate(calc(var(--dx) * 0.6), var(--dy)); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6); }
-  80%  { opacity: 1; }
-  100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + var(--fall))); }
+@keyframes rr-fall {
+  to { --rr-fall: var(--fall); }
+}
+@keyframes rr-star-spin {
+  to { rotate: var(--rot); }
+}
+/* 별의 한살이(0.56~0.84초): 버튼 한가운데에서 톡 커지며 나와, 끝의 0.1초 남짓 동안 회색으로 옅어지며 사라집니다 */
+@keyframes rr-star-life {
+  0%   { opacity: 1; scale: 0.3; }
+  5%   { opacity: 1; scale: 1; }
+  82%  { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 0.85; }
+}
+/* 점의 한살이(0.65~0.95초): 처음부터 제 크기로 나타나, 마지막 0.2초 동안 줄어들어 사라집니다 */
+@keyframes rr-dot-life {
+  0%, 78% { scale: 1; }
+  100%    { scale: 0; }
 }
 
 /* 레벨 표 (1.7초, 한 프레임씩 계측). 나타날 때: 130ms 동안 또렷해지며, 윗변보다 20px 위의 점을 축으로 0.6배에서 자라
@@ -603,22 +671,23 @@
 @property --rr-tip-hop    { syntax: "<length>"; inherits: false; initial-value: 0px; }
 @property --rr-tip-press  { syntax: "<length>"; inherits: false; initial-value: 0px; }
 
-/* 버튼 (667ms 중 583ms 동안): 움찔 줄었다(0.825) 크게 넘치고(1.30) 0.93 → 1.035 → 0.99 로 잦아듭니다.
-   50~83ms 는 폭발에 가려 계측이 안 되어 앞뒤를 이은 값입니다. 떼는 순간에는 떠 있던 자리보다 4.6px 더 튀어 오릅니다. */
+/* 버튼 (667ms 중 583ms 동안): 움찔 줄었다(0.8) 크게 넘치고(1.30) 0.93 → 1.035 → 0.99 로 잦아듭니다.
+   50~100ms 는 폭발에 일부 가려, 아래쪽 가장자리만으로 잰 값입니다. 따로 튀어 오르지는 않습니다:
+   눌렸던 자리에서 떠 있던 자리로 돌아가는 것은 버튼의 hover 전환(button.css)이 그대로 맡습니다. */
 @keyframes rr-btn-punch {
-  0%    { scale: 0.975; translate: 0 0; }
-  2.5%  { scale: 0.931; translate: 0 0; }
-  5%    { scale: 0.89;  translate: 0 -1px; }
-  7.5%  { scale: 0.84;  translate: 0 -4px; }
-  10%   { scale: 0.825; translate: 0 -4.6px; }
-  12.5% { scale: 0.86;  translate: 0 -4.6px; }
-  15%   { scale: 0.965; translate: 0 -2px; }
-  17.5% { scale: 1.081; translate: 0 -1.5px; }
-  20%   { scale: 1.188; translate: 0 -1.5px; }
-  22.5% { scale: 1.271; translate: 0 -1.5px; }
-  25%   { scale: 1.301; translate: 0 -1.5px; }
-  27.5% { scale: 1.279; translate: 0 -1.5px; }
-  30%   { scale: 1.228; translate: 0 0; }
+  0%    { scale: 0.975; }
+  2.5%  { scale: 0.945; }
+  5%    { scale: 0.86; }
+  7.5%  { scale: 0.84; }
+  10%   { scale: 0.8; }
+  12.5% { scale: 0.86; }
+  15%   { scale: 0.965; }
+  17.5% { scale: 1.081; }
+  20%   { scale: 1.188; }
+  22.5% { scale: 1.271; }
+  25%   { scale: 1.301; }
+  27.5% { scale: 1.279; }
+  30%   { scale: 1.228; }
   32.5% { scale: 1.156; }
   35%   { scale: 1.081; }
   37.5% { scale: 1.01; }
@@ -640,7 +709,7 @@
   80%   { scale: 0.992; }
   85%   { scale: 0.997; }
   87.5% { scale: 1; }
-  100%  { scale: 1; translate: 0 0; }
+  100%  { scale: 1; }
 }
 
 /* 독 (417ms): 50ms 에 1.0445배, 200ms 에 0.992배, 약 280ms 에 제 크기. 안의 버튼도 함께 커집니다. */
@@ -730,7 +799,7 @@
 /* 툴팁 (533ms): 누른 프레임에는 가만히 있다가 다음 프레임부터 움직입니다.
    크기(--rr-tip-scale)는 버튼 중심을 축으로 0.824(67ms) → 1.28(167ms) → 0.95(300ms) → 1.03(417ms) → 1,
    기울기(rotate)는 툴팁 아랫변 가운데를 축으로 -8°(100ms) → +5°(233ms) → -2°(350ms) → 0.
-   --rr-tip-hop 은 버튼이 튀어 오를 때 따라 올라가는 높이입니다.                                   */
+   --rr-tip-hop 은 눌림에서 풀려나며 제자리보다 더 튀어 오르는 높이입니다(버튼은 그렇게 튀지 않습니다).  */
 @keyframes rr-tip-punch {
   0%      { --rr-tip-scale: 1;     rotate: 0deg;     --rr-tip-hop: 0px; }
   3.125%  { --rr-tip-scale: 0.956; rotate: -0.9deg;  --rr-tip-hop: 0px; }

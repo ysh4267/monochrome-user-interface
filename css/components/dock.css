@@ -193,6 +193,14 @@
   color: var(--rr-ink);
   font-weight: var(--rr-weight-medium);
 }
+/* 산 버튼의 값이 새 값으로 바뀔 때: 누른 순간 사라졌다가 아래에서 솟아 4.3px 지나쳤다 앉습니다(350ms).
+   RR.purchase 가 붙였다 뗍니다. 글자는 그 전에 바꿔 두고, "살 수 있음" 표시는 className 을 통째로 갈지 말고
+   classList 로 바꿔야 연출이 도중에 끊기지 않습니다. */
+.rr-price.is-changed {
+  animation:
+    rr-price-in 367ms var(--rr-ease-pop) -17ms,
+    rr-fade-in 159ms linear 38ms backwards;
+}
 /* 고리는 줄 상자가 아니라 숫자의 높이에 맞춰 앉습니다(줄 가운데보다 0.13em 아래) */
 .rr-price > .rr-icon {
   position: relative;

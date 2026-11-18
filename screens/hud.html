@@ -490,7 +490,8 @@
               // 막 열린 길: 버튼이 살아나며 톡 튀고 눈길 끄는 링이 한 번 퍼집니다
               btn.disabled = false;
               RR.afford(btn, true);
-              $('p-' + r.id).className = 'rr-price is-affordable';
+              $('p-' + r.id).classList.remove('rr-price--note');
+              $('p-' + r.id).classList.add('is-affordable');
               $('p-' + r.id).innerHTML = $('tp-' + r.id).innerHTML;
               $('cta-' + r.id).className = 'rr-cta';
               $('cta-' + r.id).textContent = '클릭해서 구매';
@@ -500,7 +501,8 @@
             }
             if (r.level >= r.max || r.unlock + r.level >= 20) {
               btn.classList.remove('is-affordable');
-              $('p-' + r.id).className = 'rr-price rr-price--note';
+              $('p-' + r.id).classList.remove('is-affordable');
+              $('p-' + r.id).classList.add('rr-price--note');
               $('p-' + r.id).textContent = '최대 단계';
             }
           });

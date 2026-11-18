@@ -520,7 +520,7 @@ RR.count()</span></div>
     <!-- ───────────────────────── 효과 ───────────────────────── -->
     <section class="g-sec" id="fx">
       <h2>구매 효과 <code>css/components/fx.css</code></h2>
-      <p class="g-lead">구매 한 번에 아홉 가지가 겹쳐 일어납니다. 터지는 것 다섯 — 방사선 스파이크(130ms) · 충격파 원 둘(굵게 나와 가늘어지며 0.3초) · 별과 점(1~1.2초) · 레벨 표(1.7초) · 집중선(0.28초) — 과, <b>각자 따로 움직이는 것 넷</b>입니다. ① 버튼은 제 크기만 출렁이고(0.83배 → 1.3배 → 0.93배, 기울지 않음), ② 독 상자는 통째로 4.4% 부풀었다 0.8% 움츠러들며(기울지 않음), ③ 아래 묶음(독 + 게이지)은 한 덩어리로 좌우·위아래로 떨고(살 때마다 다른 방향, 크기 변화 없음), ④ 툴팁은 독을 따라 커지지도 같이 떨지도 않고 제 펀치(0.82배 → 1.28배, −8° → +5°)를 치면서 버튼을 한 프레임 늦게 따라갑니다. 아래에서 넷을 따로 틀어 보세요 — 게이지는 떨기만 하고, 툴팁은 독이 부풀 때 가만히 있습니다. 화면 전체를 쓰는 <a href="#screens">화면 예제</a>에서는 사는 순간 버튼에서 화면 끝까지 뻗는 집중선(<code>.rr-focus</code>, 0.28초)도 함께 보입니다.</p>
+      <p class="g-lead">구매 한 번에 열 가지가 겹쳐 일어납니다. 터지는 것 다섯 — 버튼 가장자리에서 튀어나가 느려지며 짧아지는 가닥 스물여덟 줄(0.2~0.35초) · 충격파 원 둘(굵게 나와 가늘어지며 0.4초 · 0.65초) · 포물선으로 떨어지는 별과 천천히 흩어지는 점(0.6~0.9초) · 레벨 표(1.7초) · 집중선(0.28초) — 과, <b>각자 따로 움직이는 것 다섯</b>입니다. 터지는 것들은 눌려 있던 버튼의 자리를 중심으로 삼고, 독이 떨거나 부풀어도 따라 움직이지 않습니다. ① 버튼은 제 크기만 출렁이고(0.8배 → 1.3배 → 0.93배, 기울지 않음), ② 독 상자는 통째로 4.4% 부풀었다 0.8% 움츠러들며(기울지 않음), ③ 아래 묶음(독 + 게이지)은 한 덩어리로 좌우·위아래로 떨고(살 때마다 다른 방향, 크기 변화 없음), ④ 툴팁은 독을 따라 커지지도 같이 떨지도 않고 제 펀치(0.82배 → 1.28배, −8° → +5°)를 치면서 버튼을 한 프레임 늦게 따라가며, ⑤ 산 칸의 값 표시는 누른 순간 사라졌다가 새 값이 아래에서 솟아 4px 지나쳤다 앉습니다(0.35초). 아래에서 다섯을 따로 틀어 보세요 — 게이지는 떨기만 하고, 툴팁은 독이 부풀 때 가만히 있습니다. 값이 바뀌면 그 길이에 맞춰 독 상자와 게이지의 너비도 바뀝니다. 화면 전체를 쓰는 <a href="#screens">화면 예제</a>에서는 사는 순간 버튼에서 화면 끝까지 뻗는 집중선(<code>.rr-focus</code>, 0.28초)도 함께 보입니다.</p>
       <div class="g-demo rr" style="padding-top: 250px">
         <div class="g-item g-item--left">
           <div class="rr-dockwrap" id="g-fx-wrap" style="min-width: 438px">
@@ -558,7 +558,7 @@ RR.count()</span></div>
                   <p class="rr-tip__desc">비행기가 먼 곳의 손님을 한꺼번에 실어 옵니다.</p>
                   <div class="rr-tip__now">아직 오지 않음</div>
                   <div class="rr-tip__next">60초마다 2,000명</div>
-                  <div class="rr-tip__foot"><span class="rr-price rr-price--lg is-affordable"><i class="rr-icon rr-icon--ring"></i>5,500만</span><span class="rr-cta">클릭해서 구매</span></div>
+                  <div class="rr-tip__foot"><span class="rr-price rr-price--lg is-affordable" id="g-fx-tprice"><i class="rr-icon rr-icon--ring"></i>5,500만</span><span class="rr-cta">클릭해서 구매</span></div>
                 </div>
               </div>
             </div>
@@ -568,18 +568,19 @@ RR.count()</span></div>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-dock"><span class="rr-rbtn__label">② 독의 부풂만</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-shake"><span class="rr-rbtn__label">③ 묶음의 떨림만</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-tip"><span class="rr-rbtn__label">④ 툴팁의 펀치만</span></button>
+            <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-price"><span class="rr-rbtn__label">⑤ 값의 바뀜만</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-afford"><span class="rr-rbtn__label">살 수 있음 ↔ 모자람</span></button>
           </div>
           <span class="g-cap">비행기 버튼(5)을 누르면 전부 한꺼번에: RR.purchase(btn, { level })
-(1) .rr-btn.is-bought  (2) .rr-dock.is-punch  (3) RR.shake(wrap) → .is-shake  (4) .rr-dock__item.is-punch
-살 수 있음 ↔ 모자람: 값 표시가 굵어지고 커지면(16 → 17px) 칸이 넓어져, 독과 게이지의 너비가 3.3px 늘었다 줄어듭니다</span>
+(1) .rr-btn.is-bought  (2) .rr-dock.is-punch  (3) RR.shake(wrap) → .is-shake  (4) .rr-dock__item.is-punch  (5) .rr-price.is-changed
+값이 바뀌거나(5,500만 → 1.6억) 살 수 있음 ↔ 모자람으로 굵기가 바뀌면(16 ↔ 17px) 칸의 너비가 달라져, 독과 게이지의 너비가 3.3px 늘었다 줄어듭니다</span>
         </div>
       </div>
       <div class="g-demo rr" style="padding-top: 150px; gap: 34px 70px">
         <div class="g-item"><button class="rr-btn is-affordable" id="g-fx-all"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--star"></i></span></span></button><span class="g-cap">RR.purchase(btn, { level })
 독 밖의 버튼</span></div>
         <div class="g-item"><button class="rr-btn" id="g-fx-burst"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--bolt"></i></span></span></button><span class="g-cap">RR.burst(btn)
-스파이크 · 원 둘 · 별 · 점</span></div>
+가닥 · 원 둘 · 별 · 점 (누를 때마다 다름)</span></div>
         <div class="g-item"><button class="rr-btn" id="g-fx-sq"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--expand"></i></span></span></button><span class="g-cap">RR.burst(btn, { stars: 0, squares: 10 })
 네모 조각</span></div>
         <div class="g-item"><button class="rr-btn" id="g-fx-lv"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--gear"></i></span></span></button><span class="g-cap">RR.levelTag(btn, 'Lv.7')
@@ -852,18 +853,21 @@ RR.wipe.cover(box, done) · RR.wipe.reveal(box, done)</span>
     $('g-fx-sq').addEventListener('click', function () { RR.burst(this, { stars: 0, squares: 10, dots: 4 }); });
     $('g-fx-lv').addEventListener('click', function () { RR.levelTag(this, 'Lv.7'); });
     $('g-fx-jolt').addEventListener('click', function () { RR.shake('#g-fx-dock2'); });
-    // 구매 순간의 네 움직임을 하나씩: 클래스만 붙였다 떼면 됩니다
+    // 구매 순간의 다섯 움직임을 하나씩: 클래스만 붙였다 떼면 됩니다
     RR.track.layout('#g-fx-track', { instant: true });
-    var fxLv = 0;
+    var fxLv = 0, fxCosts = ['5,500만', '9,500만', '1.6억', '2.8억', '4.9억'];
     $('g-fx-btn').addEventListener('click', function () {
       fxLv = fxLv % 5 + 1;
       $('g-fx-lvtext').textContent = 'Lv.' + fxLv + ' / 5';
+      // 새 값을 먼저 써 두고 부릅니다: 값 표시가 사라졌다 솟아오르고, 칸의 너비는 새 값에 맞춰 바로 바뀝니다
+      $('g-fx-price').lastChild.nodeValue = $('g-fx-tprice').lastChild.nodeValue = fxCosts[fxLv % 5];
       RR.purchase(this, { level: fxLv });
     });
     $('g-fx-part-btn').addEventListener('click', function () { RR.replay('#g-fx-btn', 'is-bought', 690); });
     $('g-fx-part-dock').addEventListener('click', function () { RR.replay('#g-fx-dock', 'is-punch', 440); });
     $('g-fx-part-shake').addEventListener('click', function () { RR.shake('#g-fx-wrap'); });
     $('g-fx-part-tip').addEventListener('click', function () { RR.replay('#g-fx-item', 'is-punch', 600); });
+    $('g-fx-part-price').addEventListener('click', function () { RR.replay('#g-fx-price', 'is-changed', 370); });
     // 값 표시가 굵어지면 칸이 넓어집니다: 독 상자와 게이지의 너비가 그만큼 늘었다 줄어듭니다
     $('g-fx-part-afford').addEventListener('click', function () {
       var on = !$('g-fx-btn').classList.contains('is-affordable');

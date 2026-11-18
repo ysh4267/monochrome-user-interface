@@ -77,7 +77,8 @@
   };
 
   /* ── 구매 효과 ────────────────────────────────────────────────────────────
-     RR.burst(host, { stars: 8, dots: 8, squares: 0 })  host 한가운데에서 터뜨립니다.
+     RR.burst(host, { streaks: 28, stars: 11, dots: 9, squares: 0 })   host 한가운데에서 터뜨립니다(가닥 · 원 둘 · 별 · 점).
+                                                         { pressed: true } 면 눌려 있던 자리(3px 아래)를 중심으로.
      RR.levelTag(host, 'Lv.3')                           host 위에 레벨 표를 띄웁니다.
      RR.shake(node)                                      node 를 한 번 떱니다(크기·기울기 없이 좌우·위아래로만, 매번 다르게).
      RR.focus(button)                                    button 을 중심으로 화면 끝까지 뻗는 집중선을 한 번 칩니다(무대 안에서만).
@@ -85,51 +86,84 @@
      RR.afford(button, true)                             살 수 있게 됨: 검게 바뀌며 톡 튀고 링이 퍼집니다.
      RR.purchase(button, { level: 3 })                   아래의 움직임을 한꺼번에 틉니다. 원본처럼 넷이 각자 움직입니다.
          버튼의 펀치 · 독 상자의 부풂 · 아래 묶음(독 + 게이지)의 떨림 · 툴팁의 펀치  +  폭발 · 레벨 표 · 집중선
-         { punch: false } 독의 부풂 없이,  { shake: false } 떨림 없이,  { focus: false } 집중선 없이.          */
+         그 칸의 값 표시는 사라졌다가 아래에서 솟아오릅니다(새 값은 부르기 전에 써 두세요).
+         { punch: false } 독의 부풂 없이,  { shake: false } 떨림 없이,  { focus: false } 집중선 없이,
+         { price: false } 값 표시는 그대로.                                                                  */
 
   RR.burst = function (target, opts) {
     var host = resolve(target);
     if (!host) return null;
     opts = opts || {};
-    var stars = opts.stars == null ? 9 : opts.stars;
-    var dots = opts.dots == null ? 8 : opts.dots;
+    var streaks = opts.streaks == null ? 28 : opts.streaks;
+    var stars = opts.stars == null ? 11 : opts.stars;
+    var dots = opts.dots == null ? 9 : opts.dots;
     var squares = opts.squares || 0;
     var reach = opts.reach || 1;
-    var b = make('span', 'rr-burst');
+    var rim = (host.offsetWidth || 80) / 2;                 /* 버튼의 반지름 */
+    var cls = 'rr-burst' + (opts.pressed ? ' rr-burst--pressed' : '');
+    var vars = { '--rr-burst-scale': (rim / 40).toFixed(3) };
+    var dock = host.closest('.rr-dock');
+    var i, a, v, d, sx, sy, hr, dr;
+    /* 폭발은 독이 부풀어도 따라 커지거나 밀리지 않습니다: 독의 중심에서 떨어진 거리를 적어 두면 CSS 가 되돌려 놓습니다 */
+    if (dock) {
+      hr = host.getBoundingClientRect();
+      dr = dock.getBoundingClientRect();
+      if (dr.width && dr.height) {
+        vars['--_ox'] = ((hr.left + hr.width / 2 - dr.left - dr.width / 2) / dr.width * dock.offsetWidth).toFixed(1) + 'px';
+        vars['--_oy'] = ((hr.top + hr.height / 2 - dr.top - dr.height / 2) / dr.height * dock.offsetHeight).toFixed(1) + 'px';
+      }
+    }
+    /* 버튼 몸통 뒤의 층: 충격파 원 둘과 가닥(방향과 빠르기가 제각각) */
+    var under = make('span', cls + ' rr-burst--under', vars);
+    under.setAttribute('aria-hidden', 'true');
+    under.appendChild(make('i', 'rr-burst__ring'));
+    under.appendChild(make('i', 'rr-burst__ring rr-burst__ring--2'));
+    for (i = 0; i < streaks; i++) {
+      under.appendChild(make('i', 'rr-burst__streak', {
+        '--a': Math.round(rand(0, 360)) + 'deg',
+        '--k': rand(0.6, 1.2).toFixed(2)
+      }));
+    }
+    /* 버튼 앞의 층: 별과 점 */
+    var b = make('span', cls, vars);
     b.setAttribute('aria-hidden', 'true');
-    b.appendChild(make('i', 'rr-burst__spikes', { transform: 'rotate(' + Math.round(rand(0, 360)) + 'deg)' }));
-    b.appendChild(make('i', 'rr-burst__ring'));
-    b.appendChild(make('i', 'rr-burst__ring rr-burst__ring--2'));
-    var i, a, d;
     for (i = 0; i < stars + squares; i++) {
-      /* 별은 주로 위쪽과 옆으로 날아갑니다 */
-      a = rand(-200, 20) * Math.PI / 180;
-      d = rand(60, 170) * reach;
+      /* 별: 위쪽 반원의 어느 방향으로 초속 290~660px. 거리는 850ms 동안 가는 만큼(떨어지는 것은 CSS 의 중력이 맡습니다). */
+      a = rand(185, 355) * Math.PI / 180;
+      v = rand(290, 660) * reach * 0.85;
       b.appendChild(make('i', i < stars ? 'rr-burst__p rr-burst__p--star rr-icon--star' : 'rr-burst__p rr-burst__p--sq' + (Math.random() < 0.5 ? ' is-hollow' : ''), {
-        '--dx': Math.round(Math.cos(a) * d) + 'px',
-        '--dy': Math.round(Math.sin(a) * d) + 'px',
-        '--size': Math.round(i < stars ? rand(13, 30) : rand(7, 14)) + 'px',
-        '--rot': Math.round(rand(-260, 260)) + 'deg',
-        'animation-delay': Math.round(rand(0, 40)) + 'ms'
+        '--dx': Math.round(Math.cos(a) * v) + 'px',
+        '--dy': Math.round(Math.sin(a) * v) + 'px',
+        '--size': Math.round(i < stars ? rand(19, 32) : rand(7, 14)) + 'px',
+        '--rot': Math.round(rand(-540, 540)) + 'deg',
+        '--life': Math.round(rand(560, 840)) + 'ms'
       }));
     }
     for (i = 0; i < dots; i++) {
-      a = rand(-170, -10) * Math.PI / 180;
-      d = rand(40, 110) * reach;
+      /* 점: 가장자리 언저리의 어느 자리에서, 대체로 바깥쪽으로 초속 0~190px. 거리는 950ms 동안 가는 만큼. */
+      a = rand(0, 360) * Math.PI / 180;
+      d = rand(0.6, 1.3) * rim;
+      sx = Math.cos(a) * d;
+      sy = Math.sin(a) * d;
+      a += rand(-1, 1);                                     /* 나아가는 방향은 바깥쪽에서 ±57° 안 */
+      v = rand(0, 190) * reach * 0.95;
       b.appendChild(make('i', 'rr-burst__p rr-burst__p--dot', {
-        '--dx': Math.round(Math.cos(a) * d) + 'px',
-        '--dy': Math.round(Math.sin(a) * d * 0.8) + 'px',
-        '--fall': Math.round(rand(60, 130)) + 'px',
-        '--size': Math.round(rand(5, 10)) + 'px',
-        'animation-delay': Math.round(rand(0, 60)) + 'ms'
+        '--sx': Math.round(sx) + 'px',
+        '--sy': Math.round(sy) + 'px',
+        '--dx': Math.round(Math.cos(a) * v) + 'px',
+        '--dy': Math.round(Math.sin(a) * v) + 'px',
+        '--size': Math.round(rand(5, 11)) + 'px',
+        '--life': Math.round(rand(650, 950)) + 'ms'
       }));
     }
     host.classList.add('is-bursting');
+    host.appendChild(under);
     host.appendChild(b);
     setTimeout(function () {
+      under.remove();
       b.remove();
       if (!host.querySelector('.rr-burst')) host.classList.remove('is-bursting');
-    }, 1350);
+    }, 1000);
     return b;
   };
 
@@ -220,10 +254,14 @@
     var dock = btn.closest('.rr-dock');
     replay(btn, 'is-bought', 690);                          /* 버튼: 색 + 제 크기의 펀치 */
     if (item) replay(item, 'is-punch', 600);                /* 그 칸의 툴팁: 제 펀치(독과 따로) */
+    var price = item && opts.price !== false && item.querySelector(':scope > .rr-price');
+    if (price) replay(price, 'is-changed', 370);            /* 그 칸의 값 표시: 사라졌다가 아래에서 솟아오름 */
     if (dock && opts.punch !== false) replay(dock, 'is-punch', 440);   /* 독 상자: 부풀었다 움츠러듦 */
     if (opts.shake !== false && opts.jolt !== false) RR.shake(btn.closest('.rr-dockwrap') || dock);   /* 독 + 게이지: 떨림 */
     if (opts.focus !== false) RR.focus(btn);                /* 화면 전체의 집중선 (무대 안에서만) */
-    RR.burst(btn, opts);
+    var burst = { pressed: true };                          /* 폭발: 눌려 있던 자리를 중심으로 */
+    Object.keys(opts).forEach(function (k) { burst[k] = opts[k]; });
+    RR.burst(btn, burst);
     if (opts.level != null) RR.levelTag(btn, opts.max ? 'MAX!' : 'Lv.' + opts.level, opts);
     emit(btn, 'rr:buy', opts);
   };

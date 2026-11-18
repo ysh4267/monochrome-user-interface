@@ -324,7 +324,7 @@
 .rr-toast.is-live {
   animation: rr-toast-in 440ms linear both;
 }
-/* 닿는 순간(100ms) 둘레로 튀는 방사선. 그림은 fx.css 의 구매 효과와 같은 것을 씁니다. */
+/* 닿는 순간(100ms) 둘레로 튀는 방사선. 그림(배경)은 fx.css 에 있습니다. */
 .rr-toast.is-live::after {
   content: "";
   position: absolute;

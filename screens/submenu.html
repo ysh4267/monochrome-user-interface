@@ -296,13 +296,14 @@
       function price(id, cost, ok, maxed) {
         RR.afford($('b-' + id), ok && !maxed, { quiet: quiet });
         var dock = $('p-' + id), tip = $('tp-' + id);
+        // 상태는 classList 로 바꿉니다: className 을 통째로 갈면 값이 바뀌는 연출(.is-changed)이 도중에 끊깁니다
+        dock.classList.toggle('rr-price--note', maxed);
+        dock.classList.toggle('is-affordable', ok && !maxed);
+        tip.classList.toggle('is-affordable', ok && !maxed);
         if (maxed) {
-          dock.className = 'rr-price rr-price--note';
           dock.textContent = '최대 단계';
           tip.innerHTML = '';
         } else {
-          dock.className = 'rr-price' + (ok ? ' is-affordable' : '');
-          tip.className = 'rr-price rr-price--lg' + (ok ? ' is-affordable' : '');
           dock.innerHTML = tip.innerHTML = '<i class="rr-icon rr-icon--ring"></i><span>' + fmt(cost) + '</span>';
         }
         var cta = $('cta-' + id);
@@ -329,7 +330,8 @@
             price(r.id, r.cost, money >= r.cost, maxed);
           } else {
             RR.afford(btn, false);
-            $('p-' + r.id).className = 'rr-price rr-price--note';
+            $('p-' + r.id).classList.remove('is-affordable');
+            $('p-' + r.id).classList.add('rr-price--note');
             $('p-' + r.id).textContent = front.name + ' +' + (r.unlock - s);
             $('cta-' + r.id).className = 'rr-cta rr-cta--ghost';
             $('cta-' + r.id).textContent = front.name + ' ' + (r.unlock - s) + '레벨 더 올리면 열립니다 (홍보 ' + r.unlock + '단계)';
@@ -352,8 +354,8 @@
         if (cheapest) {
           var can = money >= cheapest.cost;
           RR.afford($('b-open'), can, { quiet: quiet });
-          $('p-open').className = 'rr-price' + (can ? ' is-affordable' : '');
-          $('tp-open').className = 'rr-price rr-price--lg' + (can ? ' is-affordable' : '');
+          $('p-open').classList.toggle('is-affordable', can);
+          $('tp-open').classList.toggle('is-affordable', can);
           $('p-open').lastElementChild.textContent = $('tp-open').lastElementChild.textContent = fmt(cheapest.cost);
         }
         var walk = routes[0], per = 215 + (walk.level - 5) * 55;
