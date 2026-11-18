@@ -1,0 +1,196 @@
+/* ==========================================================================
+   흑백 모노크롬 유저 인터페이스 — 기본기
+   .rr        : 키트의 루트. 글꼴·색·커서를 잡아 줍니다. 컴포넌트는 반드시 .rr 안에 둡니다.
+   .rr-stage  : 원본과 같은 1920×1080 무대. --fit 을 붙이면 뷰포트에 맞춰 통째로 축소됩니다.
+   ========================================================================== */
+
+:root {
+  /* 커서: 회전문을 위에서 본 "(+)". 클릭 가능한 곳에서는 "((×))". 흰 테두리가 있어 검은 면 위에서도 보입니다. */
+  --rr-cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath stroke='%23fff' stroke-width='5.2' d='M9 5Q-1 16 9 27M23 5Q33 16 23 27M16 10v12M10 16h12'/%3E%3Cpath stroke='%23000' stroke-width='2.2' d='M9 5Q-1 16 9 27M23 5Q33 16 23 27M16 10v12M10 16h12'/%3E%3C/g%3E%3C/svg%3E") 16 16, auto;
+  --rr-cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath stroke='%23fff' stroke-width='5.2' d='M11 8.5Q0 20 11 31.5M29 8.5Q40 20 29 31.5M15 10.5Q6 20 15 29.5M25 10.5Q34 20 25 29.5M16.1 16.1l7.8 7.8M23.9 16.1l-7.8 7.8'/%3E%3Cpath stroke='%23000' stroke-width='2.2' d='M11 8.5Q0 20 11 31.5M29 8.5Q40 20 29 31.5M15 10.5Q6 20 15 29.5M25 10.5Q34 20 25 29.5M16.1 16.1l7.8 7.8M23.9 16.1l-7.8 7.8'/%3E%3C/g%3E%3C/svg%3E") 20 20, pointer;
+}
+
+.rr {
+  font-family: var(--rr-font);
+  font-weight: var(--rr-weight-regular);
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--rr-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  font-variant-numeric: lining-nums;
+  user-select: none;
+  cursor: var(--rr-cursor-default);
+}
+
+.rr,
+.rr *,
+.rr *::before,
+.rr *::after {
+  box-sizing: border-box;
+}
+
+/* 리셋은 :where() 로 감싸 우선순위를 0으로 둡니다. 컴포넌트 클래스가 언제나 이깁니다. */
+:where(.rr) button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(.rr) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(.rr) :where(button, a, [role="button"], [tabindex], .rr-clickable):not(:disabled, .is-disabled) {
+  cursor: var(--rr-cursor-pointer);
+}
+
+:where(.rr) :where(p, h1, h2, h3, h4, ul, ol, dl, dd, figure, hr) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+:where(.rr) :where(ul, ol) {
+  list-style: none;
+}
+
+:where(.rr) :where(h1, h2, h3, h4) {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* 키보드 포커스: 게임에는 없지만 접근성을 위해 넣었습니다. 선 굵기는 UI와 같은 3px. */
+.rr :focus-visible {
+  outline: var(--rr-stroke) solid var(--rr-ink);
+  outline-offset: 4px;
+}
+
+/* ── 따라다니는 커서 ──────────────────────────────────────────────────────
+   기본은 위의 CSS 커서(정지 그림)입니다. RR.cursor.enable() 을 부르면 이 요소가 마우스를
+   따라다니며, 원본처럼 가운데 십자(문짝)가 천천히 돕니다. 클릭할 수 있는 곳에서는 괄호가 겹이 됩니다. */
+
+.rr-cursor-on,
+.rr-cursor-on * {
+  cursor: none !important;
+}
+.rr-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--rr-z-cursor);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  filter: drop-shadow(1.4px 0 0 #fff) drop-shadow(-1.4px 0 0 #fff) drop-shadow(0 1.4px 0 #fff) drop-shadow(0 -1.4px 0 #fff);
+}
+.rr-cursor.is-away {
+  opacity: 0;
+}
+.rr-cursor::before {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  width: 32px;
+  height: 32px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' d='M9 5Q-1 16 9 27M23 5Q33 16 23 27'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.rr-cursor.is-pointer::before {
+  top: -20px;
+  left: -20px;
+  width: 40px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' d='M11 8.5Q0 20 11 31.5M29 8.5Q40 20 29 31.5M15 10.5Q6 20 15 29.5M25 10.5Q34 20 25 29.5'/%3E%3C/svg%3E");
+}
+.rr-cursor > i {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' d='M7 1.2v11.6M1.2 7h11.6'/%3E%3C/svg%3E") center / contain no-repeat;
+  animation: rr-spin var(--rr-cursor-spin, 8s) linear infinite;
+}
+.rr-cursor.is-pointer > i {
+  width: 12px;
+  height: 12px;
+  top: -6px;
+  left: -6px;
+}
+
+/* ── 무대 ─────────────────────────────────────────────────────────────── */
+
+.rr-stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--rr-paper);
+  isolation: isolate;
+}
+
+/* 뷰포트에 맞춰 축소. tan(atan2(a, b))는 길이÷길이를 단위 없는 비율로 바꾸는 CSS 관용구입니다. */
+.rr-stage--fit {
+  zoom: min(tan(atan2(100vw, 1920px)), tan(atan2(100vh, 1080px)));
+}
+
+.rr-layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* 게임 화면(월드) 자리. 배경 이미지는 --rr-world 로 바꿔 끼웁니다. */
+.rr-world {
+  position: absolute;
+  inset: 0;
+  z-index: var(--rr-z-world);
+  background: var(--rr-world, none) center / cover no-repeat var(--rr-paper);
+}
+
+/* ── 글자 유틸 ────────────────────────────────────────────────────────── */
+
+.rr-t-medium { font-weight: var(--rr-weight-medium); }
+.rr-t-bold { font-weight: var(--rr-weight-bold); }
+.rr-t-grey { color: var(--rr-grey); }
+.rr-num { font-variant-numeric: tabular-nums lining-nums; }
+
+/* 화면에는 안 보이지만 스크린리더에는 읽히는 글자 */
+.rr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── 모션 줄이기 ──────────────────────────────────────────────────────────
+   이 키트는 원본 게임처럼 기본으로 모션을 항상 재생합니다. (Windows 의 "애니메이션 효과"를
+   꺼 둔 PC 에서는 브라우저가 "모션 줄이기"로 보고하므로, 그걸 그대로 따르면 아무것도 움직이지 않습니다.)
+   접근성을 위해 줄이고 싶으면 <html> 에 속성을 답니다.
+     data-rr-motion="system"  OS 설정을 따릅니다 (prefers-reduced-motion)
+     data-rr-motion="off"     항상 줄입니다                                              */
+
+[data-rr-motion="off"] .rr *,
+[data-rr-motion="off"] .rr *::before,
+[data-rr-motion="off"] .rr *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-rr-motion="system"] .rr *,
+  [data-rr-motion="system"] .rr *::before,
+  [data-rr-motion="system"] .rr *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

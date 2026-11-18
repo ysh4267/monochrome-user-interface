@@ -1,0 +1,90 @@
+/* ==========================================================================
+   흑백 모노크롬 유저 인터페이스 — 디자인 토큰
+   --------------------------------------------------------------------------
+   모든 수치는 원본 게임의 1920×1080 화면에서 픽셀 단위로 계측한 값입니다.
+   컴포넌트는 이 변수만 참조하므로, 여기 값을 바꾸면 전체 룩이 함께 바뀝니다.
+   크기를 통째로 키우거나 줄이려면 컨테이너에 `zoom`을 주세요(.rr-stage 참고).
+   ========================================================================== */
+
+:root {
+  /* ── 색 ─────────────────────────────────────────────────────────────── */
+  --rr-ink: #000;                 /* 선, 채움, 본문 */
+  --rr-paper: #fff;               /* 면 */
+  --rr-ink-soft: #2b2b2b;         /* 보조 본문 */
+  --rr-grey: #6a6a6a;             /* 살 수 없음 / 캡션 / 설명 */
+  --rr-grey-mid: #9a9a9a;         /* 더 옅은 캡션 */
+  --rr-grey-light: #cbcbcb;       /* 잠김(비활성) 선·아이콘 */
+  --rr-line-soft: #dedede;        /* 잠긴 행 구분선 */
+  --rr-shadow: rgba(0, 0, 0, 0.2);        /* 하드 섀도 */
+  --rr-backdrop: rgba(255, 255, 255, 0.88); /* 모달 뒤 흰 막 */
+  --rr-panel-veil: rgba(255, 255, 255, 0.93); /* 타이틀/엔딩 사이드 패널 */
+
+  /* ── 글꼴 ───────────────────────────────────────────────────────────── */
+  --rr-font: "Noto Sans KR", "Noto Sans CJK KR", "Malgun Gothic", system-ui, sans-serif;
+  --rr-font-logo: "Poppins", "Noto Sans KR", sans-serif;   /* 원본 로고와 자폭·굵기가 가장 가까운 공개 글꼴 */
+  --rr-weight-regular: 400;
+  --rr-weight-medium: 500;
+  --rr-weight-bold: 700;
+
+  /* ── 선 ─────────────────────────────────────────────────────────────── */
+  --rr-stroke: 3px;               /* 독·카드·버튼 링 */
+  --rr-stroke-thin: 2px;          /* 배지·핀 */
+  --rr-stroke-hair: 1px;          /* 행 구분선 */
+  --rr-stroke-heavy: 5px;         /* 뒤로 버튼·포커스 카드 */
+
+  /* ── 모서리 ─────────────────────────────────────────────────────────── */
+  --rr-radius-box: 5px;           /* 다이얼로그·툴팁·카드 */
+  --rr-radius-btn: 6px;           /* 사각 버튼 */
+  --rr-radius-pill: 10px;         /* CTA·콤보·획득 라벨 */
+  --rr-radius-dock: 28px;         /* 하단 독 */
+  --rr-radius-round: 999px;
+
+  /* ── 그림자 ─────────────────────────────────────────────────────────── */
+  --rr-shadow-hard: 6px 6px 0 var(--rr-shadow);     /* 카드·다이얼로그 */
+  --rr-shadow-btn: 0 6px 0 var(--rr-shadow);        /* 원형 버튼(초승달) */
+  --rr-shadow-btn-lift: 0 9px 0 var(--rr-shadow);   /* hover로 떠오른 상태 */
+  --rr-shadow-btn-down: 0 1px 0 var(--rr-shadow);   /* 눌린 상태 */
+
+  /* ── 크기 ───────────────────────────────────────────────────────────── */
+  --rr-btn-size: 80px;            /* 독의 원형 버튼이 차지하는 칸. 보이는 원은 78px(칸 안쪽 1px) */
+  --rr-btn-lg-size: 128px;        /* 가운데 큰 버튼(환생) */
+  --rr-btn-gap: 20px;             /* 버튼 간격(중심 간 100px) */
+  --rr-chip-size: 40px;           /* 좌상단 계약 칩 (중심 간격 62px) */
+  --rr-iconbtn-size: 50px;        /* 일시정지·닫기 */
+
+  /* ── 모션 ───────────────────────────────────────────────────────────── */
+  --rr-ease-out: cubic-bezier(0.33, 1, 0.68, 1);      /* easeOutCubic — hover */
+  --rr-ease-out-fast: cubic-bezier(0.16, 1, 0.3, 1);  /* easeOutExpo — 툴팁 슬라이드 */
+  --rr-ease-in: cubic-bezier(0.55, 0, 1, 0.45);       /* 도장 내려찍기 */
+  --rr-ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);   /* 살짝 넘쳤다 돌아오기 */
+  --rr-ease-sine: cubic-bezier(0.37, 0, 0.63, 1);     /* 숨쉬기 */
+
+  --rr-dur-hover: 220ms;          /* 버튼 hover 확대 */
+  --rr-dur-hover-out: 120ms;      /* hover 해제 */
+  --rr-dur-press: 66ms;           /* 누름 */
+  --rr-dur-tip: 110ms;            /* 툴팁 페이드 */
+  --rr-dur-invert: 80ms;          /* 닫기 버튼 반전 */
+  --rr-dur-sweep: 85ms;           /* 사각 버튼 채움 */
+  --rr-dur-hold: 950ms;           /* 길게 눌러 확인 */
+  --rr-dur-dialog: 270ms;         /* 다이얼로그 팝 */
+  --rr-dur-backdrop: 130ms;       /* 흰 막 페이드 */
+  --rr-dur-breathe: 1700ms;       /* 살 수 있는 버튼 숨쉬기 한 주기 */
+  --rr-dur-menu: 160ms;           /* 타이틀 메뉴 밀림 */
+
+  --rr-hover-scale: 1.05;         /* 살 수 없는 버튼 hover */
+  --rr-hover-scale-hot: 1.075;    /* 살 수 있는 버튼 hover */
+  --rr-hover-lift: -3px;
+  --rr-press-drop: 3px;
+  --rr-breathe-min: 1;            /* 숨쉬기: 지름 78px ↔ 82px */
+  --rr-breathe-max: 1.05;
+
+  /* ── 겹침 순서 ──────────────────────────────────────────────────────── */
+  --rr-z-world: 0;
+  --rr-z-hud: 10;
+  --rr-z-dock: 20;
+  --rr-z-tip: 30;
+  --rr-z-fx: 40;
+  --rr-z-backdrop: 50;
+  --rr-z-dialog: 60;
+  --rr-z-cursor: 100;
+}

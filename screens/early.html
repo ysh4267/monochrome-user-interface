@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>게임 초반 · 흑백 모노크롬 유저 인터페이스</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../css/rr.css">
+  <link rel="stylesheet" href="screen.css">
+  <style>
+    /* 이 화면만의 배치: 조작 힌트는 독보다 77px 위(원본 1:56 프레임) */
+    .early-hint { position: absolute; right: 0; bottom: 244px; left: 0; display: flex; justify-content: center; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <a class="demo-back" href="../index.html">← UI 모음으로</a>
+
+  <main class="rr rr-stage rr-stage--fit">
+    <div class="rr-world" style="--rr-world: url('../assets/world-early.svg')"></div>
+
+    <div class="rr-hud">
+      <div class="rr-hud__tl">
+        <button class="rr-iconbtn" aria-label="일시정지"><i class="rr-icon rr-icon--pause"></i></button>
+      </div>
+
+      <div class="rr-hud__tr">
+        <div class="rr-stats">
+          <div class="rr-stats__main"><i class="rr-coin"></i><span class="rr-num" id="money">3</span></div>
+          <div class="rr-stats__rate"><i class="rr-icon rr-icon--people"></i>10 / 분</div>
+          <div class="rr-stats__sub">이번 판 입장 3명</div>
+          <div class="rr-stats__sub is-strong">인류의 0.000000037%</div>
+        </div>
+      </div>
+
+      <div class="early-hint"><span class="rr-toast rr-toast--hint">누르고 있으면 돌아갑니다</span></div>
+
+      <div class="rr-hud__bottom">
+        <div class="rr-dock" id="dock">
+          <span class="rr-tag rr-dock__tag">손님 부족</span>
+
+          <div class="rr-dock__item">
+            <button class="rr-btn is-affordable" id="b1" aria-describedby="tip-1">
+              <span class="rr-btn__body">
+                <span class="rr-btn__disc"><i class="rr-icon rr-icon--megaphone"></i></span>
+                <span class="rr-btn__key">1</span>
+              </span>
+            </button>
+            <div class="rr-price is-affordable" id="p1"><i class="rr-icon rr-icon--ring"></i><span>3</span></div>
+            <div class="rr-tip" id="tip-1" role="tooltip">
+              <div class="rr-tip__head"><b class="rr-tip__title">홍보</b><span class="rr-tip__lv" id="t1-lv">Lv.0 / 20</span></div>
+              <p class="rr-tip__desc">더 많은 손님이 더 자주, 더 많이 몰려 찾아옵니다.</p>
+              <div class="rr-tip__now" id="t1-now">분당 10명</div>
+              <div class="rr-tip__next" id="t1-next">분당 21명</div>
+              <div class="rr-tip__foot">
+                <span class="rr-price rr-price--lg is-affordable" id="t1-price"><i class="rr-icon rr-icon--ring"></i><span>3</span></span>
+                <span class="rr-cta" id="t1-cta">클릭해서 구매</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rr-dock__item">
+            <button class="rr-btn" id="b2" aria-describedby="tip-2">
+              <span class="rr-btn__body">
+                <span class="rr-btn__disc"><i class="rr-icon rr-icon--gear"></i></span>
+                <span class="rr-btn__key">2</span>
+              </span>
+            </button>
+            <div class="rr-price" id="p2"><i class="rr-icon rr-icon--ring"></i><span>5</span></div>
+            <div class="rr-tip" id="tip-2" role="tooltip">
+              <div class="rr-tip__head"><b class="rr-tip__title">기어 교체</b><span class="rr-tip__lv">Lv.0 / 9</span></div>
+              <p class="rr-tip__desc">같은 손놀림으로 문이 더 많이 돕니다.</p>
+              <div class="rr-tip__now">손잡이 5바퀴 = 문 1바퀴</div>
+              <div class="rr-tip__next">손잡이 4바퀴 = 문 1바퀴 · 수동 최고 속도 +5%</div>
+              <div class="rr-tip__foot">
+                <span class="rr-price rr-price--lg" id="t2-price"><i class="rr-icon rr-icon--ring"></i><span>5</span></span>
+                <span class="rr-cta rr-cta--ghost" id="t2-cta">2링 부족</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/rr.js"></script>
+  <script src="screen.js"></script>
+  <script>
+    // 화면 예제용: 아주 작은 구매 로직. 원본처럼 돈이 모자라면 버튼이 흰색이 되고 CTA가 "n링 부족"으로 바뀝니다.
+    (function () {
+      var money = 3;
+      var items = [
+        { btn: 'b1', price: 'p1', tipPrice: 't1-price', cta: 't1-cta', level: 0, max: 20, costs: [3, 10, 24, 60, 130, 300] },
+        { btn: 'b2', price: 'p2', tipPrice: 't2-price', cta: 't2-cta', level: 0, max: 9, costs: [5, 25, 90, 400] }
+      ];
+      var rates = [10, 21, 36, 58, 90, 140, 215];
+      function $(id) { return document.getElementById(id); }
+      function refresh() {
+        $('money').textContent = money.toLocaleString('ko-KR');
+        items.forEach(function (it) {
+          var cost = it.costs[Math.min(it.level, it.costs.length - 1)];
+          var ok = money >= cost;
+          $(it.btn).classList.toggle('is-affordable', ok);
+          [it.price, it.tipPrice].forEach(function (id) {
+            $(id).classList.toggle('is-affordable', ok);
+            $(id).lastElementChild.textContent = cost.toLocaleString('ko-KR');
+          });
+          $(it.cta).className = 'rr-cta' + (ok ? '' : ' rr-cta--ghost');
+          $(it.cta).textContent = ok ? '클릭해서 구매' : (cost - money).toLocaleString('ko-KR') + '링 부족';
+        });
+        var lv = items[0].level;
+        $('t1-lv').textContent = 'Lv.' + lv + ' / 20';
+        $('t1-now').textContent = '분당 ' + rates[Math.min(lv, rates.length - 1)] + '명';
+        $('t1-next').textContent = '분당 ' + rates[Math.min(lv + 1, rates.length - 1)] + '명';
+      }
+      items.forEach(function (it) {
+        $(it.btn).addEventListener('click', function () {
+          var cost = it.costs[Math.min(it.level, it.costs.length - 1)];
+          if (money < cost) { RR.jolt('#dock'); return; }      // 돈이 모자라면 독만 덜컹
+          money -= cost;
+          it.level += 1;
+          refresh();
+          RR.purchase(this, { level: it.level });
+        });
+      });
+      refresh();
+      // 손님이 들어오면 돈이 오릅니다(구경용).
+      if (!DEMO.shot) setInterval(function () { money += 1; refresh(); }, 900);
+    })();
+  </script>
+</body>
+</html>

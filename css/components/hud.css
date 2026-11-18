@@ -1,0 +1,393 @@
+/* ==========================================================================
+   HUD (게임 화면 위에 떠 있는 표시들)
+   --------------------------------------------------------------------------
+   .rr-hud          무대 위 HUD 층. __tl / __tr / __bl / __br / __top 로 귀퉁이에 붙입니다.
+   .rr-stats        우상단 재화·수치 묶음
+   .rr-pill         검은 알약 라벨 ("러시 아워 6초", "최고 속도")
+   .rr-combo        콤보 라벨 (+ 타이머 막대, 기울어진 꼬리표)
+   .rr-gain         획득 수치가 떠오르는 라벨
+   .rr-toast        상단 가운데 알림 / 조작 힌트 알약
+   .rr-bubble       검은 말풍선 ("꿀꺽!")
+   .rr-notice       왼쪽에 뜨는 정산 카드
+   .rr-keytag       화면 아래 귀퉁이의 검은 단축키 꼬리표
+   ========================================================================== */
+
+.rr-hud {
+  position: absolute;
+  inset: 0;
+  z-index: var(--rr-z-hud);
+  pointer-events: none;
+}
+.rr-hud > *,
+.rr-hud__top > *,
+.rr-hud__bottom > * {
+  pointer-events: auto;
+}
+
+.rr-hud__tl,
+.rr-hud__tr,
+.rr-hud__bl,
+.rr-hud__br,
+.rr-hud__top,
+.rr-hud__bottom {
+  position: absolute;
+  display: flex;
+}
+.rr-hud__tl {
+  top: 33px;
+  left: 37px;
+  align-items: center;
+  gap: 18px;
+}
+.rr-hud__tr {
+  top: 30px;
+  right: 49px;
+}
+.rr-hud__bl {
+  bottom: 44px;
+  left: 36px;
+}
+.rr-hud__br {
+  right: 36px;
+  bottom: 44px;
+}
+/* 가운데 정렬은 transform 대신 flex 로 합니다(반 픽셀 번짐 방지). 빈 곳은 클릭이 통과합니다. */
+.rr-hud__top,
+.rr-hud__bottom {
+  right: 0;
+  left: 0;
+  justify-content: center;
+  pointer-events: none;
+}
+.rr-hud__top {
+  top: 121px;
+}
+.rr-hud__bottom {
+  bottom: 22px;
+  z-index: var(--rr-z-dock);
+  align-items: flex-end;
+}
+
+/* 좌상단 칩 줄: 사각 버튼 뒤로 칩이 62px 간격으로 늘어섭니다 */
+.rr-chips {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-left: 5px;
+}
+
+/* ── 우상단 수치 ───────────────────────────────────────────────────────────
+   <div class="rr-stats">
+     <div class="rr-stats__main"><i class="rr-coin"></i><span class="rr-num">120만</span></div>
+     <div class="rr-stats__rate"><i class="rr-icon rr-icon--people"></i>19,633 / 분</div>
+     <div class="rr-stats__sub">이번 판 입장 25,430명</div>
+     <div class="rr-stats__sub is-strong">인류의 0.00031%</div>
+     <span class="rr-pill">러시 아워 6초</span>
+   </div>                                                                              */
+
+.rr-stats {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  white-space: nowrap;
+}
+/* 군중 위에서도 읽히도록 뒤에 흐릿한 흰 바탕이 깔립니다 */
+.rr-stats::before {
+  content: "";
+  position: absolute;
+  inset: -40px -60px -14px -30px;
+  z-index: -1;
+  background: var(--rr-paper);
+  filter: blur(9px);
+}
+.rr-stats__main {
+  display: flex;
+  align-items: center;
+  gap: 19px;
+  height: 66px;
+  font-size: 45px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 66px;
+  letter-spacing: 0.07em;
+  margin-right: calc(2px - 0.07em);
+}
+.rr-stats__rate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  height: 28px;
+  color: var(--rr-ink-soft);
+  font-size: 20px;
+  line-height: 28px;
+}
+.rr-stats__rate > .rr-icon {
+  margin-top: -3px;
+  font-size: 24px;
+}
+.rr-stats__sub {
+  margin-top: 12px;
+  height: 22px;
+  color: var(--rr-grey);
+  font-size: 16px;
+  line-height: 22px;
+}
+.rr-stats__sub + .rr-stats__sub {
+  margin-top: 4px;
+}
+.rr-stats__sub.is-strong {
+  color: var(--rr-ink);
+  font-size: 17px;
+  text-shadow: 0 0 3px var(--rr-paper), 0 0 3px var(--rr-paper);
+}
+.rr-stats > .rr-pill {
+  margin-top: 6px;
+}
+
+/* 링(재화) 아이콘: 세로축으로 도는 고리. 납작해졌다 펴지는 것으로 회전을 흉내 냅니다. */
+.rr-coin {
+  display: inline-block;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 10px solid var(--rr-ink);
+  border-radius: 50%;
+  animation: rr-coin-spin 2400ms linear infinite;
+}
+.rr-coin--still {
+  animation: none;
+}
+
+/* ── 알약 라벨 ────────────────────────────────────────────────────────── */
+
+.rr-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 5px;
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+  font-size: 16.5px;
+  font-weight: var(--rr-weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+}
+.rr-pill--round {
+  height: 36px;
+  padding: 0 19px;
+  border-radius: 13px;
+  font-size: 19.5px;
+  letter-spacing: 0.02em;
+}
+
+/* ── 콤보 ──────────────────────────────────────────────────────────────────
+   <div class="rr-combo" style="--rr-combo-time:.55">
+     <div class="rr-combo__label">풍 ×<span class="rr-num">17729</span></div>
+     <span class="rr-combo__tag">입장료 +60%</span>
+     <span class="rr-combo__bar"></span>
+   </div>
+   숫자가 오를 때 .is-bump 를 잠깐 붙이면 라벨이 툭 커졌다 돌아옵니다.                   */
+
+.rr-combo {
+  --rr-combo-time: 1;
+  position: relative;
+  display: inline-block;
+}
+.rr-combo__label {
+  display: flex;
+  align-items: center;
+  height: 59px;
+  padding: 0 17px;
+  border-radius: 12px;
+  background: var(--rr-ink);
+  box-shadow: 0 0 0 2px var(--rr-paper);
+  color: var(--rr-paper);
+  font-size: 40.5px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 1;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+  transform-origin: 50% 60%;
+}
+.rr-combo.is-bump .rr-combo__label {
+  animation: rr-bump 150ms var(--rr-ease-out);
+}
+.rr-combo__tag {
+  position: absolute;
+  bottom: calc(100% - 37px);
+  left: calc(100% - 1px);
+  padding: 4px 9px 5px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: 10px;
+  background: var(--rr-paper);
+  font-size: 18px;
+  line-height: 22px;
+  white-space: nowrap;
+  transform: rotate(-8deg);
+  transform-origin: 0 100%;
+}
+.rr-combo__bar {
+  position: absolute;
+  top: calc(100% + 13px);
+  right: -3px;
+  width: calc(var(--rr-combo-time) * 56%);
+  height: 6px;
+  border-radius: 3px;
+  background: var(--rr-ink);
+  box-shadow: 0 0 0 1.5px var(--rr-paper);
+  transition: width 120ms linear;
+}
+
+/* ── 획득 라벨 ─────────────────────────────────────────────────────────────
+   <span class="rr-gain"><i class="rr-icon rr-icon--ring"></i>+16,608</span>
+   .is-live 를 붙이면 0.9초 동안 톡 나타나 40px 떠오르다 사라집니다.                      */
+
+.rr-gain {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 11px 0 9px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: var(--rr-radius-pill);
+  background: var(--rr-paper);
+  font-size: 19px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.rr-gain > .rr-icon {
+  font-size: 15px;
+  vertical-align: 0;
+}
+.rr-gain--lg {
+  height: 44px;
+  padding: 0 15px 0 12px;
+  border-width: var(--rr-stroke);
+  border-radius: 12px;
+  font-size: 28px;
+}
+.rr-gain--lg > .rr-icon {
+  font-size: 19px;
+}
+.rr-gain.is-live {
+  animation: rr-gain 900ms linear both;
+}
+
+/* ── 알림 / 힌트 ───────────────────────────────────────────────────────── */
+
+.rr-toast {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 17px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: 16px;
+  background: var(--rr-paper);
+  font-size: 22px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.rr-toast--hint {
+  height: 52px;
+  padding: 0 32px;
+  border-radius: 17px;
+  font-size: 22px;
+  font-weight: var(--rr-weight-regular);
+  letter-spacing: 0.06em;
+}
+.rr-toast.is-live {
+  animation: rr-pop-in 180ms var(--rr-ease-out) both;
+}
+
+.rr-bubble {
+  display: inline-flex;
+  align-items: center;
+  height: 39px;
+  padding: 0 14px;
+  border-radius: 9px;
+  background: var(--rr-ink);
+  box-shadow: 0 0 0 2px var(--rr-paper);
+  color: var(--rr-paper);
+  font-size: 19.5px;
+  font-weight: var(--rr-weight-bold);
+  white-space: nowrap;
+}
+.rr-bubble.is-live {
+  animation: rr-pop-in 160ms var(--rr-ease-pop) both;
+}
+
+/* ── 정산 카드 ─────────────────────────────────────────────────────────────
+   <div class="rr-notice">
+     <div class="rr-notice__title">배달 완료! 2초 · 팁 ×2</div>
+     <div class="rr-notice__value"><i class="rr-icon rr-icon--ring"></i>+32.6억</div>
+     <div class="rr-notice__sub">4분어치 수입</div>
+     <div class="rr-notice__foot">밀렸던 손님 1,174만명이 한꺼번에 들어옵니다</div>
+   </div>                                                                              */
+
+.rr-notice {
+  width: 323px;
+  padding: 15px 16px 16px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: var(--rr-radius-box);
+  background: var(--rr-paper);
+  box-shadow: var(--rr-shadow-hard);
+  text-align: center;
+}
+.rr-notice__title {
+  font-size: 18px;
+  line-height: 24px;
+}
+.rr-notice__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 41px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 56px;
+  letter-spacing: 0.04em;
+}
+.rr-notice__value > .rr-icon {
+  font-size: 27px;
+  vertical-align: 0;
+}
+.rr-notice__sub {
+  margin-top: 5px;
+  color: var(--rr-ink-soft);
+  font-size: 16px;
+  line-height: 21px;
+}
+.rr-notice__foot {
+  margin-top: 8px;
+  color: var(--rr-grey);
+  font-size: 14px;
+  line-height: 19px;
+}
+.rr-notice.is-live {
+  animation: rr-dialog-in var(--rr-dur-dialog) backwards;
+}
+
+/* ── 단축키 꼬리표 ─────────────────────────────────────────────────────── */
+
+.rr-keytag {
+  display: inline-flex;
+  align-items: center;
+  height: 42px;
+  padding: 0 19px;
+  border-radius: var(--rr-radius-btn);
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+  font-size: 17px;
+  font-weight: var(--rr-weight-bold);
+  white-space: nowrap;
+}

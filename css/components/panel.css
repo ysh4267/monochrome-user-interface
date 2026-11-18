@@ -1,0 +1,264 @@
+/* ==========================================================================
+   옆 패널 (타이틀 화면 / 엔딩 통계 / 크레딧)
+   --------------------------------------------------------------------------
+   .rr-side          화면 한쪽을 세로로 채우는 흰 패널 (--left / --right)
+                     너비는 --rr-side-width, 글이 시작하는 쪽 여백은 --rr-side-pad,
+                     반대쪽 여백은 --rr-side-pad-end 로 바꿉니다.
+   .rr-logo          로고 (둘째 줄의 O 자리에 도는 회전문)
+   .rr-menu          타이틀 메뉴 (검은 네모 글머리표가 붙으며 밀리는 hover)
+   .rr-tally         엔딩 통계 (큰 수 + 작은 설명의 반복)
+   .rr-credits       크레딧 (이름표 + 값의 반복)
+   ========================================================================== */
+
+.rr-side {
+  --rr-side-width: 560px;
+  --rr-side-pad: 49px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: var(--rr-z-hud);
+  display: flex;
+  flex-direction: column;
+  width: var(--rr-side-width);
+  padding: 0 var(--rr-side-pad-end, 40px) 0 var(--rr-side-pad);
+  background: var(--rr-panel-veil);
+}
+.rr-side--left {
+  left: 0;
+  border-right: var(--rr-stroke) solid var(--rr-ink);
+}
+.rr-side--right {
+  right: 0;
+  border-left: var(--rr-stroke) solid var(--rr-ink);
+}
+.rr-side.is-live.rr-side--left {
+  animation: rr-slide-in-left 320ms var(--rr-ease-out) backwards;
+}
+.rr-side.is-live.rr-side--right {
+  animation: rr-slide-in-right 320ms var(--rr-ease-out) backwards;
+}
+
+/* ── 로고 ──────────────────────────────────────────────────────────────────
+   <h1 class="rr-logo" aria-label="Round and Round Inc.">
+     <span>ROUND AND</span>
+     <span>R<i class="rr-logo__door"></i>UND INC.</span>
+   </h1>                                                                               */
+
+.rr-logo {
+  margin-left: -5px;                 /* 글꼴의 왼쪽 여백만큼 당겨 R 의 기둥을 본문 왼선에 맞춤 */
+  font-family: var(--rr-font-logo);
+  font-size: 99px;
+  font-weight: 900;
+  line-height: 82px;
+  letter-spacing: -0.054em;
+  white-space: nowrap;
+}
+/* 원본 로고는 Poppins 보다 글자가 4% 좁아서, 줄마다 가로로 살짝 눌러 글자 사이 틈을 살립니다 */
+.rr-logo > span {
+  display: block;
+  transform: scaleX(0.96);
+  transform-origin: 0 50%;
+}
+.rr-logo__door {
+  position: relative;
+  display: inline-block;
+  width: 91.5px;
+  height: 76px;
+  margin: 0 -3px 0 8px;
+  vertical-align: -3px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 84 76'%3E%3Cpath fill='none' stroke='%23000' stroke-width='9' stroke-linecap='round' d='M14 6Q-4 38 14 70M70 6Q88 38 70 70'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+/* 문짝: 십자가 천천히 돕니다 */
+.rr-logo__door::before,
+.rr-logo__door::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 7px;
+  margin: -3.5px 0 0 -12px;
+  border-radius: 2px;
+  background: var(--rr-ink);
+  animation: rr-spin var(--rr-door-spin, 6s) linear infinite;
+}
+.rr-logo__door::after {
+  animation-name: rr-spin-quarter;
+}
+
+.rr-logo__tagline {
+  margin-top: 24px;
+  color: var(--rr-ink-soft);
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0.075em;
+}
+
+/* ── 타이틀 메뉴 ───────────────────────────────────────────────────────────
+   <ul class="rr-menu">
+     <li><button class="rr-menu__item is-selected">새로 시작</button></li>
+     <li><button class="rr-menu__item">설정</button></li>
+   </ul>
+   고른 항목(.is-selected)과 마우스를 올린 항목 모두에 글머리표가 붙습니다(원본과 같음).
+   글머리표는 80ms 만에 나타나고, 글자는 160ms 동안 45px 밀립니다.                       */
+
+.rr-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.rr-menu__item {
+  position: relative;
+  display: block;
+  height: 62.2px;
+  padding: 0 16px 0 0;
+  color: var(--rr-ink-soft);
+  font-size: 32px;
+  line-height: 62.2px;
+  letter-spacing: 0.055em;
+  white-space: nowrap;
+  transition:
+    padding-left var(--rr-dur-menu) var(--rr-ease-out),
+    font-size 80ms var(--rr-ease-out),
+    color 80ms linear;
+}
+.rr-menu__item::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 28px;
+  height: 30px;
+  margin-top: -17px;
+  background: var(--rr-ink);
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 80ms linear,
+    transform 80ms var(--rr-ease-out);
+}
+/* 고른 항목은 글머리표가 붙고, 굵어지고, 살짝(32→34px) 커집니다 */
+.rr-menu__item:is(:hover, :focus-visible, .is-selected) {
+  padding-left: 45px;
+  color: var(--rr-ink);
+  font-size: 34px;
+  font-weight: var(--rr-weight-bold);
+}
+.rr-menu__item:is(:hover, :focus-visible, .is-selected)::before {
+  opacity: 1;
+  transform: scale(1);
+}
+.rr-menu__item:focus-visible {
+  outline: none;
+}
+
+.rr-side__foot {
+  margin-top: auto;
+  padding-bottom: 36px;
+  color: var(--rr-grey);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+/* ── 엔딩 통계 ─────────────────────────────────────────────────────────────
+   <dl class="rr-tally">
+     <div class="rr-tally__row rr-tally__row--hero"><dt>82억명</dt><dd>이 문을 지나간 사람</dd></div>
+     <div class="rr-tally__row"><dt>51분</dt><dd>영업한 시간 · 가게를 12번 열었습니다</dd></div>
+     <div class="rr-tally__row rr-tally__row--sm"><dt>고양이 26 · 여우 21</dt><dd>만난 수인 친구</dd></div>
+   </dl>
+   <p class="rr-tally__hint">클릭하면 계속합니다</p>
+   .is-live 를 붙이면 줄이 위에서부터 차례로 나타납니다(줄마다 style="--rr-i: n").          */
+
+.rr-tally {
+  display: flex;
+  flex-direction: column;
+  gap: 15.5px;
+}
+.rr-tally__row > dt {
+  font-size: 30px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 38px;
+  letter-spacing: 0.04em;
+}
+.rr-tally__row > dd {
+  margin-top: 6px;
+  color: var(--rr-ink-soft);
+  font-size: 14.5px;
+  line-height: 20px;
+}
+.rr-tally__row--hero {
+  margin-bottom: 12.5px;
+}
+.rr-tally__row--hero > dt {
+  font-size: 59px;
+  line-height: 68px;
+  letter-spacing: 0.05em;
+}
+.rr-tally__row--hero > dd {
+  margin-top: 11.5px;
+}
+.rr-tally__row--sm > dt {
+  margin-top: -1px;
+  font-size: 22.4px;
+  line-height: 31px;
+}
+.rr-tally__row--sm > dd {
+  margin-top: 3px;
+}
+.rr-tally__hint {
+  margin-top: 27px;
+  color: var(--rr-ink-soft);
+  font-size: 14.5px;
+  line-height: 20px;
+}
+.rr-tally.is-live > .rr-tally__row {
+  animation: rr-rise-in 260ms var(--rr-ease-out) backwards;
+  animation-delay: calc(var(--rr-i, 0) * 90ms);
+}
+
+/* ── 크레딧 ────────────────────────────────────────────────────────────────
+   <dl class="rr-credits">
+     <div><dt>기획 · 개발</dt><dd>Murbong</dd></div> …
+   </dl>
+   <p class="rr-credits__thanks">플레이해 주셔서 감사합니다.</p>
+   <p class="rr-credits__note">입장 82억명 · 플레이 51분</p>
+   <div class="rr-credits__actions"> .rr-rbtn--block ×n </div>                           */
+
+.rr-credits {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  color: var(--rr-ink-soft);
+  font-size: 19px;
+  line-height: 28px;
+}
+.rr-credits > div > dt {
+  font-size: 18px;
+}
+.rr-credits__thanks {
+  margin-top: 32px;
+  font-size: 31px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 44px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.rr-credits__note {
+  margin-top: 7.5px;
+  color: var(--rr-ink-soft);
+  font-size: 17px;
+  line-height: 24px;
+}
+.rr-credits__note + .rr-credits__note {
+  margin-top: 21px;
+}
+.rr-credits__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12.5px;
+  margin-top: 9.5px;
+}
+.rr-credits__actions > .rr-rbtn {
+  height: 55px;
+  font-size: 20px;
+}

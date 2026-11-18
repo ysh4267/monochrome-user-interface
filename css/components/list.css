@@ -1,0 +1,310 @@
+/* ==========================================================================
+   환생 업그레이드 화면 (큰 패널 + 세로 목록 여러 줄)
+   --------------------------------------------------------------------------
+   <section class="rr-sheet">
+     <header class="rr-sheet__head"> … </header>
+     <div class="rr-sheet__cols">
+       <div class="rr-col">
+         <h3 class="rr-col__title">개업</h3>
+         <ul class="rr-uplist">
+           <li><button class="rr-up is-owned"> … </button></li>
+         </ul>
+       </div>
+     </div>
+     <footer class="rr-sheet__foot"> … </footer>
+   </section>
+
+   행 상태:  (기본) 살 수 있는 항목 — 선으로 된 원 아이콘
+             .is-owned  한 번 이상 산 항목 — 검게 채운 원
+             .is-maxed  끝까지 올린 항목 — 값 대신 "최대"
+             :disabled / .is-disabled  아직 못 여는 항목 — 전부 옅은 회색
+   값 배지:  .rr-cost.is-affordable 검은 알약 / 기본은 선만
+   ========================================================================== */
+
+.rr-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 1758px;
+  height: 938px;
+  padding: 32px 33px 32px 42px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: var(--rr-radius-box);
+  background: var(--rr-paper);
+  box-shadow: 8px 8px 0 var(--rr-shadow);
+}
+.rr-sheet.is-live {
+  animation: rr-dialog-in var(--rr-dur-dialog) backwards;
+}
+
+.rr-sheet__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.rr-sheet__energy {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  height: 78px;
+  margin-left: -5.5px;
+  font-size: 66px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 78px;
+  letter-spacing: 0.03em;
+}
+.rr-sheet__energy > .rr-icon {
+  position: relative;
+  top: 1.5px;
+  margin-right: 1.5px;
+  font-size: 52px;
+  vertical-align: 0;
+}
+.rr-sheet__energy > small {
+  margin-left: 1px;
+  padding-top: 12px;
+  font-size: 21px;
+  font-weight: var(--rr-weight-regular);
+  letter-spacing: 0.02em;
+}
+.rr-sheet__gain {
+  margin: 8px 0 0 -7px;
+  font-size: 21px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 28px;
+  letter-spacing: 0.02em;
+}
+.rr-sheet__meta {
+  padding-top: 12px;
+  font-size: 17.5px;
+  line-height: 24px;
+}
+
+.rr-sheet__cols {
+  display: grid;
+  grid-template-columns: repeat(var(--rr-cols, 4), 406px);
+  justify-content: space-between;
+  flex: 1;
+  margin-top: 17px;
+  padding-right: 6px;
+}
+.rr-uplist {
+  margin-top: 3px;
+}
+
+.rr-col__title {
+  padding-bottom: 4px;
+  border-bottom: var(--rr-stroke) solid var(--rr-ink);
+  font-size: 22px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 32px;
+}
+
+/* ── 업그레이드 행 ─────────────────────────────────────────────────────── */
+
+.rr-up {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  column-gap: 12px;
+  width: 100%;
+  min-height: 65px;
+  padding: 7px 4px 7px 3px;
+  border-bottom: var(--rr-stroke-hair) solid var(--rr-ink);
+  text-align: left;
+}
+.rr-up::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 4px;
+  background: var(--rr-ink);
+  opacity: 0;
+  transition: opacity 140ms linear;
+}
+.rr-up:hover::before,
+.rr-up:focus-visible::before {
+  opacity: 1;
+  transition-duration: 40ms;
+}
+.rr-up > * {
+  transition: transform 120ms var(--rr-ease-out);
+}
+.rr-up:hover > *,
+.rr-up:focus-visible > * {
+  transform: translateX(5px);
+}
+.rr-up:hover > .rr-up__side {
+  transform: none;
+}
+
+.rr-up__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: 50%;
+  background: var(--rr-paper);
+  font-size: 26px;
+  line-height: 1;
+  transition:
+    background-color 200ms linear,
+    color 200ms linear,
+    transform 120ms var(--rr-ease-out);
+}
+.rr-up.is-owned > .rr-up__icon,
+.rr-up.is-maxed > .rr-up__icon {
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+}
+.rr-up__title {
+  display: block;
+  font-size: 19px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 26px;
+  letter-spacing: 0.02em;
+}
+.rr-up__sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--rr-ink-soft);
+  font-size: 14px;
+  line-height: 20px;
+}
+.rr-up__sub--arrow::before {
+  content: "→ ";
+}
+.rr-up__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  align-self: start;
+  margin-top: -2px;
+}
+.rr-up__lv {
+  padding-right: 1px;
+  color: var(--rr-grey);
+  font-size: 12.5px;
+  line-height: 14px;
+}
+
+.rr-up:is(:disabled, .is-disabled) {
+  border-bottom-color: var(--rr-line-soft);
+  color: var(--rr-grey-light);
+}
+.rr-up:is(:disabled, .is-disabled)::before {
+  background: var(--rr-grey-light);
+}
+.rr-up:is(:disabled, .is-disabled) :is(.rr-up__icon, .rr-cost) {
+  border-color: var(--rr-grey-light);
+  background: var(--rr-paper);
+  color: var(--rr-grey-light);
+}
+.rr-up:is(:disabled, .is-disabled) :is(.rr-up__sub, .rr-up__lv) {
+  color: var(--rr-grey-light);
+}
+
+/* 소용돌이 글리프는 목록에서 다른 아이콘보다 작게 그려집니다(원본 계측: 22.5px) */
+.rr-up__icon > .rr-icon--spin {
+  font-size: 22.5px;
+}
+
+/* 막 샀을 때 한 번 재생: 아이콘이 톡 튑니다 */
+.rr-up.is-bought > .rr-up__icon {
+  animation: rr-bump 180ms var(--rr-ease-out);
+}
+
+/* ── 값 배지 ───────────────────────────────────────────────────────────── */
+
+.rr-cost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 54px;
+  height: 34px;
+  padding: 0 11px 0 10px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: 12px;
+  background: var(--rr-paper);
+  color: var(--rr-ink);
+  font-size: 17px;
+  font-weight: var(--rr-weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color 200ms linear,
+    color 200ms linear;
+}
+.rr-cost > .rr-icon {
+  font-size: 15px;
+  vertical-align: 0;
+}
+.rr-cost.is-affordable {
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+}
+.rr-cost--max {
+  border-color: transparent;
+  background: none;
+  color: var(--rr-ink-soft);
+  font-size: 12px;
+  font-weight: var(--rr-weight-regular);
+}
+
+/* ── 아래 줄: 맺은 계약 + 큰 버튼 ──────────────────────────────────────── */
+
+.rr-sheet__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+}
+.rr-deals {
+  margin: 0 0 3px -9px;
+}
+.rr-deals__title {
+  margin-bottom: 13px;
+  font-size: 16.5px;
+  line-height: 20px;
+  letter-spacing: 0.03em;
+}
+.rr-deals__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 70px;
+}
+.rr-deal {
+  display: grid;
+  grid-template-columns: 40px auto;
+  align-items: center;
+  column-gap: 10px;
+  min-width: 206px;
+}
+.rr-deal > .rr-chip {
+  --rr-chip-size: 40px;
+  grid-row: span 2;
+  font-size: 26px;
+}
+.rr-deal__title {
+  font-size: 16.5px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 22px;
+  letter-spacing: 0.06em;
+}
+.rr-deal__title > small {
+  margin-left: 6px;
+  color: var(--rr-grey);
+  font-size: 12px;
+  font-weight: var(--rr-weight-regular);
+}
+.rr-deal__sub {
+  color: var(--rr-grey);
+  font-size: 13px;
+  line-height: 18px;
+}

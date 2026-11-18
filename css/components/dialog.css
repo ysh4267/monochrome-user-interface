@@ -1,0 +1,326 @@
+/* ==========================================================================
+   다이얼로그
+   --------------------------------------------------------------------------
+   <div class="rr-modal" id="settings">             ← .is-open 으로 엽니다
+     <div class="rr-modal__veil" data-rr-close></div> ← 흰 막 (누르면 닫힘)
+     <section class="rr-dialog"> … </section>
+   </div>
+
+   열릴 때: 흰 막 130ms 페이드, 상자는 아래에서 올라와 14px 넘쳤다가 270ms 안에 제자리로.
+   닫힐 때: 상자는 즉시 사라지고 흰 막만 100ms 페이드.
+
+   상자 안에 넣는 부품:  .rr-dialog__head / .rr-tabs / .rr-option / .rr-stepper / .rr-kv / .rr-bignum
+   ========================================================================== */
+
+.rr-modal {
+  position: absolute;
+  inset: 0;
+  z-index: var(--rr-z-dialog);
+  display: grid;
+  place-items: center;
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 100ms;
+}
+.rr-modal.is-open {
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.rr-modal__veil {
+  position: absolute;
+  inset: 0;
+  background: var(--rr-backdrop);
+  opacity: 0;
+  transition: opacity 100ms linear;
+}
+.rr-modal.is-open > .rr-modal__veil {
+  opacity: 1;
+  transition-duration: var(--rr-dur-backdrop);
+}
+
+.rr-dialog {
+  position: relative;
+  width: var(--rr-dialog-width, 900px);
+  padding: 28px 32px 28px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: var(--rr-radius-box);
+  background: var(--rr-paper);
+  box-shadow: var(--rr-shadow-hard);
+  visibility: hidden;
+}
+/* 상자는 흰 막보다 70ms 늦게 튀어나옵니다(원본의 호흡) */
+.rr-modal.is-open > .rr-dialog,
+.rr-dialog.is-open {
+  visibility: visible;
+  animation: rr-dialog-in var(--rr-dur-dialog) 70ms backwards;
+}
+
+/* <dialog class="rr-dialog"> 로 써도 됩니다(showModal). */
+dialog.rr-dialog {
+  visibility: visible;
+  margin: auto;
+  color: inherit;
+}
+dialog.rr-dialog[open] {
+  animation: rr-dialog-in var(--rr-dur-dialog) backwards;
+}
+dialog.rr-dialog::backdrop {
+  background: var(--rr-backdrop);
+}
+
+/* 제목은 닫기 버튼이 없어도 항상 __head 로 감쌉니다(세로 자리가 같아지도록) */
+.rr-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+}
+.rr-dialog__title {
+  font-size: 33px;
+  font-weight: var(--rr-weight-bold);
+  line-height: 48px;
+  letter-spacing: 0.06em;
+}
+.rr-dialog__head > .rr-iconbtn {
+  --rr-iconbtn-size: 52px;
+}
+.rr-dialog__body {
+  margin-top: 11px;
+  font-size: 19.2px;
+  line-height: 29px;
+  letter-spacing: 0.025em;
+}
+
+/* ── 탭 ───────────────────────────────────────────────────────────────── */
+
+.rr-tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 9px;
+  padding-left: 0;
+  border-bottom: var(--rr-stroke) solid var(--rr-ink);
+}
+.rr-tab {
+  position: relative;
+  height: 54px;
+  margin-left: -2px;
+  padding: 0 19.5px;
+  color: var(--rr-grey);
+  font-size: 20px;
+  line-height: 54px;
+  transition: color var(--rr-dur-invert) linear;
+}
+.rr-tab + .rr-tab {
+  margin-left: 0;
+}
+.rr-tab:hover {
+  color: var(--rr-ink);
+}
+.rr-tab::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  left: 0;
+  height: 5px;
+  background: var(--rr-ink);
+  transform: scaleX(0);
+  transition: transform 120ms var(--rr-ease-out);
+}
+.rr-tab.is-active {
+  color: var(--rr-ink);
+  font-weight: var(--rr-weight-bold);
+}
+.rr-tab.is-active::after {
+  transform: scaleX(1);
+}
+
+.rr-tabpanel {
+  display: none;
+}
+.rr-tabpanel.is-active {
+  display: block;
+}
+
+/* ── 설정 행 ───────────────────────────────────────────────────────────────
+   hover 하면 왼쪽에 4px 검은 막대가 서고 이름이 7px 밀립니다.                          */
+
+.rr-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 76px;
+  padding: 18px 10px 0 10px;         /* 내용이 행 한가운데보다 9px 아래에 앉습니다(원본 그대로) */
+  border-bottom: var(--rr-stroke-hair) solid var(--rr-ink);
+  font-size: 19.5px;
+}
+.rr-option::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  background: var(--rr-ink);
+  opacity: 0;
+  transition: opacity var(--rr-dur-invert) linear;
+}
+.rr-option__label {
+  color: var(--rr-ink-soft);
+  transition: transform 120ms var(--rr-ease-out);
+}
+.rr-option:hover::before,
+.rr-option:focus-within::before {
+  opacity: 1;
+}
+.rr-option:hover > .rr-option__label,
+.rr-option:focus-within > .rr-option__label {
+  transform: translateX(7px);
+}
+.rr-option__help {
+  margin-top: 9px;
+  padding-left: 10px;
+  color: var(--rr-grey);
+  font-size: 15px;
+  line-height: 24px;
+}
+.rr-option__help + .rr-option__help {
+  margin-top: 12px;
+}
+
+/* ── 좌우 선택기 ───────────────────────────────────────────────────────────
+   <div class="rr-stepper">
+     <button class="rr-stepper__btn" aria-label="이전"><i class="rr-icon rr-icon--chevron-left"></i></button>
+     <span class="rr-stepper__value">끔 (원 그리기)</span>
+     <button class="rr-stepper__btn" aria-label="다음"><i class="rr-icon rr-icon--chevron-right"></i></button>
+   </div>                                                                              */
+
+.rr-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  flex: none;
+  width: var(--rr-stepper-width, 340px);
+  height: 42px;
+  overflow: hidden;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: var(--rr-radius-box);
+  background: var(--rr-paper);
+}
+.rr-stepper__btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  font-size: 16px;
+  line-height: 1;
+  transition:
+    background-color var(--rr-dur-invert) linear,
+    color var(--rr-dur-invert) linear;
+}
+.rr-stepper__btn:hover {
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+}
+.rr-stepper__value {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+/* ── 이름–값 표 ────────────────────────────────────────────────────────── */
+
+.rr-kv {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 5.25px;
+  padding-top: 13px;
+  border-top: var(--rr-stroke-thin) solid var(--rr-ink);
+  font-size: 17px;
+  line-height: 24px;
+}
+.rr-kv > dt {
+  color: var(--rr-ink-soft);
+}
+.rr-kv > dd {
+  padding-right: 2px;
+  font-size: 17.8px;
+  font-weight: var(--rr-weight-bold);
+  text-align: right;
+}
+
+/* ── 큰 숫자 ───────────────────────────────────────────────────────────────
+   <div class="rr-bignum"><i class="rr-icon rr-icon--spin"></i>+13</div>
+   <p class="rr-bignum__caption">스핀 에너지를 얻습니다</p>                              */
+
+.rr-bignum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13.5px;
+  margin-top: 28px;
+  padding-left: 4.5px;
+  font-size: 73px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 86px;
+  letter-spacing: 0.046em;
+}
+.rr-bignum > .rr-icon {
+  font-size: 56px;
+  vertical-align: 0;
+}
+.rr-modal.is-open .rr-bignum,
+.rr-bignum.is-live {
+  animation: rr-num-pop 260ms var(--rr-ease-out) 120ms backwards;
+}
+.rr-bignum__caption {
+  margin: 11px 0 19px;
+  font-size: 17.8px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.rr-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 13px;
+  margin-top: 26px;
+}
+.rr-dialog__hint {
+  margin-top: 16px;
+  color: var(--rr-grey);
+  font-size: 13.5px;
+  line-height: 18px;
+  text-align: right;
+}
+
+/* ── 한마디 상자 ("영업 종료.") ────────────────────────────────────────── */
+
+.rr-msgbox {
+  width: 760px;
+  padding: 38px 40px 35.5px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: var(--rr-radius-box);
+  background: var(--rr-paper);
+  box-shadow: 8px 8px 0 var(--rr-shadow);
+  text-align: center;
+}
+.rr-msgbox.is-live {
+  animation: rr-dialog-in var(--rr-dur-dialog) backwards;
+}
+.rr-msgbox__title {
+  font-size: 48px;
+  font-weight: var(--rr-weight-bold);
+  line-height: 62px;
+  letter-spacing: 0.05em;
+}
+.rr-msgbox__sub {
+  margin-top: 18.5px;
+  font-size: 25px;
+  line-height: 36px;
+  letter-spacing: 0.036em;
+}

@@ -1,0 +1,139 @@
+/* ==========================================================================
+   독 (화면 아래 가운데의 버튼 선반)
+   --------------------------------------------------------------------------
+   <div class="rr-dockwrap">            ← 진행 패널(.rr-track)과 독을 세로로 쌓는 틀 (선택)
+     <div class="rr-dock rr-dock--hump"> ← --hump: 가운데 큰 버튼을 감싸는 봉우리
+       <span class="rr-tag rr-dock__tag">손님 부족</span>
+       <div class="rr-dock__item"> button.rr-btn + .rr-price + .rr-tip </div>
+       <div class="rr-dock__item rr-dock__item--center"> button.rr-btn.rr-btn--lg + .rr-price </div>
+     </div>
+   </div>
+   버튼 중심 간격은 100px(80 + 20). 버튼 수에 따라 독 너비가 저절로 정해집니다.
+   ========================================================================== */
+
+.rr-dockwrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+}
+
+.rr-dock {
+  --_pt: 12.5px;                                   /* 윗선에서 버튼까지 */
+  --rr-tip-offset: calc(var(--_pt) + 15px);        /* 툴팁 아랫변이 독 윗변보다 12px 위에 오도록 */
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--rr-btn-gap);
+  padding: var(--_pt) 26px 10.5px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: var(--rr-radius-dock);
+  background: var(--rr-paper);
+}
+
+.rr-dock__item {
+  position: relative;            /* 툴팁의 기준점. 봉우리(::before)보다 위에 그려지게도 합니다. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  width: var(--rr-btn-size);
+}
+
+/* ── 가운데 봉우리 ─────────────────────────────────────────────────────────
+   폭 208px, 높이 40px 의 종 모양 언덕입니다(양 끝과 꼭대기에서 수평으로 이어지는 S 곡선 두 개).
+   SVG 의 y=0 이 윗선의 중심선이고, 흰 면이 그 아래 윗선을 덮어 지웁니다.                    */
+
+.rr-dock--hump {
+  --_pt: 18.5px;
+}
+.rr-dock--hump::before {
+  content: "";
+  position: absolute;
+  top: -45px;                      /* 정수 픽셀에 놓아야 윗선과 어긋나 보이지 않습니다 */
+  left: 50%;
+  width: 240px;
+  height: 48px;
+  margin-left: -120px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-120 -43.5 240 48'%3E%3Cpath fill='%23fff' d='M-120 0H-104C-88 0-52-40 0-40S88 0 104 0H120V4.500H-120Z'/%3E%3Cpath fill='none' stroke='%23000' stroke-width='3' d='M-120 0H-104C-88 0-52-40 0-40S88 0 104 0H120'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+.rr-dock__item--center {
+  --_rise: calc(var(--rr-btn-lg-size) - var(--rr-btn-size));     /* 큰 버튼이 위로 솟는 높이(48px) */
+  --rr-tip-offset: calc(var(--_pt) + 15px + var(--_rise));
+  gap: 10.5px;
+  width: var(--rr-btn-lg-size);
+  margin: 0 6px;
+}
+.rr-dock__item--center .rr-btn {
+  margin-top: calc(var(--_rise) * -1 - 1px);                    /* 봉우리 안으로 */
+}
+
+/* ── 값 표시 ───────────────────────────────────────────────────────────────
+   <div class="rr-price is-affordable"><i class="rr-icon rr-icon--ring"></i>54만</div>
+   살 수 있으면 검정, 모자라면 회색. "최대 단계" 같은 안내 글자도 같은 자리에 씁니다.      */
+
+.rr-price {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 24px;
+  color: var(--rr-grey);
+  font-size: 17px;
+  line-height: 24px;
+  white-space: nowrap;
+  transition: color 300ms linear;
+}
+.rr-price.is-affordable {
+  color: var(--rr-ink);
+  font-weight: var(--rr-weight-medium);
+}
+/* 고리는 줄 상자가 아니라 숫자의 높이에 맞춰 앉습니다(줄 가운데보다 0.13em 아래) */
+.rr-price > .rr-icon {
+  position: relative;
+  top: 0.03em;
+  color: var(--rr-ink);
+  font-size: 15px;
+  vertical-align: 0;
+}
+.rr-price--note {
+  font-size: 16px;
+}
+/* 작은 값(계약금처럼 조건을 알리는 숫자) */
+.rr-price--sm {
+  font-size: 15px;
+}
+.rr-price--lg {
+  gap: 6px;
+  height: 32px;
+  font-size: 22px;
+  line-height: 32px;
+}
+.rr-price--lg > .rr-icon {
+  font-size: 20px;
+}
+
+/* ── 꼬리표 ───────────────────────────────────────────────────────────── */
+
+.rr-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 27px;
+  padding: 0 11px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: 14px;
+  background: var(--rr-paper);
+  color: var(--rr-ink-soft);
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* 독 윗선에 걸터앉는 꼬리표: 꼬리표의 아랫선이 독의 윗선과 겹칩니다 */
+.rr-dock__tag {
+  position: absolute;
+  bottom: 100%;
+  left: 16px;
+}

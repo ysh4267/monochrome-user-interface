@@ -1,0 +1,175 @@
+/* ==========================================================================
+   흑백 모노크롬 유저 인터페이스 — 모션 (키프레임 모음)
+   --------------------------------------------------------------------------
+   수치는 원본 영상을 60fps 프레임 단위로 계측해서 옮겼습니다(docs/reference-notes.md).
+   이름은 모두 rr- 로 시작하며, 컴포넌트 CSS가 animation 으로 불러 씁니다.
+   새 모션을 추가할 때도 여기에 키프레임을 두면 한곳에서 관리됩니다.
+   ========================================================================== */
+
+/* 살 수 있는 버튼의 숨쉬기: 지름 78↔82px(1↔1.05배), 1.7초 주기(alternate 로 절반씩) */
+@keyframes rr-breathe {
+  from { transform: scale(var(--rr-breathe-min)); }
+  to   { transform: scale(var(--rr-breathe-max)); }
+}
+
+/* 재화 고리의 회전: 세로축으로 도는 고리를 가로 납작해짐으로 표현 */
+@keyframes rr-coin-spin {
+  0%   { transform: scaleX(1);    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5); }
+  25%  { transform: scaleX(0.14); animation-timing-function: cubic-bezier(0.1, 0.5, 0.5, 1); }
+  50%  { transform: scaleX(1);    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5); }
+  75%  { transform: scaleX(0.14); animation-timing-function: cubic-bezier(0.1, 0.5, 0.5, 1); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes rr-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes rr-spin-quarter {
+  from { transform: rotate(90deg); }
+  to   { transform: rotate(450deg); }
+}
+
+/* 숫자가 오를 때 라벨이 툭 커졌다 돌아옴 */
+@keyframes rr-bump {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.13); }
+  100% { transform: scale(1); }
+}
+
+/* 작은 것이 톡 나타남 (알림, 말풍선, 비율 알약) */
+@keyframes rr-pop-in {
+  0%   { opacity: 0; transform: scale(0.3); }
+  55%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes rr-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes rr-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes rr-rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 획득 라벨: 50ms 만에 톡 나타나 0.9초 동안 40px 떠오르고 마지막 150ms 에 사라짐 */
+@keyframes rr-gain {
+  0%   { opacity: 0; transform: translateY(0) scale(0.4); }
+  6%   { opacity: 1; transform: translateY(-2px) scale(1.05); }
+  10%  { opacity: 1; transform: translateY(-4px) scale(1); }
+  83%  { opacity: 1; transform: translateY(-34px) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1); }
+}
+
+/* 다이얼로그: 아래에서 올라와 14px 넘쳤다가 제자리로 (총 270ms, 정점은 80ms) */
+@keyframes rr-dialog-in {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.98); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  30%  { opacity: 1; transform: translateY(-14px) scale(1.013); animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* 큰 숫자가 절반 크기에서 커지며 등장 */
+@keyframes rr-num-pop {
+  0%   { opacity: 0; transform: scale(0.5); }
+  40%  { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 카드 돌리기: 기운 채 아래에서 날아와 반대로 살짝 넘어갔다가 바로 섬 */
+@keyframes rr-card-deal {
+  0%   { opacity: 0; transform: translate(var(--_from-x), 46px) rotate(var(--_tilt)) scale(0.9); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  42%  { opacity: 1; transform: translate(0, -5px) rotate(calc(var(--_tilt) * -0.3)) scale(1.01); animation-timing-function: ease-in-out; }
+  70%  { opacity: 1; transform: translate(0, 1px) rotate(calc(var(--_tilt) * 0.12)); animation-timing-function: ease-in-out; }
+  100% { opacity: 1; transform: none; }
+}
+
+/* 도장: 3배 크기에서 내려찍힘 */
+@keyframes rr-stamp {
+  0%   { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(3); }
+  45%  { opacity: 0.85; }
+  100% { opacity: 1; transform: translate(-50%, -50%) rotate(-10deg) scale(1); }
+}
+/* 도장 맞은 카드: 0.93배로 움찔했다 복귀 */
+@keyframes rr-card-thud {
+  0%   { transform: translateY(-14px) scale(1); }
+  25%  { transform: translateY(-9px) scale(0.93); }
+  100% { transform: translateY(-14px) scale(1); }
+}
+
+@keyframes rr-slide-in-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rr-slide-in-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── 구매 효과 ─────────────────────────────────────────────────────────── */
+
+@keyframes rr-spikes {
+  0%   { opacity: 1; transform: scale(0.42); }
+  38%  { opacity: 1; transform: scale(1); }
+  70%  { opacity: 0.7; transform: scale(1.04); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+
+/* 충격파: 버튼 가장자리(반지름 45px)에서 시작해 반지름 --_to 까지 퍼지고, 마지막 1/4 구간에서 사라짐 */
+@keyframes rr-ring {
+  0%   { opacity: 0; inset: -45px; }
+  1%   { opacity: 1; }
+  75%  { opacity: 0.8; }
+  100% { opacity: 0; inset: calc(var(--_to, 200px) * -1); }
+}
+
+@keyframes rr-star {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(0.4); }
+  12%  { opacity: 1; transform: translate(calc(var(--dx) * 0.45), calc(var(--dy) * 0.45)) rotate(calc(var(--rot) * 0.4)) scale(1); }
+  60%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.9); }
+}
+
+/* 점: 옆으로는 일정하게, 위아래로는 솟았다 떨어지는 포물선 */
+@keyframes rr-dot {
+  0%   { opacity: 1; transform: translate(0, 0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.5, 1); }
+  30%  { opacity: 1; transform: translate(calc(var(--dx) * 0.6), var(--dy)); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + var(--fall))); }
+}
+
+@keyframes rr-lvtag {
+  0%   { opacity: 0; transform: rotate(-14deg) scale(0.3); }
+  5%   { opacity: 1; transform: rotate(-6deg) scale(1.22); }
+  9%   { opacity: 1; transform: rotate(-8deg) scale(1); }
+  86%  { opacity: 1; transform: rotate(-8deg) scale(1); }
+  100% { opacity: 0; transform: rotate(-8deg) translateY(-4px) scale(1); }
+}
+
+/* 끝 키프레임을 비워 두어, 사고 난 뒤의 제 상태(살 수 있음/없음)로 자연히 이어집니다 */
+@keyframes rr-bought {
+  0%   { background-color: #000; border-color: #000; transform: scale(1.02); }
+  12%  { background-color: #161616; border-color: #000; transform: scale(1.08); }
+  25%  { background-color: #707070; border-color: #000; transform: scale(1.19); }
+  35%  { background-color: #7c7c7c; border-color: #000; transform: scale(1.25); }
+  50%  { background-color: #8c8c8c; border-color: #000; transform: scale(1.1); }
+  72%  { background-color: #b9b9b9; border-color: #000; transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+@keyframes rr-icon-back {
+  0%, 14% { opacity: 0; }
+  100%    { opacity: 1; }
+}
+
+@keyframes rr-jolt {
+  0%   { transform: none; }
+  12%  { transform: rotate(-3.5deg) translate(-6px, 5px); }
+  36%  { transform: rotate(2deg) translate(3px, -3px); }
+  62%  { transform: rotate(-0.9deg) translate(-1px, 1px); }
+  100% { transform: none; }
+}

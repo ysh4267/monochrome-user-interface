@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>흑백 모노크롬 유저 인터페이스</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/rr.css">
+  <link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+<div class="g-wrap">
+
+  <nav class="g-nav">
+    <a class="g-nav__brand" href="#top">흑백 모노크롬<br>유저 인터페이스</a>
+    <div class="g-nav__group">시작</div>
+    <a class="g-link" href="#screens">화면 예제</a>
+    <a class="g-link" href="#tokens">토큰</a>
+    <div class="g-nav__group">컴포넌트</div>
+    <a class="g-link" href="#btn">원형 버튼</a>
+    <a class="g-link" href="#dock">독</a>
+    <a class="g-link" href="#tip">툴팁</a>
+    <a class="g-link" href="#track">진행 패널</a>
+    <a class="g-link" href="#hud">HUD</a>
+    <a class="g-link" href="#rbtn">사각 버튼</a>
+    <a class="g-link" href="#dialog">다이얼로그</a>
+    <a class="g-link" href="#card">계약 카드 · 도장</a>
+    <a class="g-link" href="#list">업그레이드 목록</a>
+    <a class="g-link" href="#panel">옆 패널</a>
+    <div class="g-nav__group">바탕</div>
+    <a class="g-link" href="#fx">구매 효과</a>
+    <a class="g-link" href="#icons">아이콘</a>
+    <a class="g-link" href="#cursor">커서</a>
+  </nav>
+
+  <main class="g-main" id="top">
+
+    <header class="g-hero">
+      <h1 class="g-title">흑백 모노크롬<br>유저 인터페이스</h1>
+      <p>게임 <b>Round and Round Inc.</b>의 화면을 프레임 단위로 재어 CSS로 옮긴 흑백 UI 모음입니다. 크기·간격은 1920×1080 화면의 픽셀 값 그대로이고, 모션의 길이와 가감속은 60fps 영상에서 계측했습니다. 아이콘은 영상 프레임을 겹쳐 평균 낸 뒤 도형으로 맞춰 그린 벡터입니다. 모양과 움직임은 전부 CSS이며, <code>js/rr.js</code>는 클래스를 붙였다 떼는 일만 합니다.</p>
+    </header>
+
+    <!-- ───────────────────────── 화면 ───────────────────────── -->
+    <section class="g-sec" id="screens">
+      <h2>화면 예제 <code>screens/</code></h2>
+      <p class="g-lead">컴포넌트를 원본과 같은 자리에 조립한 1920×1080 화면입니다. 창 크기에 맞춰 통째로 축소되고, 원본처럼 눌러 볼 수 있습니다.</p>
+      <div class="g-screens">
+        <a class="g-screen" href="screens/title.html"><b>타이틀</b><span>로고, 메뉴 hover, 설정 다이얼로그</span><i>0:38</i></a>
+        <a class="g-screen" href="screens/early.html"><b>게임 초반</b><span>미니 독, 툴팁, 구매 효과, 힌트</span><i>1:43</i></a>
+        <a class="g-screen" href="screens/submenu.html"><b>하위 메뉴</b><span>진행 패널, 뒤로 버튼, 잠긴 툴팁</span><i>5:26</i></a>
+        <a class="g-screen" href="screens/hud.html"><b>게임 HUD</b><span>독 전체, 콤보, 재화, 계약 흐름</span><i>19:52</i></a>
+        <a class="g-screen" href="screens/hud.html?scene=late"><b>게임 HUD · 후반</b><span>칩 줄, 정산 카드, 알림, 단축키 꼬리표</span><i>54:22</i></a>
+        <a class="g-screen" href="screens/hud.html?open=franchise"><b>프랜차이즈 계약</b><span>카드 돌리기, 도장, 다음 다이얼로그로</span><i>13:04</i></a>
+        <a class="g-screen" href="screens/hud.html?open=reopen"><b>다시 개업</b><span>큰 숫자, 이름–값 표, 길게 눌러 확인</span><i>13:21</i></a>
+        <a class="g-screen" href="screens/prestige.html"><b>환생 업그레이드</b><span>네 줄 목록, 값 배지, 잠금 풀기</span><i>13:36</i></a>
+        <a class="g-screen" href="screens/title.html?open=settings"><b>설정</b><span>탭, 좌우 선택기, 행 hover</span><i>0:58</i></a>
+        <a class="g-screen" href="screens/ending.html"><b>엔딩 · 통계</b><span>옆 패널, 큰 수와 설명의 반복</span><i>58:46</i></a>
+        <a class="g-screen" href="screens/ending.html?step=2"><b>엔딩 · 한마디</b><span>“영업 종료.” 상자</span><i>59:01</i></a>
+        <a class="g-screen" href="screens/ending.html?step=3"><b>엔딩 · 크레딧</b><span>오른쪽 패널, 꽉 찬 버튼 셋</span><i>59:16</i></a>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 토큰 ───────────────────────── -->
+    <section class="g-sec" id="tokens">
+      <h2>토큰 <code>css/tokens.css</code></h2>
+      <p class="g-lead">컴포넌트는 값을 직접 쓰지 않고 이 변수만 봅니다. 여기 값을 바꾸면 전체가 함께 바뀌고, 특정 영역에서만 다르게 하려면 그 요소에 같은 이름으로 다시 선언하면 됩니다.</p>
+      <div class="g-demo g-demo--top">
+        <div class="g-swatches" id="swatches"></div>
+      </div>
+      <div class="g-demo g-demo--top">
+        <table class="g-table" id="motion-table">
+          <thead><tr><th>모션</th><th>변수</th><th>값</th><th>원본에서 잰 것</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 원형 버튼 ───────────────────────── -->
+    <section class="g-sec" id="btn">
+      <h2>원형 버튼 <code>.rr-btn</code></h2>
+      <p class="g-lead">올리면 3px 떠오르며 커지고(190ms), 누르면 6px 내려앉습니다(66ms). 살 수 있는 버튼은 검게 채워지고 1.7초 주기로 숨을 쉽니다. 눌러 보세요 — 구매 효과가 터집니다.</p>
+      <div class="g-demo rr">
+        <div class="g-item">
+          <button class="rr-btn" data-rr-buy><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--gear"></i></span><span class="rr-btn__key">1</span></span></button>
+          <span class="g-cap">.rr-btn
+기본(살 수 없음)</span>
+        </div>
+        <div class="g-item">
+          <button class="rr-btn is-affordable" data-rr-buy data-rr-level="0"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--megaphone"></i></span><span class="rr-btn__key">2</span></span></button>
+          <span class="g-cap">.is-affordable
+살 수 있음 · 숨쉬기</span>
+        </div>
+        <div class="g-item">
+          <button class="rr-btn is-affordable" data-rr-buy data-rr-level="3"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--star"></i></span><span class="rr-btn__key">3</span><span class="rr-btn__dot"></span><span class="rr-btn__more"><i class="rr-icon rr-icon--chevron-right"></i></span></span></button>
+          <span class="g-cap">__key · __dot · __more
+단축키 · 알림 점 · 하위 메뉴</span>
+        </div>
+        <div class="g-item">
+          <button class="rr-btn" disabled><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--train"></i></span><span class="rr-btn__key">4</span></span></button>
+          <span class="g-cap">:disabled
+잠김</span>
+        </div>
+        <div class="g-item">
+          <button class="rr-btn rr-btn--back"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--chevron-left"></i></span><span class="rr-btn__key">1</span></span></button>
+          <span class="g-cap" style="margin-top: 9px">.rr-btn--back
+굵은 링 · 9px 아래</span>
+        </div>
+        <div class="g-item">
+          <button class="rr-btn rr-btn--lg" data-rr-buy><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--spin"></i><span class="rr-btn__label">환생</span></span></span></button>
+          <span class="g-cap">.rr-btn--lg</span>
+        </div>
+        <div class="g-item">
+          <button class="rr-btn rr-btn--lg is-affordable" data-rr-buy><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--spin"></i><span class="rr-btn__label">환생</span></span></span></button>
+          <span class="g-cap">.rr-btn--lg.is-affordable</span>
+        </div>
+        <div class="g-item">
+          <div class="g-row">
+            <button class="rr-iconbtn" aria-label="일시정지"><i class="rr-icon rr-icon--pause"></i></button>
+            <button class="rr-iconbtn" aria-label="닫기"><i class="rr-icon rr-icon--close"></i></button>
+          </div>
+          <span class="g-cap">.rr-iconbtn
+올리면 80ms 만에 반전</span>
+        </div>
+        <div class="g-item">
+          <div class="g-row" style="gap: 22px; padding-bottom: 26px">
+            <span class="rr-chip"><i class="rr-icon rr-icon--gear"></i></span>
+            <span class="rr-chip"><i class="rr-icon rr-icon--ticket"></i></span>
+            <span class="rr-chip rr-chip--ring" style="--rr-progress: .7" data-label="+60%"><i class="rr-icon rr-icon--expand"></i></span>
+          </div>
+          <span class="g-cap">.rr-chip · .rr-chip--ring
+--rr-progress: 0~1</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 독 ───────────────────────── -->
+    <section class="g-sec" id="dock">
+      <h2>독 <code>.rr-dock</code></h2>
+      <p class="g-lead">버튼을 얹는 선반입니다. 버튼 수만큼 저절로 넓어지고, <code>.rr-dock--hump</code>를 붙이면 가운데 큰 버튼을 감싸는 봉우리가 생깁니다. 버튼에 마우스를 올리면 그 칸(<code>.rr-dock__item</code>)에 든 툴팁이 뜹니다.</p>
+      <div class="g-demo g-demo--tall rr" style="justify-content: space-around">
+        <div class="g-item">
+          <div class="rr-dock">
+            <span class="rr-tag rr-dock__tag">손님 부족</span>
+            <div class="rr-dock__item">
+              <button class="rr-btn is-affordable" data-rr-buy data-rr-level="0"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--megaphone"></i></span><span class="rr-btn__key">1</span></span></button>
+              <div class="rr-price is-affordable"><i class="rr-icon rr-icon--ring"></i>3</div>
+              <div class="rr-tip">
+                <div class="rr-tip__head"><b class="rr-tip__title">홍보</b><span class="rr-tip__lv">Lv.0 / 20</span></div>
+                <p class="rr-tip__desc">더 많은 손님이 더 자주, 더 많이 몰려 찾아옵니다.</p>
+                <div class="rr-tip__now">분당 10명</div>
+                <div class="rr-tip__next">분당 21명</div>
+                <div class="rr-tip__foot"><span class="rr-price rr-price--lg is-affordable"><i class="rr-icon rr-icon--ring"></i>3</span><span class="rr-cta">클릭해서 구매</span></div>
+              </div>
+            </div>
+            <div class="rr-dock__item">
+              <button class="rr-btn"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--gear"></i></span><span class="rr-btn__key">2</span></span></button>
+              <div class="rr-price"><i class="rr-icon rr-icon--ring"></i>5</div>
+              <div class="rr-tip">
+                <div class="rr-tip__head"><b class="rr-tip__title">기어 교체</b><span class="rr-tip__lv">Lv.0 / 9</span></div>
+                <p class="rr-tip__desc">같은 손놀림으로 문이 더 많이 돕니다.</p>
+                <div class="rr-tip__now">손잡이 5바퀴 = 문 1바퀴</div>
+                <div class="rr-tip__next">손잡이 4바퀴 = 문 1바퀴 · 수동 최고 속도 +5%</div>
+                <div class="rr-tip__foot"><span class="rr-price rr-price--lg"><i class="rr-icon rr-icon--ring"></i>5</span><span class="rr-cta rr-cta--ghost">2링 부족</span></div>
+              </div>
+            </div>
+          </div>
+          <span class="g-cap">.rr-dock + .rr-dock__tag</span>
+        </div>
+
+        <div class="g-item">
+          <div class="rr-dock rr-dock--hump">
+            <div class="rr-dock__item">
+              <button class="rr-btn is-affordable" data-rr-buy data-rr-level="4"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--bolt"></i></span><span class="rr-btn__key">4</span></span></button>
+              <div class="rr-price is-affordable"><i class="rr-icon rr-icon--ring"></i>38,000</div>
+            </div>
+            <div class="rr-dock__item rr-dock__item--center">
+              <button class="rr-btn rr-btn--lg is-affordable"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--spin"></i><span class="rr-btn__label">환생</span></span></span></button>
+              <div class="rr-price is-affordable"><i class="rr-icon rr-icon--spin"></i>+33</div>
+              <div class="rr-tip">
+                <div class="rr-tip__head"><b class="rr-tip__title">다시 개업</b></div>
+                <p class="rr-tip__desc">다시 개업하면 회전문, 업그레이드, 링, 이번 판 입장 인원이 모두 처음으로 돌아갑니다.</p>
+                <div class="rr-tip__now">스핀 에너지를 얻습니다</div>
+                <div class="rr-tip__foot"><span class="rr-price rr-price--lg is-affordable"><i class="rr-icon rr-icon--spin"></i>+33</span></div>
+              </div>
+            </div>
+            <div class="rr-dock__item">
+              <button class="rr-btn"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--expand"></i></span><span class="rr-btn__key">5</span></span></button>
+              <div class="rr-price rr-price--note">최대 단계</div>
+            </div>
+          </div>
+          <span class="g-cap">.rr-dock--hump + .rr-dock__item--center</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 툴팁 ───────────────────────── -->
+    <section class="g-sec" id="tip">
+      <h2>툴팁 카드 <code>.rr-tip</code></h2>
+      <p class="g-lead">110ms 만에 나타나며 아래에서 10px 올라옵니다. 사라질 때는 즉시. 아래는 <code>.rr-tip--static</code>으로 고정해 둔 세 가지 상태입니다.</p>
+      <div class="g-demo g-demo--top rr">
+        <div class="g-item">
+          <div class="rr-tip rr-tip--static">
+            <div class="rr-tip__head"><b class="rr-tip__title">홍보</b><span class="rr-tip__lv">Lv.0 / 20</span></div>
+            <p class="rr-tip__desc">더 많은 손님이 더 자주, 더 많이 몰려 찾아옵니다.</p>
+            <div class="rr-tip__now">분당 10명</div>
+            <div class="rr-tip__next">분당 21명</div>
+            <div class="rr-tip__foot"><span class="rr-price rr-price--lg is-affordable"><i class="rr-icon rr-icon--ring"></i>3</span><span class="rr-cta">클릭해서 구매</span></div>
+          </div>
+          <span class="g-cap">살 수 있음 · .rr-cta</span>
+        </div>
+        <div class="g-item">
+          <div class="rr-tip rr-tip--static">
+            <div class="rr-tip__head"><b class="rr-tip__title">도보</b><span class="rr-tip__lv">Lv.5 / 20</span></div>
+            <p class="rr-tip__desc">걸어서 찾아오는 손님이 늘고, 더 큰 무리로 옵니다.</p>
+            <div class="rr-tip__now">분당 215명 · 4명씩</div>
+            <div class="rr-tip__next">분당 270명 · 4명씩</div>
+            <div class="rr-tip__foot"><span class="rr-price rr-price--lg"><i class="rr-icon rr-icon--ring"></i>200</span><span class="rr-cta rr-cta--ghost">100링 부족</span></div>
+          </div>
+          <span class="g-cap">돈이 모자람 · .rr-cta--ghost</span>
+        </div>
+        <div class="g-item">
+          <div class="rr-tip rr-tip--static">
+            <div class="rr-tip__head"><b class="rr-tip__title">기차</b><span class="rr-tip__lv">Lv.0 / 8</span></div>
+            <p class="rr-tip__desc">기차가 한꺼번에 많은 손님을 실어 옵니다.</p>
+            <div class="rr-tip__now">아직 오지 않음</div>
+            <div class="rr-tip__next">20초마다 2,657명</div>
+            <div class="rr-tip__foot"><span class="rr-price rr-price--lg is-affordable"><i class="rr-icon rr-icon--ring"></i>32만</span><span class="rr-cta rr-cta--ghost">도보 7레벨 더 올리면 열립니다 (홍보 12단계)</span></div>
+          </div>
+          <span class="g-cap">잠김 · 긴 문구는 두 줄로</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 진행 패널 ───────────────────────── -->
+    <section class="g-sec" id="track">
+      <h2>진행 패널 <code>.rr-track</code></h2>
+      <p class="g-lead">단계는 <code>--rr-level</code> 하나로 정해집니다. 값을 바꾸면 막대와 숫자가 260ms 동안 따라 움직입니다. 표지는 <code>--rr-at</code>(꽂히는 단계)과 <code>--rr-shift</code>(옆으로 비켜 서는 거리)로 놓습니다.</p>
+      <div class="g-demo rr">
+        <div class="g-item g-item--left">
+          <div class="rr-track" id="g-track" style="width: 538px; --rr-level: 5; --rr-max: 20">
+            <div class="rr-track__head"><span>홍보 › 손님 길</span><b id="g-track-title">홍보 5단계</b></div>
+            <div class="rr-track__rail">
+              <span class="rr-track__dots"></span>
+              <span class="rr-track__fill"></span>
+              <span class="rr-track__pin is-open" id="g-pin-bus" style="--rr-at: 5; --rr-shift: -34px"><b><i class="rr-icon rr-icon--bus"></i></b></span>
+              <span class="rr-track__pin is-current" id="g-pin-walk" style="--rr-at: 5"><b><i class="rr-icon rr-icon--walk"></i></b></span>
+              <span class="rr-track__pin" id="g-pin-train" style="--rr-at: 12"><b><i class="rr-icon rr-icon--train"></i></b></span>
+              <span class="rr-track__pin" id="g-pin-plane" style="--rr-at: 15"><b><i class="rr-icon rr-icon--plane"></i></b></span>
+              <span class="rr-track__now" id="g-track-now">5</span>
+              <span class="rr-track__max">20</span>
+            </div>
+          </div>
+          <div class="g-row">
+            <button class="rr-rbtn rr-rbtn--sm" id="g-track-down"><span class="rr-rbtn__label">− 한 단계</span></button>
+            <button class="rr-rbtn rr-rbtn--sm" id="g-track-up"><span class="rr-rbtn__label">+ 한 단계</span></button>
+            <span class="g-cap">style="--rr-level: n"</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── HUD ───────────────────────── -->
+    <section class="g-sec" id="hud">
+      <h2>HUD <code>css/components/hud.css</code></h2>
+      <p class="g-lead">게임 화면 위에 떠 있는 표시들입니다. 한 번 재생되는 연출은 <code>.is-live</code>를 붙이거나 <code>RR.gain()</code>, <code>RR.bump()</code>로 부릅니다.</p>
+      <div class="g-demo rr" style="gap: 44px 56px">
+        <div class="g-item">
+          <div class="rr-stats">
+            <div class="rr-stats__main"><i class="rr-coin"></i><span class="rr-num" id="g-money">120만</span></div>
+            <div class="rr-stats__rate"><i class="rr-icon rr-icon--people"></i>19,633 / 분</div>
+            <div class="rr-stats__sub">이번 판 입장 25,430명</div>
+            <div class="rr-stats__sub is-strong">인류의 0.00031%</div>
+            <span class="rr-pill">러시 아워 6초</span>
+          </div>
+          <span class="g-cap">.rr-stats · .rr-coin · .rr-pill</span>
+        </div>
+        <div class="g-item">
+          <div style="padding: 26px 130px 22px 0">
+            <div class="rr-combo" id="g-combo" style="--rr-combo-time: .8">
+              <div class="rr-combo__label">풍 ×<span class="rr-num" id="g-combo-n">17729</span></div>
+              <span class="rr-combo__tag">입장료 +60%</span>
+              <span class="rr-combo__bar"></span>
+            </div>
+          </div>
+          <div class="g-row"><button class="rr-rbtn rr-rbtn--sm" id="g-combo-btn"><span class="rr-rbtn__label">콤보 올리기</span></button><span class="g-cap">.rr-combo · RR.bump()</span></div>
+        </div>
+        <div class="g-item">
+          <div class="g-row" id="g-gains" style="position: relative; height: 96px; width: 300px; align-items: flex-end">
+            <span class="rr-gain"><i class="rr-icon rr-icon--ring"></i>+16,608</span>
+            <span class="rr-gain rr-gain--lg"><i class="rr-icon rr-icon--ring"></i>+659만</span>
+          </div>
+          <div class="g-row"><button class="rr-rbtn rr-rbtn--sm" id="g-gain-btn"><span class="rr-rbtn__label">획득 띄우기</span></button><span class="g-cap">.rr-gain · RR.gain()</span></div>
+        </div>
+        <div class="g-item">
+          <div class="g-row">
+            <span class="rr-pill rr-pill--round">0.35 : 1</span>
+            <span class="rr-pill rr-pill--round">최고 속도</span>
+            <span class="rr-bubble">꿀꺽!</span>
+          </div>
+          <span class="g-cap">.rr-pill--round · .rr-bubble</span>
+        </div>
+        <div class="g-item">
+          <span class="rr-toast">본사 타워가 섰습니다</span>
+          <span class="g-cap">.rr-toast</span>
+        </div>
+        <div class="g-item">
+          <span class="rr-toast rr-toast--hint">누르고 있으면 돌아갑니다</span>
+          <span class="g-cap">.rr-toast--hint</span>
+        </div>
+        <div class="g-item">
+          <div class="rr-notice">
+            <div class="rr-notice__title">배달 완료! 2초 · 팁 ×2</div>
+            <div class="rr-notice__value"><i class="rr-icon rr-icon--ring"></i>+32.6억</div>
+            <div class="rr-notice__sub">4분어치 수입</div>
+            <div class="rr-notice__foot">밀렸던 손님 1,174만명이 한꺼번에 들어옵니다</div>
+          </div>
+          <span class="g-cap">.rr-notice</span>
+        </div>
+        <div class="g-item">
+          <div class="g-row">
+            <span class="rr-keytag">총무팀 자동 구매: 켬 (C)</span>
+            <span class="rr-tag">손님 부족</span>
+          </div>
+          <span class="g-cap">.rr-keytag · .rr-tag</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 사각 버튼 ───────────────────────── -->
+    <section class="g-sec" id="rbtn">
+      <h2>사각 버튼 <code>.rr-rbtn</code></h2>
+      <p class="g-lead">올리면 검은 면이 왼쪽에서 85ms 만에 쓸고 들어오고, 글자는 면이 지나간 만큼만 반전됩니다. <code>--hold</code>는 1초 동안 누르고 있어야 차오르며, 다 차면 <code>rr:confirm</code> 이벤트가 납니다.</p>
+      <div class="g-demo rr">
+        <div class="g-item"><button class="rr-rbtn"><span class="rr-rbtn__label">뒤로</span></button><span class="g-cap">.rr-rbtn</span></div>
+        <div class="g-item"><button class="rr-rbtn rr-rbtn--wide"><span class="rr-rbtn__label">계속 영업</span></button><span class="g-cap">--wide</span></div>
+        <div class="g-item"><button class="rr-rbtn rr-rbtn--hold" id="g-hold"><span class="rr-rbtn__label">다시 개업</span></button><span class="g-cap" id="g-hold-cap">--hold
+길게 누르세요</span></div>
+        <div class="g-item"><button class="rr-rbtn rr-rbtn--sm"><span class="rr-rbtn__label">회사 현황 (Tab)</span></button><span class="g-cap">--sm</span></div>
+        <div class="g-item"><button class="rr-rbtn rr-rbtn--solid rr-rbtn--lg"><span class="rr-rbtn__label">다시 개업</span></button><span class="g-cap">--solid --lg</span></div>
+        <div class="g-item" style="width: 300px"><button class="rr-rbtn rr-rbtn--solid rr-rbtn--block"><span class="rr-rbtn__label">본점 계속 운영</span></button><span class="g-cap">--solid --block</span></div>
+        <div class="g-item"><button class="rr-rbtn rr-rbtn--text"><span class="rr-rbtn__label">메인 메뉴로</span></button><span class="g-cap">--text</span></div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 다이얼로그 ───────────────────────── -->
+    <section class="g-sec" id="dialog">
+      <h2>다이얼로그 <code>.rr-modal</code> <code>.rr-dialog</code></h2>
+      <p class="g-lead">열릴 때 아래에서 올라와 14px 넘쳤다가 270ms 안에 제자리로 돌아옵니다. 닫힐 때 상자는 즉시 사라지고 흰 막만 100ms 동안 옅어집니다. 속성만으로 엽니다: <code>data-rr-open="#id"</code>, <code>data-rr-close</code>.</p>
+      <div class="g-demo rr">
+        <div class="g-item"><button class="rr-rbtn" data-rr-open="#g-settings"><span class="rr-rbtn__label">설정 열기</span></button><span class="g-cap">탭 · 선택기 · 행</span></div>
+        <div class="g-item"><button class="rr-rbtn" data-rr-open="#g-reopen"><span class="rr-rbtn__label">다시 개업 열기</span></button><span class="g-cap">큰 숫자 · 이름–값 표</span></div>
+        <div class="g-item"><button class="rr-rbtn" data-rr-open="#g-pick"><span class="rr-rbtn__label">계약 고르기 열기</span></button><span class="g-cap">.rr-pick · .rr-card</span></div>
+        <div class="g-item">
+          <div class="rr-stepper" data-rr-options='["끔 (원 그리기)","누르고 있기"]'>
+            <button class="rr-stepper__btn" data-rr-step="-1" aria-label="이전"><i class="rr-icon rr-icon--chevron-left"></i></button>
+            <span class="rr-stepper__value">끔 (원 그리기)</span>
+            <button class="rr-stepper__btn" data-rr-step="1" aria-label="다음"><i class="rr-icon rr-icon--chevron-right"></i></button>
+          </div>
+          <span class="g-cap">.rr-stepper · data-rr-options</span>
+        </div>
+        <div class="g-item">
+          <div class="rr-msgbox" style="zoom: .6">
+            <h3 class="rr-msgbox__title">영업 종료.</h3>
+            <p class="rr-msgbox__sub">퇴장은 반대편 문을 이용해 주십시오.</p>
+          </div>
+          <span class="g-cap">.rr-msgbox (60%로 축소해 보임)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 카드 ───────────────────────── -->
+    <section class="g-sec" id="card">
+      <h2>계약 카드 · 도장 <code>.rr-card</code> <code>.rr-stamp</code></h2>
+      <p class="g-lead">올리면 14px 떠오릅니다. 누르면(<code>data-rr-pick</code>) 도장이 3배 크기에서 170ms 만에 내려찍히고 카드가 움찔하며, 나머지 카드는 200ms 동안 사라집니다.</p>
+      <div class="g-demo rr" id="g-cards-box" style="padding-top: 46px; zoom: .8">
+        <div class="rr-pick__cards" id="g-cards" style="margin: 0; padding: 0">
+          <button class="rr-card" data-rr-pick>
+            <i class="rr-icon rr-icon--expand rr-card__icon"></i><span class="rr-card__badge">새 계약</span>
+            <span class="rr-card__title">확장 기념 행사</span>
+            <span class="rr-card__desc">회전문을 키울 때마다 1분 동안 손님이 60% 더 옵니다.</span>
+            <span class="rr-card__tag">확장 → 손님</span><span class="rr-stamp">계약</span>
+          </button>
+          <button class="rr-card" data-rr-pick>
+            <i class="rr-icon rr-icon--ring rr-card__icon"></i><span class="rr-card__badge">새 계약</span>
+            <span class="rr-card__title">회전 적립금</span>
+            <span class="rr-card__desc">이번 판에 쓴 링의 0.05%를 다음 판 시작 자금으로 적립합니다.</span>
+            <span class="rr-card__tag">판 → 다음 판</span><span class="rr-stamp">계약</span>
+          </button>
+          <button class="rr-card" data-rr-pick>
+            <i class="rr-icon rr-icon--cat rr-card__icon"></i><span class="rr-card__badge">새 계약</span>
+            <span class="rr-card__title">특별 손님 단골</span>
+            <span class="rr-card__desc">단골 배달원이 판 처음부터 들르고, 특별 손님이 1.5배 자주 옵니다.</span>
+            <span class="rr-card__tag">특별 손님 → 수입</span><span class="rr-stamp">계약</span>
+          </button>
+        </div>
+        <div class="g-item" style="align-self: center"><button class="rr-rbtn" id="g-cards-reset"><span class="rr-rbtn__label">다시 놓기</span></button></div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 목록 ───────────────────────── -->
+    <section class="g-sec" id="list">
+      <h2>업그레이드 목록 <code>.rr-up</code> <code>.rr-cost</code></h2>
+      <p class="g-lead">환생 화면의 한 줄입니다. 올리면 왼쪽에 4px 막대가 서고 내용이 5px 밀립니다. 상태는 클래스로: <code>.is-owned</code>(산 적 있음), <code>.is-maxed</code>(끝까지), <code>:disabled</code>(잠김).</p>
+      <div class="g-demo g-demo--top rr">
+        <div class="rr-col" style="width: 406px">
+          <h3 class="rr-col__title">개업</h3>
+          <ul class="rr-uplist">
+            <li><button class="rr-up"><span class="rr-up__icon"><i class="rr-icon rr-icon--ring"></i></span><span class="rr-up__text"><span class="rr-up__title">개업 자금</span><span class="rr-up__sub rr-up__sub--arrow">시작 자금 20링</span></span><span class="rr-up__side"><span class="rr-cost is-affordable"><i class="rr-icon rr-icon--spin"></i>1</span><span class="rr-up__lv">Lv.0 / 5</span></span></button></li>
+            <li><button class="rr-up is-owned"><span class="rr-up__icon"><i class="rr-icon rr-icon--megaphone"></i></span><span class="rr-up__text"><span class="rr-up__title">단골 손님</span><span class="rr-up__sub rr-up__sub--arrow">모든 손님 길이 홍보 2단계로 시작</span></span><span class="rr-up__side"><span class="rr-cost"><i class="rr-icon rr-icon--spin"></i>4</span><span class="rr-up__lv">Lv.1 / 2</span></span></button></li>
+            <li><button class="rr-up is-owned is-maxed"><span class="rr-up__icon"><i class="rr-icon rr-icon--bolt"></i></span><span class="rr-up__text"><span class="rr-up__title">예비 모터</span><span class="rr-up__sub">모터 1단계로 시작</span></span><span class="rr-up__side"><span class="rr-cost rr-cost--max">최대</span></span></button></li>
+            <li><button class="rr-up" disabled><span class="rr-up__icon"><i class="rr-icon rr-icon--flywheel"></i></span><span class="rr-up__text"><span class="rr-up__title">플라이휠 창고</span><span class="rr-up__sub">위 항목을 먼저 사야 합니다</span></span><span class="rr-up__side"><span class="rr-cost"><i class="rr-icon rr-icon--spin"></i>4</span><span class="rr-up__lv">Lv.0 / 1</span></span></button></li>
+          </ul>
+        </div>
+        <div class="g-item g-item--left">
+          <div class="g-row"><span class="rr-cost is-affordable"><i class="rr-icon rr-icon--spin"></i>12</span><span class="rr-cost"><i class="rr-icon rr-icon--spin"></i>150</span><span class="rr-cost rr-cost--max">최대</span></div>
+          <span class="g-cap">.rr-cost.is-affordable · .rr-cost · .rr-cost--max</span>
+          <div class="rr-deal" style="margin-top: 22px"><span class="rr-chip"><i class="rr-icon rr-icon--expand"></i></span><span class="rr-deal__title">확장 기념 행사<small>Lv.2</small></span><span class="rr-deal__sub">확장 → 손님</span></div>
+          <span class="g-cap">.rr-deal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 패널 ───────────────────────── -->
+    <section class="g-sec" id="panel">
+      <h2>옆 패널의 부품 <code>css/components/panel.css</code></h2>
+      <p class="g-lead">타이틀 메뉴는 고른 항목과 마우스를 올린 항목 모두에 검은 네모가 붙습니다(80ms). 글자는 160ms 동안 45px 밀리며 굵어집니다.</p>
+      <div class="g-demo g-demo--top rr" style="gap: 40px 90px">
+        <div class="g-item g-item--left">
+          <ul class="rr-menu">
+            <li><button class="rr-menu__item is-selected">새로 시작</button></li>
+            <li><button class="rr-menu__item">설정</button></li>
+            <li><button class="rr-menu__item">만든 사람들</button></li>
+            <li><button class="rr-menu__item">종료</button></li>
+          </ul>
+          <span class="g-cap">.rr-menu · .rr-menu__item.is-selected</span>
+        </div>
+        <div class="g-item g-item--left">
+          <dl class="rr-tally">
+            <div class="rr-tally__row rr-tally__row--hero"><dt>82억명</dt><dd>이 문을 지나간 사람</dd></div>
+            <div class="rr-tally__row"><dt>51분</dt><dd>영업한 시간 · 가게를 12번 열었습니다</dd></div>
+            <div class="rr-tally__row rr-tally__row--sm"><dt>고양이 26 · 여우 21 · 늑대 25</dt><dd>만난 수인 친구</dd></div>
+          </dl>
+          <span class="g-cap">.rr-tally · __row--hero · __row--sm</span>
+        </div>
+        <div class="g-item g-item--left">
+          <dl class="rr-credits">
+            <div><dt>기획 · 개발</dt><dd>Murbong</dd></div>
+            <div><dt>글꼴</dt><dd>Noto Sans CJK — SIL OFL 1.1</dd></div>
+          </dl>
+          <span class="g-cap">.rr-credits</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 효과 ───────────────────────── -->
+    <section class="g-sec" id="fx">
+      <h2>구매 효과 <code>css/components/fx.css</code></h2>
+      <p class="g-lead">구매 한 번에 여섯 가지가 겹쳐 일어납니다: 방사선 스파이크(130ms) · 충격파 링 둘(0.6초) · 별과 점(1~1.2초) · 레벨 표(1.7초) · 버튼 되튐(0.4초) · 독 흔들림(0.38초). 하나씩 눌러 보세요.</p>
+      <div class="g-demo rr" style="padding-top: 150px; gap: 34px 70px">
+        <div class="g-item"><button class="rr-btn is-affordable" id="g-fx-all"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--star"></i></span></span></button><span class="g-cap">RR.purchase(btn, { level })
+전부 한꺼번에</span></div>
+        <div class="g-item"><button class="rr-btn" id="g-fx-burst"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--bolt"></i></span></span></button><span class="g-cap">RR.burst(btn)
+스파이크 · 링 · 별 · 점</span></div>
+        <div class="g-item"><button class="rr-btn" id="g-fx-sq"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--expand"></i></span></span></button><span class="g-cap">RR.burst(btn, { stars: 0, squares: 10 })
+네모 조각</span></div>
+        <div class="g-item"><button class="rr-btn" id="g-fx-lv"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--gear"></i></span></span></button><span class="g-cap">RR.levelTag(btn, 'Lv.7')
+레벨 표</span></div>
+        <div class="g-item">
+          <div class="rr-dock" id="g-fx-dock"><div class="rr-dock__item"><button class="rr-btn" id="g-fx-jolt"><span class="rr-btn__body"><span class="rr-btn__disc"><i class="rr-icon rr-icon--pinwheel"></i></span></span></button><div class="rr-price">∞</div></div></div>
+          <span class="g-cap">RR.jolt(dock)
+덜컹</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── 아이콘 ───────────────────────── -->
+    <section class="g-sec" id="icons">
+      <h2>아이콘 <code>.rr-icon--이름</code></h2>
+      <p class="g-lead">모두 직접 그린 벡터(SVG)입니다. 원본은 <code>icons/*.svg</code>이고, 파일을 넣거나 고친 뒤 <code>tools/build-icons.ps1</code>을 돌리면 <code>css/icons.css</code>가 다시 만들어집니다. 색은 글자색을, 크기는 <code>font-size</code>를 따릅니다.</p>
+      <div class="g-demo rr"><div class="g-icons" id="icon-grid"></div></div>
+    </section>
+
+    <!-- ───────────────────────── 커서 ───────────────────────── -->
+    <section class="g-sec" id="cursor">
+      <h2>커서 <code>RR.cursor</code></h2>
+      <p class="g-lead">키트 안(<code>.rr</code>)에서는 회전문을 위에서 본 <b>(+)</b> 모양 커서가 쓰이고, 누를 수 있는 곳에서는 괄호가 겹인 <b>((×))</b> 로 바뀝니다. CSS 커서는 그림이 멈춰 있으므로, 원본처럼 문짝이 돌게 하려면 따라다니는 커서를 켜세요.</p>
+      <div class="g-demo rr">
+        <div class="g-item"><button class="rr-rbtn" id="g-cursor-btn"><span class="rr-rbtn__label">따라다니는 커서 켜기</span></button><span class="g-cap">RR.cursor.enable() / .disable()</span></div>
+      </div>
+    </section>
+
+    <footer class="g-foot">비공식 팬 작업물입니다. Round and Round Inc.의 이름과 디자인은 원저작자(Murbong · GoldWorks)의 것이며, 이 페이지는 UI를 공부하려고 직접 다시 그린 것입니다. 게임의 원본 이미지·글꼴·소리는 들어 있지 않습니다.</footer>
+  </main>
+</div>
+
+<!-- 모달이 뜨는 층 -->
+<div class="g-overlay rr">
+  <div class="rr-modal" id="g-settings" data-rr-esc>
+    <div class="rr-modal__veil" data-rr-close></div>
+    <section class="rr-dialog" style="min-height: 520px">
+      <header class="rr-dialog__head"><h2 class="rr-dialog__title">설정</h2><button class="rr-iconbtn" data-rr-close aria-label="닫기"><i class="rr-icon rr-icon--close"></i></button></header>
+      <div class="rr-tabs" role="tablist">
+        <button class="rr-tab" role="tab" data-rr-tab="#g-set-1">일반</button>
+        <button class="rr-tab" role="tab" data-rr-tab="#g-set-2">소리</button>
+        <button class="rr-tab is-active" role="tab" data-rr-tab="#g-set-3">조작</button>
+      </div>
+      <div class="rr-tabpanel" id="g-set-1">
+        <div class="rr-option"><span class="rr-option__label">언어</span>
+          <div class="rr-stepper" data-rr-options='["한국어","English","日本語"]'><button class="rr-stepper__btn" data-rr-step="-1" aria-label="이전"><i class="rr-icon rr-icon--chevron-left"></i></button><span class="rr-stepper__value">한국어</span><button class="rr-stepper__btn" data-rr-step="1" aria-label="다음"><i class="rr-icon rr-icon--chevron-right"></i></button></div>
+        </div>
+      </div>
+      <div class="rr-tabpanel" id="g-set-2">
+        <div class="rr-option"><span class="rr-option__label">배경 음악</span>
+          <div class="rr-stepper" data-rr-options='["100%","75%","50%","25%","끔"]'><button class="rr-stepper__btn" data-rr-step="-1" aria-label="이전"><i class="rr-icon rr-icon--chevron-left"></i></button><span class="rr-stepper__value">100%</span><button class="rr-stepper__btn" data-rr-step="1" aria-label="다음"><i class="rr-icon rr-icon--chevron-right"></i></button></div>
+        </div>
+        <div class="rr-option"><span class="rr-option__label">효과음</span>
+          <div class="rr-stepper" data-rr-options='["100%","75%","50%","25%","끔"]'><button class="rr-stepper__btn" data-rr-step="-1" aria-label="이전"><i class="rr-icon rr-icon--chevron-left"></i></button><span class="rr-stepper__value">100%</span><button class="rr-stepper__btn" data-rr-step="1" aria-label="다음"><i class="rr-icon rr-icon--chevron-right"></i></button></div>
+        </div>
+      </div>
+      <div class="rr-tabpanel is-active" id="g-set-3">
+        <div class="rr-option"><span class="rr-option__label">회전 보조</span>
+          <div class="rr-stepper" data-rr-options='["끔 (원 그리기)","누르고 있기"]'><button class="rr-stepper__btn" data-rr-step="-1" aria-label="이전"><i class="rr-icon rr-icon--chevron-left"></i></button><span class="rr-stepper__value">끔 (원 그리기)</span><button class="rr-stepper__btn" data-rr-step="1" aria-label="다음"><i class="rr-icon rr-icon--chevron-right"></i></button></div>
+        </div>
+        <p class="rr-option__help">원 그리기가 힘들면 누르고만 있어도 문이 돕니다. 스페이스바도 됩니다. 다만 손으로 원을 그릴 때보다 느립니다.</p>
+        <p class="rr-option__help">마우스 휠로 확대·축소할 수 있습니다.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="rr-modal" id="g-reopen" data-rr-esc>
+    <div class="rr-modal__veil" data-rr-close></div>
+    <section class="rr-dialog" style="--rr-dialog-width: 660px">
+      <header class="rr-dialog__head"><h2 class="rr-dialog__title">다시 개업</h2></header>
+      <p class="rr-dialog__body">다시 개업하면 회전문, 업그레이드, 링, 이번 판 입장 인원이 모두 처음으로 돌아갑니다.</p>
+      <div class="rr-bignum"><i class="rr-icon rr-icon--spin"></i>+13</div>
+      <p class="rr-bignum__caption">스핀 에너지를 얻습니다</p>
+      <dl class="rr-kv"><dt>이번 판 입장</dt><dd>12.9만명</dd><dt>최고 콤보</dt><dd>44,711</dd><dt>영업 시간</dt><dd>12:00</dd><dt>맺을 계약</dt><dd>확장 기념 행사</dd><dt>계약금</dt><dd>140만링</dd></dl>
+      <div class="rr-dialog__actions">
+        <button class="rr-rbtn" data-rr-close><span class="rr-rbtn__label">뒤로</span></button>
+        <button class="rr-rbtn rr-rbtn--hold" id="g-reopen-go"><span class="rr-rbtn__label">다시 개업</span></button>
+      </div>
+      <p class="rr-dialog__hint">길게 눌러야 다시 개업합니다</p>
+    </section>
+  </div>
+
+  <div class="rr-modal rr-pick" id="g-pick" data-rr-esc>
+    <div class="rr-modal__veil"></div>
+    <div class="rr-pick__inner">
+      <h2 class="rr-pick__title">프랜차이즈 계약</h2>
+      <p class="rr-pick__sub">하나를 골라 다시 개업합니다. 계약은 환생해도 남습니다.</p>
+      <div class="rr-pick__cards">
+        <button class="rr-card is-focus" data-rr-pick><i class="rr-icon rr-icon--expand rr-card__icon"></i><span class="rr-card__badge">새 계약</span><span class="rr-card__title">확장 기념 행사</span><span class="rr-card__desc">회전문을 키울 때마다 1분 동안 손님이 60% 더 옵니다.</span><span class="rr-card__tag">확장 → 손님</span><span class="rr-stamp">계약</span></button>
+        <button class="rr-card" data-rr-pick><i class="rr-icon rr-icon--ring rr-card__icon"></i><span class="rr-card__badge">새 계약</span><span class="rr-card__title">회전 적립금</span><span class="rr-card__desc">이번 판에 쓴 링의 0.05%를 다음 판 시작 자금으로 적립합니다.</span><span class="rr-card__tag">판 → 다음 판</span><span class="rr-stamp">계약</span></button>
+        <button class="rr-card" data-rr-pick><i class="rr-icon rr-icon--cat rr-card__icon"></i><span class="rr-card__badge">새 계약</span><span class="rr-card__title">특별 손님 단골</span><span class="rr-card__desc">단골 배달원이 판 처음부터 들르고, 특별 손님이 1.5배 자주 옵니다.</span><span class="rr-card__tag">특별 손님 → 수입</span><span class="rr-stamp">계약</span></button>
+      </div>
+      <button class="rr-rbtn rr-rbtn--wide" data-rr-close><span class="rr-rbtn__label">계속 영업</span></button>
+    </div>
+  </div>
+</div>
+
+<script src="js/rr.js"></script>
+<script>
+  // UI 모음 페이지용 배선. 키트의 공개 함수(RR.*)와 이벤트만 씁니다.
+  (function () {
+    function $(id) { return document.getElementById(id); }
+    function make(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+    // 색 토큰
+    [['--rr-ink', '선 · 채움 · 본문'], ['--rr-paper', '면'], ['--rr-ink-soft', '보조 본문'], ['--rr-grey', '살 수 없음 · 설명'], ['--rr-grey-light', '잠김'], ['--rr-line-soft', '잠긴 행 구분선'], ['--rr-shadow', '하드 섀도']].forEach(function (c) {
+      var s = make('div', 'g-swatch');
+      var chip = make('i'); chip.style.setProperty('--c', 'var(' + c[0] + ')');
+      s.appendChild(chip); s.appendChild(document.createTextNode(c[1])); s.appendChild(make('code', '', c[0]));
+      $('swatches').appendChild(s);
+    });
+
+    // 모션 토큰 (값은 실제 CSS 변수에서 읽어 옵니다)
+    var css = getComputedStyle(document.documentElement);
+    [['버튼 hover 확대', '--rr-dur-hover', '1.0 → 1.05배(살 수 있으면 1.075배), −3px. easeOutCubic'],
+     ['hover 해제', '--rr-dur-hover-out', '약 7프레임'],
+     ['버튼 누름', '--rr-dur-press', '6px 내려앉음, 4프레임'],
+     ['툴팁 나타남', '--rr-dur-tip', '투명도 0→1, 6~7프레임. 사라질 때는 1프레임'],
+     ['닫기 버튼 반전', '--rr-dur-invert', '5프레임'],
+     ['사각 버튼 채움', '--rr-dur-sweep', '왼쪽에서 오른쪽으로 5프레임, 일정한 속도'],
+     ['길게 눌러 확인', '--rr-dur-hold', '0.98초 동안 일정한 속도로 참. 놓으면 85ms 만에 빠짐'],
+     ['다이얼로그 팝', '--rr-dur-dialog', '+10px → −14px(80ms) → 0'],
+     ['흰 막 페이드', '--rr-dur-backdrop', '8프레임'],
+     ['숨쉬기 한 주기', '--rr-dur-breathe', '지름 78 ↔ 82px, 사인 곡선'],
+     ['타이틀 메뉴 밀림', '--rr-dur-menu', '45px, 글머리표는 80ms']].forEach(function (m) {
+      var tr = make('tr');
+      tr.appendChild(make('td', '', m[0]));
+      var td = make('td'); td.appendChild(make('code', '', m[1])); tr.appendChild(td);
+      tr.appendChild(make('td', '', css.getPropertyValue(m[1]).trim()));
+      tr.appendChild(make('td', '', m[2]));
+      $('motion-table').tBodies[0].appendChild(tr);
+    });
+
+    // 아이콘 격자
+    ['megaphone', 'gear', 'flywheel', 'bolt', 'spin', 'expand', 'pinwheel', 'ticket', 'star', 'cat', 'people', 'ring', 'walk', 'bus', 'train', 'plane', 'pause', 'close', 'check', 'chevron-left', 'chevron-right', 'triangle-down', 'reload', 'wheel', 'pause-bold', 'gulp', 'stall', 'door'].forEach(function (name) {
+      var cell = make('div', 'g-icon');
+      cell.appendChild(make('i', 'rr-icon rr-icon--' + name));
+      cell.appendChild(make('span', '', name));
+      $('icon-grid').appendChild(cell);
+    });
+
+    // 진행 패널
+    var level = 5;
+    function setLevel(n) {
+      level = Math.max(0, Math.min(20, n));
+      $('g-track').style.setProperty('--rr-level', level);
+      $('g-pin-walk').style.setProperty('--rr-at', level);
+      $('g-pin-bus').style.setProperty('--rr-at', level);
+      $('g-track-now').textContent = level;
+      $('g-track-title').textContent = '홍보 ' + level + '단계';
+      $('g-pin-train').classList.toggle('is-open', level >= 12);
+      $('g-pin-plane').classList.toggle('is-open', level >= 15);
+    }
+    $('g-track-up').addEventListener('click', function () { setLevel(level + 1); });
+    $('g-track-down').addEventListener('click', function () { setLevel(level - 1); });
+
+    // HUD
+    var combo = 17729;
+    $('g-combo-btn').addEventListener('click', function () {
+      combo += Math.round(20 + Math.random() * 80);
+      $('g-combo-n').textContent = combo;
+      RR.bump('#g-combo');
+    });
+    $('g-gain-btn').addEventListener('click', function () {
+      RR.gain('#g-gains', '+' + Math.round(12000 + Math.random() * 20000).toLocaleString('ko-KR'), 20 + Math.random() * 150, 44);
+    });
+
+    // 사각 버튼: 길게 눌러 확인
+    $('g-hold').addEventListener('rr:confirm', function () {
+      $('g-hold-cap').textContent = '--hold\nrr:confirm 발생!';
+      var b = this;
+      setTimeout(function () { b.classList.remove('is-confirmed'); $('g-hold-cap').textContent = '--hold\n길게 누르세요'; }, 1200);
+    });
+    $('g-reopen-go').addEventListener('rr:confirm', function () { setTimeout(function () { RR.close('#g-reopen'); }, 200); });
+
+    // 카드
+    $('g-cards-reset').addEventListener('click', function () {
+      Array.prototype.forEach.call($('g-cards').children, function (c) { c.classList.remove('is-picked', 'is-passed'); });
+    });
+    document.addEventListener('rr:pick', function (e) {
+      if (e.target.closest('#g-pick')) { RR.close('#g-pick'); RR.open('#g-reopen'); }
+    });
+
+    // 효과
+    var lv = 0;
+    $('g-fx-all').addEventListener('click', function () { RR.purchase(this, { level: ++lv }); });
+    $('g-fx-burst').addEventListener('click', function () { RR.burst(this); });
+    $('g-fx-sq').addEventListener('click', function () { RR.burst(this, { stars: 0, squares: 10, dots: 4 }); });
+    $('g-fx-lv').addEventListener('click', function () { RR.levelTag(this, 'Lv.7'); });
+    $('g-fx-jolt').addEventListener('click', function () { RR.jolt('#g-fx-dock'); });
+
+    // 커서
+    var cursorOn = false;
+    $('g-cursor-btn').addEventListener('click', function () {
+      cursorOn = !cursorOn;
+      RR.cursor[cursorOn ? 'enable' : 'disable']();
+      this.firstElementChild.textContent = cursorOn ? '따라다니는 커서 끄기' : '따라다니는 커서 켜기';
+    });
+  })();
+</script>
+</body>
+</html>

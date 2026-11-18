@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>환생 업그레이드 · 흑백 모노크롬 유저 인터페이스</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../css/rr.css">
+  <link rel="stylesheet" href="screen.css">
+  <style>
+    .prestige-wrap { position: absolute; inset: 0; display: grid; place-items: center; }
+    .prestige-world { opacity: 0.22; }
+  </style>
+</head>
+<body>
+  <a class="demo-back" href="../index.html">← UI 모음으로</a>
+
+  <main class="rr rr-stage rr-stage--fit">
+    <div class="rr-world prestige-world" style="--rr-world: url('../assets/world.svg')"></div>
+
+    <div class="prestige-wrap">
+      <section class="rr-sheet is-live" aria-label="환생 업그레이드">
+        <header class="rr-sheet__head">
+          <div>
+            <div class="rr-sheet__energy"><i class="rr-icon rr-icon--spin"></i><span class="rr-num" id="energy">13</span><small>스핀 에너지</small></div>
+            <p class="rr-sheet__gain">이번 환생 +13</p>
+          </div>
+          <p class="rr-sheet__meta">환생 1회 · 누적 입장 13.6만명</p>
+        </header>
+
+        <!-- 목록은 아래 스크립트의 DATA 로 그립니다. 마크업 구조는 css/components/list.css 머리말 참고. -->
+        <div class="rr-sheet__cols" id="cols"></div>
+
+        <footer class="rr-sheet__foot">
+          <div class="rr-deals">
+            <h3 class="rr-deals__title">맺은 계약</h3>
+            <ul class="rr-deals__list">
+              <li class="rr-deal">
+                <span class="rr-chip"><i class="rr-icon rr-icon--expand"></i></span>
+                <span class="rr-deal__title">확장 기념 행사</span>
+                <span class="rr-deal__sub">확장 → 손님</span>
+              </li>
+            </ul>
+          </div>
+          <a class="rr-rbtn rr-rbtn--solid rr-rbtn--lg" href="hud.html"><span class="rr-rbtn__label">다시 개업</span></a>
+        </footer>
+      </section>
+    </div>
+  </main>
+
+  <script src="../js/rr.js"></script>
+  <script src="screen.js"></script>
+  <script>
+    // 화면 예제용: 데이터 → 행 마크업. 줄을 추가하려면 DATA 에 한 줄 더 쓰면 됩니다.
+    (function () {
+      // [아이콘, 이름, 효과(레벨별 문구 함수 또는 문자열), 값, 최대 레벨]
+      var DATA = [
+        ['개업', [
+          ['ring', '개업 자금', function (lv) { return '시작 자금 ' + [20, 100, 500, 2500, 12500, 62500][lv] + '링'; }, 1, 5],
+          ['megaphone', '단골 손님', '모든 손님 길이 홍보 2단계로 시작', 1, 2],
+          ['gear', '중고 기어함', function (lv) { return '기어 ' + (lv + 1) + '단계로 시작'; }, 2, 3],
+          ['bolt', '예비 모터', '모터 1단계로 시작', 5, 1],
+          ['flywheel', '플라이휠 창고', '플라이휠 1단계로 시작', 4, 1],
+          ['ticket', '입장료 협상', function (lv) { return '입장료 ×' + (1 + 0.357 * (lv + 1)).toFixed(2); }, 3, 10]
+        ]],
+        ['손잡이', [
+          ['reload', '손맛 장인', function (lv) { return '손으로 돌릴 때 입장료 +' + 20 * (lv + 1) + '%'; }, 2, 10],
+          ['star', '풍 콤보 강화', function (lv) { return '콤보 보너스 +' + 20 * (lv + 1) + '%p'; }, 3, 5],
+          ['pause-bold', '숨 고르기', function (lv) { return '콤보 유지 +' + (0.3 * (lv + 1)).toFixed(1) + '초'; }, 5, 3],
+          ['flywheel', '플라이휠 장인', function (lv) { return '관성 ×' + (1.28 + 0.28 * lv).toFixed(2); }, 4, 4],
+          ['pinwheel', '과속 면허', '손으로 돌리면 최고 속도의 120%까지 빨라짐', 15, 3],
+          ['wheel', '개업 경품 추첨', '추첨권 6분마다 · 최대 1장 · 잭팟 1칸 15분어치', 6, 3],
+          ['gulp', '꿀꺽', '손으로 8바퀴 돌리면 25초 동안 입구가 손님을 빨아들임', 8, 3]
+        ]],
+        ['규모', [
+          ['people', '단체 입장', function (lv) { return '픽토그램 1개 = ' + Math.pow(2, lv + 1).toLocaleString('ko-KR') + '명'; }, 1, 14],
+          ['chevron-right', '버스 노선', '모든 차량 간격 −19% · 인원 +44%', 4, 5],
+          ['cat', 'VIP 초대장', '특별 손님 보너스 ×1.25', 8, 3],
+          ['expand', '확장 허가', '회전문을 한 단계 더 키울 수 있음', 50, 2],
+          ['triangle-down', '나비에–스토크스 연구소', '군중이 물처럼 흐릅니다', 400, 1]
+        ]],
+        ['본사', [
+          ['chevron-left', '대량 결제', '버튼을 누르고 있으면 연속 구매', 5, 1],
+          ['check', '총무팀', '가장 싼 업그레이드 자동 구매 (C)', 150, 1],
+          ['spin', '특허 로열티', '환생할 때 스핀 에너지 +10%', 10, 5],
+          ['stall', '대형 배달 계약', '배달 한 번에 2배 물량', 20, 3],
+          ['megaphone', '광고 드론', '홍보 효과 +30%', 20, 3]
+        ]]
+      ];
+
+      var energy = 13;
+      var levels = DATA.map(function (col) { return col[1].map(function () { return 0; }); });
+      var cols = document.getElementById('cols');
+      cols.style.setProperty('--rr-cols', DATA.length);
+
+      function make(tag, cls, text) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+      function icon(name) { return make('i', 'rr-icon rr-icon--' + name); }
+
+      function render() {
+        document.getElementById('energy').textContent = energy.toLocaleString('ko-KR');
+        cols.textContent = '';
+        DATA.forEach(function (col, ci) {
+          var box = make('div', 'rr-col');
+          box.appendChild(make('h3', 'rr-col__title', col[0]));
+          var list = make('ul', 'rr-uplist');
+          col[1].forEach(function (row, ri) {
+            var lv = levels[ci][ri];
+            var max = row[4];
+            // 규칙: 바로 윗줄을 한 번 이상 사야 열립니다.
+            var locked = ri > 0 && levels[ci][ri - 1] === 0;
+            var maxed = lv >= max;
+            var b = make('button', 'rr-up' + (lv > 0 ? ' is-owned' : '') + (maxed ? ' is-maxed' : ''));
+            b.disabled = locked;
+            var ic = make('span', 'rr-up__icon');
+            ic.appendChild(icon(row[0]));
+            b.appendChild(ic);
+            var text = make('span', 'rr-up__text');
+            text.appendChild(make('span', 'rr-up__title', row[1]));
+            var effect = typeof row[2] === 'function' ? row[2](Math.min(lv, max - 1) + (maxed ? 1 : 0)) : row[2];
+            text.appendChild(make('span', 'rr-up__sub' + (locked ? '' : ' rr-up__sub--arrow'), locked ? '위 항목을 먼저 사야 합니다' : effect));
+            b.appendChild(text);
+            var side = make('span', 'rr-up__side');
+            if (maxed) {
+              side.appendChild(make('span', 'rr-cost rr-cost--max', '최대'));
+            } else {
+              var cost = make('span', 'rr-cost' + (!locked && energy >= row[3] ? ' is-affordable' : ''));
+              cost.appendChild(icon('spin'));
+              cost.appendChild(document.createTextNode(row[3]));
+              side.appendChild(cost);
+              side.appendChild(make('span', 'rr-up__lv', 'Lv.' + lv + ' / ' + max));
+            }
+            b.appendChild(side);
+            b.addEventListener('click', function () {
+              if (locked || maxed || energy < row[3]) return;
+              energy -= row[3];
+              levels[ci][ri] += 1;
+              render();
+              var again = cols.children[ci].querySelectorAll('.rr-up')[ri];
+              again.classList.add('is-bought');
+              again.focus({ preventScroll: true });
+            });
+            var li = make('li');
+            li.appendChild(b);
+            list.appendChild(li);
+          });
+          box.appendChild(list);
+          cols.appendChild(box);
+        });
+      }
+      render();
+    })();
+  </script>
+</body>
+</html>

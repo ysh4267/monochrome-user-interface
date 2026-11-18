@@ -1,0 +1,183 @@
+/* ==========================================================================
+   계약 카드 (셋 중 하나 고르기) + 도장
+   --------------------------------------------------------------------------
+   <div class="rr-modal rr-pick" id="franchise">
+     <div class="rr-modal__veil"></div>
+     <div class="rr-pick__inner">
+       <h2 class="rr-pick__title">프랜차이즈 계약</h2>
+       <p class="rr-pick__sub">하나를 골라 다시 개업합니다. 계약은 환생해도 남습니다.</p>
+       <div class="rr-pick__cards">
+         <button class="rr-card" data-rr-pick> … <span class="rr-stamp">계약</span></button>  ×3
+       </div>
+       <button class="rr-rbtn rr-rbtn--wide">…</button>
+     </div>
+   </div>
+
+   등장: 카드가 80ms 간격으로 한 장씩, 기울어진 채 아래에서 날아와 스프링처럼 바로 섭니다.
+   hover: 14px 떠오름.  선택(.is-picked): 도장이 3배 크기에서 내려찍히고 카드가 움찔,
+   나머지 카드(.is-passed)는 200ms 동안 흐려집니다.
+   ========================================================================== */
+
+.rr-pick__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.rr-pick__title {
+  font-size: 44px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 62px;
+  letter-spacing: 0.07em;
+  margin-right: -0.07em;
+}
+.rr-pick__sub {
+  margin-top: 5px;
+  font-size: 20px;
+  line-height: 28px;
+}
+.rr-pick__cards {
+  display: flex;
+  gap: 32px;
+  margin-top: 14px;
+  padding-top: 14px;                  /* 떠오른 카드가 머무는 자리 */
+}
+.rr-pick__inner > .rr-rbtn {
+  margin-top: 29px;
+}
+/* 이 모달의 흰 막은 다른 다이얼로그보다 빨리(70ms) 깔립니다 */
+.rr-pick.is-open > .rr-modal__veil {
+  transition-duration: 70ms;
+}
+.rr-modal.is-open .rr-pick__title,
+.rr-modal.is-open .rr-pick__sub,
+.rr-modal.is-open .rr-pick__inner > .rr-rbtn {
+  animation: rr-fade-in 70ms linear both;
+}
+
+.rr-card {
+  --_tilt: 0deg;
+  --_from-x: 0px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  width: 330px;
+  height: 440px;
+  padding: 24px 26px 22px;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: 7px;
+  background: var(--rr-paper);
+  box-shadow: var(--rr-shadow-hard);
+  text-align: center;
+  transition:
+    transform var(--rr-dur-hover-out) var(--rr-ease-out),
+    box-shadow var(--rr-dur-hover-out) var(--rr-ease-out),
+    opacity 200ms linear;
+}
+.rr-card:hover,
+.rr-card:focus-visible,
+.rr-card.is-focus {
+  transform: translateY(-14px);
+  box-shadow: 6px 20px 0 var(--rr-shadow);
+  transition-duration: var(--rr-dur-hover), var(--rr-dur-hover), 200ms;
+}
+/* 지금 잡고 있는 카드(처음 열면 첫 장): 떠오른 채로 선이 안쪽으로 5px 까지 굵어집니다 */
+.rr-card.is-focus,
+.rr-card:focus-visible {
+  border-width: var(--rr-stroke-heavy);
+  outline: none;
+}
+
+/* 한 장씩 날아와 서기 */
+.rr-modal.is-open .rr-card {
+  animation: rr-card-deal 420ms backwards;   /* backwards: 끝난 뒤에는 hover 변형이 다시 먹도록 */
+}
+.rr-modal.is-open .rr-card:nth-child(1) { --_tilt: -12deg; --_from-x: -34px; animation-delay: 90ms; }
+.rr-modal.is-open .rr-card:nth-child(2) { --_tilt: 2deg; --_from-x: 0px; animation-delay: 170ms; }
+.rr-modal.is-open .rr-card:nth-child(3) { --_tilt: 10deg; --_from-x: 34px; animation-delay: 250ms; }
+.rr-modal.is-open .rr-card:nth-child(n + 4) { --_tilt: 8deg; --_from-x: 30px; animation-delay: 330ms; }
+
+.rr-card__icon {
+  font-size: 76px;
+  line-height: 1;
+}
+.rr-card__badge {
+  display: inline-flex;
+  align-items: center;
+  height: 25px;
+  margin-top: 12px;
+  padding: 0 11px;
+  border-radius: 13px;
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+  font-size: 14px;
+  font-weight: var(--rr-weight-bold);
+  letter-spacing: 0.06em;
+}
+.rr-card__title {
+  margin-top: 13px;
+  font-size: 28px;
+  font-weight: var(--rr-weight-medium);
+  line-height: 40px;
+  letter-spacing: 0.06em;
+}
+.rr-card__desc {
+  margin-top: 15px;
+  color: var(--rr-ink-soft);
+  font-size: 17px;
+  line-height: 24.5px;
+}
+.rr-card__tag {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  margin-top: auto;
+  padding: 0 14px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: 15px;
+  font-size: 15px;
+  font-weight: var(--rr-weight-bold);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* ── 도장 ─────────────────────────────────────────────────────────────── */
+
+.rr-stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  min-width: 190px;
+  height: 88px;
+  padding: 0 26px;
+  border: 6px solid var(--rr-ink);
+  border-radius: 12px;
+  background: var(--rr-paper);
+  font-size: 50px;
+  font-weight: var(--rr-weight-bold);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-10deg) scale(3);
+}
+/* 아래 두 규칙은 등장 애니메이션(.rr-modal.is-open .rr-card)보다 우선해야 해서 선택자를 맞췄습니다 */
+.rr-card.is-picked,
+.rr-modal.is-open .rr-card.is-picked {
+  transform: translateY(-14px);
+  animation: rr-card-thud 260ms 170ms both;
+}
+.rr-card.is-picked > .rr-stamp,
+.rr-stamp.is-live {
+  animation: rr-stamp 170ms var(--rr-ease-in) both;
+}
+.rr-card.is-passed,
+.rr-modal.is-open .rr-card.is-passed {
+  pointer-events: none;
+  animation: rr-fade-out 200ms linear 150ms both;   /* 도장이 찍힌 뒤에 사라지기 시작 */
+}

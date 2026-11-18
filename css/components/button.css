@@ -1,0 +1,382 @@
+/* ==========================================================================
+   버튼
+   --------------------------------------------------------------------------
+   .rr-btn      원형 아이콘 버튼 (독의 업그레이드 버튼)
+   .rr-rbtn     사각 버튼 (왼쪽에서 검은 면이 쓸고 들어오는 hover)
+   .rr-cta      툴팁 안의 알약 버튼
+   .rr-iconbtn  선으로만 된 작은 원 버튼 (일시정지·닫기)
+   .rr-chip     검은 원 칩 (좌상단 계약 표시)
+   ========================================================================== */
+
+/* ── 원형 버튼 ────────────────────────────────────────────────────────────
+   구조:  button.rr-btn > span.rr-btn__body > span.rr-btn__disc > i.rr-icon
+                                             > span.rr-btn__key   (단축키 배지)
+                                             > span.rr-btn__dot   (알림 점)
+                                             > span.rr-btn__more  (하위 메뉴 표시)
+   body 는 hover/누름 변형을, disc 는 숨쉬기 변형을 맡습니다(둘이 겹쳐 보여야 해서 층을 나눔).
+   상태:  .is-affordable(살 수 있음: 검은 채움 + 숨쉬기)  :disabled/.is-disabled(잠김)
+   변형:  .rr-btn--back(굵은 링)  .rr-btn--lg(가운데 큰 버튼)                          */
+
+.rr-btn {
+  --_size: var(--rr-btn-size);
+  --_key-x: calc(var(--_size) / 2 - 9px);     /* 단축키 배지 중심: 버튼 중심에서 왼쪽으로 */
+  --_key-y: calc(var(--_size) / 2 - 11px);    /*                   아래로 */
+  --_dot-r: calc(var(--_size) / 2 + 1px);
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: 50%;
+  outline-offset: 8px;
+}
+
+.rr-btn__body {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  transition: transform var(--rr-dur-hover-out) var(--rr-ease-out);
+  will-change: transform;
+}
+
+.rr-btn__disc {
+  position: absolute;
+  inset: 1px;                      /* 80px 칸 안의 78px 원 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: 50%;
+  background: var(--rr-paper);
+  color: var(--rr-ink);
+  box-shadow: var(--rr-shadow-btn);
+  font-size: 42px;                 /* 아이콘 크기 */
+  line-height: 1;
+  transition:
+    background-color 400ms linear,
+    color 400ms linear,
+    border-color 400ms linear,
+    box-shadow var(--rr-dur-hover-out) var(--rr-ease-out);
+}
+
+/* hover: 3px 떠오르며 확대. 그림자는 제자리에 남도록 오프셋을 그만큼 늘립니다. */
+.rr-btn:hover:not(:disabled, .is-disabled) .rr-btn__body {
+  transform: translateY(var(--rr-hover-lift)) scale(var(--rr-hover-scale));
+  transition-duration: var(--rr-dur-hover);
+}
+.rr-btn.is-affordable:hover:not(:disabled, .is-disabled) .rr-btn__body {
+  transform: translateY(var(--rr-hover-lift)) scale(var(--rr-hover-scale-hot));
+}
+.rr-btn:hover:not(:disabled, .is-disabled) .rr-btn__disc {
+  box-shadow: var(--rr-shadow-btn-lift);
+  transition-duration: 400ms, 400ms, 400ms, var(--rr-dur-hover);
+}
+
+/* 누름: 떠 있던 -3px 에서 +3px 로 6px 내려앉습니다. 크기는 그대로. */
+.rr-btn:active:not(:disabled, .is-disabled) .rr-btn__body {
+  transform: translateY(var(--rr-press-drop)) scale(var(--rr-hover-scale));
+  transition-duration: var(--rr-dur-press);
+}
+.rr-btn.is-affordable:active:not(:disabled, .is-disabled) .rr-btn__body {
+  transform: translateY(var(--rr-press-drop)) scale(var(--rr-hover-scale-hot));
+}
+.rr-btn:active:not(:disabled, .is-disabled) .rr-btn__disc {
+  box-shadow: var(--rr-shadow-btn-down);
+  transition-duration: 400ms, 400ms, 400ms, var(--rr-dur-press);
+}
+
+/* 살 수 있음: 검은 채움 + 1.7초 주기 숨쉬기(±2.5%) */
+.rr-btn.is-affordable .rr-btn__disc {
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+  animation: rr-breathe calc(var(--rr-dur-breathe) / 2) var(--rr-ease-sine) infinite alternate;
+}
+
+/* 잠김 */
+.rr-btn:is(:disabled, .is-disabled) .rr-btn__disc {
+  border-color: var(--rr-grey-light);
+  color: var(--rr-grey-light);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+  animation: none;
+}
+
+/* 뒤로: 링이 굵고, 값 표시가 없는 대신 9px 내려앉아 있습니다 */
+.rr-btn--back {
+  top: 9px;
+}
+.rr-btn--back .rr-btn__key {
+  translate: 2.5px -2px;
+}
+.rr-btn--back .rr-btn__disc {
+  border-width: var(--rr-stroke-heavy);
+  font-size: 40px;
+}
+
+/* 가운데 큰 버튼: 안쪽에 얇은 링이 하나 더 있고, 아이콘 아래에 글자가 들어갑니다 */
+.rr-btn--lg {
+  --_size: var(--rr-btn-lg-size);
+}
+.rr-btn--lg .rr-btn__disc {
+  inset: 0;
+  gap: 5.5px;
+  padding-bottom: 2px;
+  font-size: 47px;
+  border-width: 4px;
+}
+.rr-btn--lg .rr-btn__disc::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 2px solid var(--rr-grey-light);
+  border-radius: 50%;
+  transition: border-color 400ms linear;
+}
+.rr-btn--lg.is-affordable .rr-btn__disc::after {
+  border-color: var(--rr-paper);
+}
+.rr-btn__label {
+  font-size: 22px;
+  font-weight: var(--rr-weight-medium);
+}
+
+/* 단축키 배지: 버튼 가장자리 7시 30분 방향 */
+.rr-btn__key,
+.rr-btn__more {
+  position: absolute;
+  top: calc(50% + var(--_key-y) - 11px);
+  left: calc(50% - var(--_key-x) - 11px);
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: 50%;
+  background: var(--rr-paper);
+  color: var(--rr-ink-soft);
+  font-size: 13.5px;
+  line-height: 1;
+}
+
+/* 하위 메뉴 표시 ">": 4시 30분 방향 */
+.rr-btn__more {
+  left: auto;
+  right: calc(50% - var(--_key-x) - 11px);
+  font-size: 12px;
+}
+
+/* 알림 점: 1시 30분 방향. 흰 테가 링을 끊어 줍니다. */
+.rr-btn__dot {
+  position: absolute;
+  top: calc(50% - var(--_dot-r) * 0.7071 - 8px);
+  right: calc(50% - var(--_dot-r) * 0.7071 - 8px);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--rr-ink);
+  box-shadow: 0 0 0 3px var(--rr-paper);
+}
+
+/* ── 사각 버튼 ────────────────────────────────────────────────────────────
+   <button class="rr-rbtn"><span class="rr-rbtn__label">계속 영업</span></button>
+   hover 하면 검은 면이 왼쪽에서 85ms 만에 쓸고 들어오고, 글자는 면이 지나간 만큼만 반전됩니다.
+   변형: --sm / --lg / --block / --solid(처음부터 검정) / --hold(길게 눌러야 확정)          */
+
+.rr-rbtn {
+  --_fill: var(--rr-ink);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 58px;
+  min-width: 120px;
+  padding: 0 28px;
+  overflow: hidden;
+  isolation: isolate;
+  border: var(--rr-stroke) solid var(--rr-ink);
+  border-radius: var(--rr-radius-btn);
+  background: var(--rr-paper);
+  color: var(--rr-ink);
+  font-size: 21px;
+  font-weight: var(--rr-weight-medium);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.rr-rbtn::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: var(--_fill);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--rr-dur-sweep) linear;
+}
+.rr-rbtn:hover:not(:disabled)::before {
+  transform: scaleX(1);
+}
+
+/* 흰 글자를 difference 로 섞으면 흰 바탕에서는 검게, 검은 면 위에서는 희게 보입니다. */
+.rr-rbtn__label {
+  position: relative;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.rr-rbtn--sm {
+  height: 40px;
+  min-width: 0;
+  padding: 0 17.5px;
+  border-width: var(--rr-stroke-thin);
+  font-size: 17px;
+  font-weight: var(--rr-weight-regular);
+  letter-spacing: 0.02em;
+}
+.rr-rbtn--lg {
+  height: 75px;
+  min-width: 280px;
+  padding: 0 60px;
+  font-size: 29px;
+  font-weight: var(--rr-weight-bold);
+  letter-spacing: 0.08em;
+}
+.rr-rbtn--wide {
+  min-width: 180px;
+}
+.rr-rbtn--block {
+  display: flex;
+  width: 100%;
+}
+.rr-rbtn--solid {
+  --_fill: var(--rr-paper);
+  background: var(--rr-ink);
+  font-weight: var(--rr-weight-bold);
+}
+.rr-rbtn--text {
+  border-color: transparent;
+  background: none;
+}
+.rr-rbtn--text::before {
+  display: none;
+}
+/* 글자만 있는 버튼: 채움 대신 밑줄이 왼쪽에서 그어집니다 (바탕이 없으니 difference 섞기도 끕니다) */
+.rr-rbtn--text .rr-rbtn__label {
+  color: inherit;
+  mix-blend-mode: normal;
+  background: linear-gradient(currentColor, currentColor) left bottom / 0 2px no-repeat;
+  transition: background-size var(--rr-dur-sweep) linear;
+}
+.rr-rbtn--text:hover .rr-rbtn__label {
+  background-size: 100% 2px;
+}
+
+/* 길게 눌러 확인: hover 로는 차지 않고, 누르고 있는 동안 1초에 걸쳐 일정한 속도로 찹니다. */
+.rr-rbtn--hold {
+  padding: 0 25px;
+  border-width: 5px;
+}
+.rr-rbtn--hold:hover:not(:disabled)::before {
+  transform: scaleX(0);
+}
+.rr-rbtn--hold:active:not(:disabled)::before,
+.rr-rbtn--hold.is-holding::before {
+  transform: scaleX(1);
+  transition-duration: var(--rr-dur-hold);
+}
+.rr-rbtn--hold.is-confirmed::before {
+  transform: scaleX(1);
+  transition-duration: 0s;
+}
+
+/* ── 알약 CTA ─────────────────────────────────────────────────────────── */
+
+.rr-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 3px 13px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  border-radius: var(--rr-radius-pill);
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+  font-size: 15px;
+  font-weight: var(--rr-weight-bold);
+  line-height: 22px;
+  text-align: center;
+  white-space: nowrap;
+}
+/* 돈이 모자라거나 잠긴 경우: 선만 남기고 글자는 회색. 문장이 길면 두 줄로 접힙니다. */
+.rr-cta--ghost {
+  background: var(--rr-paper);
+  color: var(--rr-grey);
+  font-weight: var(--rr-weight-regular);
+  white-space: normal;
+}
+
+/* ── 선으로 된 원 버튼 ────────────────────────────────────────────────── */
+
+.rr-iconbtn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--rr-iconbtn-size);
+  height: var(--rr-iconbtn-size);
+  border-radius: 50%;
+  border: var(--rr-stroke-thin) solid var(--rr-ink);
+  background: var(--rr-paper);
+  color: var(--rr-ink);
+  font-size: 30px;
+  line-height: 1;
+  transition:
+    background-color var(--rr-dur-invert) linear,
+    color var(--rr-dur-invert) linear;
+}
+.rr-iconbtn:hover {
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+}
+
+/* ── 칩 ───────────────────────────────────────────────────────────────────
+   <span class="rr-chip"><i class="rr-icon rr-icon--gear"></i></span>
+   진행 링이 필요하면:  <span class="rr-chip rr-chip--ring" style="--rr-progress:.9" data-label="+90%">…</span> */
+
+.rr-chip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--rr-chip-size);
+  height: var(--rr-chip-size);
+  border-radius: 50%;
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+  font-size: calc(var(--rr-chip-size) * 0.6);
+  line-height: 1;
+}
+/* 진행 링이 붙는 칩은 원이 조금 작고(38px), 지름 51px 의 가는 호가 12시부터 시계 방향으로 돕니다 */
+.rr-chip--ring {
+  --rr-chip-size: 38px;
+  font-size: 26px;
+  margin: 0 2.5px 0 -0.5px;                  /* 칩 줄의 62px 간격은 그대로 둡니다 */
+}
+.rr-chip--ring::before {
+  content: "";
+  position: absolute;
+  inset: -6.5px;
+  border-radius: 50%;
+  background: conic-gradient(var(--rr-ink) calc(var(--rr-progress, 1) * 360deg), transparent 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.6px), #000 calc(100% - 2.1px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.6px), #000 calc(100% - 2.1px));
+}
+.rr-chip[data-label]::after {
+  content: attr(data-label);
+  position: absolute;
+  top: calc(100% + 11px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--rr-ink-soft);
+  font-size: 16px;
+  white-space: nowrap;
+}
