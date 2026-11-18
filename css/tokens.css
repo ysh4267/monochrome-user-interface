@@ -70,6 +70,7 @@
   --rr-dur-backdrop: 130ms;       /* 흰 막 페이드 */
   --rr-dur-breathe: 1700ms;       /* 살 수 있는 버튼 숨쉬기 한 주기 */
   --rr-dur-menu: 160ms;           /* 타이틀 메뉴 밀림 */
+  --rr-dur-track: 670ms;          /* 단계 게이지의 값 따라가기 (easeOutExpo 로 쓰면 시상수 97ms 의 지수 감속) */
 
   --rr-hover-scale: 1.05;         /* 살 수 없는 버튼 hover */
   --rr-hover-scale-hot: 1.075;    /* 살 수 있는 버튼 hover */
@@ -86,5 +87,6 @@
   --rr-z-fx: 40;
   --rr-z-backdrop: 50;
   --rr-z-dialog: 60;
+  --rr-z-wipe: 90;                /* 화면 전환(회전문 닦기) */
   --rr-z-cursor: 100;
 }

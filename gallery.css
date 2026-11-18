@@ -328,3 +328,40 @@ body {
   font-size: 13.5px;
   line-height: 1.7;
 }
+
+/* 화면 전환 시연 상자: 작은 무대(16:9). 선 굵기와 축은 상자 크기에 맞춰 줄입니다. */
+.g-wipe {
+  position: relative;
+  display: block;
+  width: 640px;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 3px solid #000;
+  border-radius: 5px;
+  background: var(--rr-world, none) center / cover no-repeat #fff;
+  cursor: inherit;
+}
+.g-wipe > .rr-wipe {
+  --_line: 3px;
+}
+.g-wipe > .rr-wipe > i {
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+}
+.g-wipe__screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.g-wipe__screen[hidden] {
+  display: none;
+}
+#g-wipe-b {
+  background: #fff;
+}

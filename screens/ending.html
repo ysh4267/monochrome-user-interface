@@ -40,7 +40,7 @@
           <div class="rr-tally__row" style="--rr-i: 7"><dt>1,707억링</dt><dd>벌어들인 돈</dd></div>
           <div class="rr-tally__row" style="--rr-i: 8"><dt>31.7만콤보</dt><dd>가장 긴 풍 콤보</dd></div>
         </dl>
-        <p class="rr-tally__hint">클릭하면 계속합니다</p>
+        <p class="rr-tally__hint" style="--rr-i: 9">클릭하면 계속합니다</p>
       </aside>
       <button class="end-next" data-go="2" aria-label="계속"></button>
     </section>
@@ -85,16 +85,35 @@
   <script src="screen.js"></script>
   <script>
     // 화면 예제용: 세 단계를 차례로 보여 줍니다.  ?step=2  또는  #credits 로 바로 갈 수 있습니다.
+    //   1) 통계 패널이 밀려 들어오고, 줄이 1.15초마다 하나씩 나타나며 숫자가 굴러 오릅니다.
+    //   2) 누르면 패널이 물러나고 "영업 종료." 상자가 던져 올려지듯 나타납니다.
+    //   3) 다시 누르면 상자가 흐려지고 크레딧 패널이 들어옵니다.
     (function () {
       var steps = document.querySelectorAll('.end-step');
-      function go(n) {
+      var busy = false;
+      function show(n) {
         Array.prototype.forEach.call(steps, function (s) { s.classList.toggle('is-on', s.getAttribute('data-step') === String(n)); });
+        if (String(n) === '1') RR.tally('.rr-tally.is-live');
+      }
+      // 지금 단계의 패널·상자에 퇴장 연출(.is-leaving)을 틀고, 끝나면 다음 단계로 넘어갑니다
+      function go(n) {
+        var cur = document.querySelector('.end-step.is-on');
+        var leaver = cur && cur.querySelector('.rr-side.is-live, .rr-msgbox.is-live');
+        if (!leaver) { show(n); return; }
+        if (busy) return;
+        busy = true;
+        leaver.classList.add('is-leaving');
+        setTimeout(function () {
+          leaver.classList.remove('is-leaving');
+          busy = false;
+          show(n);
+        }, leaver.classList.contains('rr-msgbox') ? 800 : 400);
       }
       document.addEventListener('click', function (e) {
         var next = e.target.closest('[data-go]');
         if (next) go(next.getAttribute('data-go'));
       });
-      go(location.hash === '#credits' ? 3 : (DEMO.query.get('step') || 1));
+      show(location.hash === '#credits' ? 3 : (DEMO.query.get('step') || 1));
     })();
   </script>
 </body>

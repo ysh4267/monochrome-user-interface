@@ -9,8 +9,9 @@
   <link rel="stylesheet" href="../css/rr.css">
   <link rel="stylesheet" href="screen.css">
   <style>
-    /* 이 화면만의 배치: 조작 힌트는 독보다 77px 위(원본 1:56 프레임) */
-    .early-hint { position: absolute; right: 0; bottom: 244px; left: 0; display: flex; justify-content: center; pointer-events: none; }
+    /* 이 화면만의 배치: 조작 힌트는 독보다 77px 위에서 둥실거리고(원본 3:01), 안내 고리는 회전문 둘레에 깔립니다 */
+    .early-hint { position: absolute; right: 0; bottom: 240px; left: 0; display: flex; justify-content: center; pointer-events: none; }
+    .early-guide { position: absolute; top: 308px; left: 725px; width: 470px; height: 324px; --rr-guide-path: path("M225 0A225 152 0 1 0 -225 0A225 152 0 1 0 225 0"); }
   </style>
 </head>
 <body>
@@ -33,6 +34,11 @@
         </div>
       </div>
 
+      <!-- 조작 안내: 점선 고리와 화살표가 돌리는 방향으로 돌고, 힌트 알약이 둥실거립니다 -->
+      <svg class="rr-guide early-guide" viewBox="-235 -162 470 324" aria-hidden="true">
+        <ellipse class="rr-guide__ring" rx="225" ry="152" pathLength="24"/>
+        <path class="rr-guide__arrow" d="M11 0L-9 -8L-4 0L-9 8Z"/>
+      </svg>
       <div class="early-hint"><span class="rr-toast rr-toast--hint">누르고 있으면 돌아갑니다</span></div>
 
       <div class="rr-hud__bottom">
@@ -94,13 +100,15 @@
         { btn: 'b2', price: 'p2', tipPrice: 't2-price', cta: 't2-cta', level: 0, max: 9, costs: [5, 25, 90, 400] }
       ];
       var rates = [10, 21, 36, 58, 90, 140, 215];
+      var quiet = true;   // 처음 상태를 잡는 동안에는 연출 없이
       function $(id) { return document.getElementById(id); }
       function refresh() {
         $('money').textContent = money.toLocaleString('ko-KR');
         items.forEach(function (it) {
           var cost = it.costs[Math.min(it.level, it.costs.length - 1)];
           var ok = money >= cost;
-          $(it.btn).classList.toggle('is-affordable', ok);
+          // 살 수 있게 된 순간에는 버튼이 톡 튀고 링이 한 번 퍼집니다
+          RR.afford($(it.btn), ok, { quiet: quiet });
           [it.price, it.tipPrice].forEach(function (id) {
             $(id).classList.toggle('is-affordable', ok);
             $(id).lastElementChild.textContent = cost.toLocaleString('ko-KR');
@@ -124,6 +132,7 @@
         });
       });
       refresh();
+      quiet = false;
       // 손님이 들어오면 돈이 오릅니다(구경용).
       if (!DEMO.shot) setInterval(function () { money += 1; refresh(); }, 900);
     })();

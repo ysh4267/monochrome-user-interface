@@ -7,6 +7,7 @@
    .rr-combo        콤보 라벨 (+ 타이머 막대, 기울어진 꼬리표)
    .rr-gain         획득 수치가 떠오르는 라벨
    .rr-toast        상단 가운데 알림 / 조작 힌트 알약
+   .rr-guide        조작 안내 고리 (점선 타원 + 도는 화살표)
    .rr-bubble       검은 말풍선 ("꿀꺽!")
    .rr-notice       왼쪽에 뜨는 정산 카드
    .rr-keytag       화면 아래 귀퉁이의 검은 단축키 꼬리표
@@ -279,9 +280,14 @@
   animation: rr-gain 900ms linear both;
 }
 
-/* ── 알림 / 힌트 ───────────────────────────────────────────────────────── */
+/* ── 알림 / 힌트 ─────────────────────────────────────────────────────────
+   <span class="rr-toast is-live">본사 타워가 섰습니다</span>
+   .is-live 를 붙이면 원본처럼 내리꽂히며 나타납니다(두 배 크기로 기울어져 날아와 움츠러들었다 펴짐, 440ms).
+   새 알림이 오면 앞의 알림은 연출 없이 바로 사라집니다.
+   --hint(조작 힌트)는 나타나고 사라질 때 연출이 없고, 떠 있는 동안 위아래로 5px 씩 둥실거립니다.        */
 
 .rr-toast {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -297,15 +303,61 @@
   white-space: nowrap;
 }
 .rr-toast--hint {
-  height: 52px;
+  height: 54px;
   padding: 0 32px;
   border-radius: 17px;
   font-size: 22px;
   font-weight: var(--rr-weight-regular);
   letter-spacing: 0.06em;
+  animation: rr-bob 800ms var(--rr-ease-sine) infinite alternate;
 }
 .rr-toast.is-live {
-  animation: rr-pop-in 180ms var(--rr-ease-out) both;
+  animation: rr-toast-in 440ms linear both;
+}
+/* 닿는 순간(100ms) 둘레로 튀는 방사선. 그림은 fx.css 의 구매 효과와 같은 것을 씁니다. */
+.rr-toast.is-live::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  opacity: 0;
+  scale: 0.7 0.4;                 /* 알약 둘레에 납작하게 퍼지는 250 × 130px 쯤의 타원 */
+  pointer-events: none;
+  animation: rr-spikes 150ms linear 100ms forwards;
+}
+
+/* ── 조작 안내 고리 ────────────────────────────────────────────────────────
+   돌릴 것(회전문) 둘레에 깔리는 점선 타원. 점선과 화살표가 돌리는 방향으로 천천히 돕니다(7.2초에 한 바퀴).
+   <svg class="rr-guide" viewBox="-280 -232 560 464" style="width:560px">
+     <ellipse class="rr-guide__ring" rx="270" ry="222" pathLength="24"/>
+     <path class="rr-guide__arrow" d="M11 0L-9 -8L-4 0L-9 8Z"/>
+   </svg>
+   크기를 바꾸려면 rx / ry 와 viewBox, 그리고 화살표의 길(--rr-guide-path)을 함께 바꿉니다.              */
+
+.rr-guide {
+  --rr-guide-path: path("M270 0A270 222 0 1 0 -270 0A270 222 0 1 0 270 0");
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+.rr-guide__ring {
+  fill: none;
+  stroke: var(--rr-ink);
+  stroke-width: 2px;
+  stroke-dasharray: 0.58 0.42;
+  animation: rr-guide-march 7200ms linear infinite;
+}
+.rr-guide__arrow {
+  fill: var(--rr-ink);
+  stroke: var(--rr-paper);
+  stroke-width: 1.5px;
+  paint-order: stroke;
+  offset-path: var(--rr-guide-path);
+  offset-rotate: auto;
+  animation: rr-guide-orbit 7200ms linear infinite;
 }
 
 .rr-bubble {
@@ -321,8 +373,21 @@
   font-weight: var(--rr-weight-bold);
   white-space: nowrap;
 }
+/* 채우는 중에는 흰 알약에 퍼센트가 오르고(--charge), 다 차는 순간 검은 말풍선으로 바뀌며 펑 튑니다(.is-live):
+   1.43배로 부풀었다가 0.73배까지 움츠러들고 한 번 더 출렁인 뒤 멎습니다(290ms). 되돌아갈 때는 연출 없이 바로. */
+.rr-bubble--charge {
+  padding: 0 13px;
+  border: var(--rr-stroke-thin) solid var(--rr-ink-soft);
+  border-radius: 12px;
+  background: var(--rr-paper);
+  box-shadow: none;
+  color: var(--rr-ink-soft);
+  font-size: 18px;
+  font-weight: var(--rr-weight-regular);
+  letter-spacing: 0.02em;
+}
 .rr-bubble.is-live {
-  animation: rr-pop-in 160ms var(--rr-ease-pop) both;
+  animation: rr-bubble-in 290ms linear both;
 }
 
 /* ── 정산 카드 ─────────────────────────────────────────────────────────────
@@ -373,21 +438,68 @@
   font-size: 14px;
   line-height: 19px;
 }
+/* .is-live 로 떨어지며 나타나고, .is-leaving 으로 떠오르며 사라집니다(원본 계측). 숫자는 RR.count() 로 굴립니다. */
 .rr-notice.is-live {
-  animation: rr-dialog-in var(--rr-dur-dialog) backwards;
+  animation: rr-notice-in 500ms linear backwards;
+}
+.rr-notice.is-leaving {
+  animation: rr-notice-out 230ms linear both;
 }
 
-/* ── 단축키 꼬리표 ─────────────────────────────────────────────────────── */
+/* ── 단축키 꼬리표 ─────────────────────────────────────────────────────────
+   <span class="rr-keytag">경품 추첨권 1장 (R)</span>                              늘 켜진 모양(검은 채움)
+   <button class="rr-keytag rr-keytag--toggle is-on"
+           data-label="총무팀 자동 구매: 켬 (C)"
+           data-rr-on="총무팀 자동 구매: 켬 (C)" data-rr-off="총무팀 자동 구매: 끔 (C)">총무팀 자동 구매: 켬 (C)</button>
+
+   --toggle 은 켜고 끄는 꼬리표입니다. 꺼져 있으면 흰 바탕에 테, 켜면(.is-on) 검은 면이 왼쪽에서 쓸고 들어오고
+   (320ms, 지수 감속) 끌 때는 왼쪽으로 빠집니다. 글자는 두 겹(꺼짐 = 보통 굵기, 켜짐 = 굵게)이라 면이 지나간
+   만큼만 바뀝니다. 두 겹의 글자는 data-label 에서 가져오고, 제 글자는 자리만 잡습니다.
+   바뀌는 순간에는 꼬리표가 톡 튑니다(.is-punch: 1.12배 → 0.92배 → 제 크기, 220ms).
+   data-rr-on / data-rr-off 를 달아 두면 누를 때마다 저절로 바뀌고, 직접 하려면 RR.keytag(el, true, '글자').   */
 
 .rr-keytag {
+  position: relative;
   display: inline-flex;
   align-items: center;
   height: 42px;
-  padding: 0 19px;
+  padding: 0 20px;
   border-radius: var(--rr-radius-btn);
   background: var(--rr-ink);
   color: var(--rr-paper);
   font-size: 17px;
   font-weight: var(--rr-weight-bold);
   white-space: nowrap;
+}
+.rr-keytag--toggle {
+  background: none;
+  color: transparent;
+}
+.rr-keytag--toggle::before,
+.rr-keytag--toggle::after {
+  content: attr(data-label);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+.rr-keytag--toggle::before {
+  border: var(--rr-stroke) solid var(--rr-ink);
+  background: var(--rr-paper);
+  color: var(--rr-ink);
+  font-weight: var(--rr-weight-regular);
+}
+.rr-keytag--toggle::after {
+  background: var(--rr-ink);
+  color: var(--rr-paper);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 320ms var(--rr-ease-out-fast);
+}
+.rr-keytag--toggle.is-on::after {
+  clip-path: inset(0);
+}
+.rr-keytag.is-punch {
+  animation: rr-keytag-punch 220ms linear;
 }

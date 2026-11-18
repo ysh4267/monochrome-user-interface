@@ -1,0 +1,94 @@
+/* ==========================================================================
+   화면 전환 — 회전문 닦기 (.rr-wipe)
+   --------------------------------------------------------------------------
+   원본에서 화면이 통째로 바뀔 때(타이틀 → 게임, 다시 개업 → 환생 화면, 환생 화면 → 게임) 쓰는 전환입니다.
+   화면 한가운데를 축으로 문짝 네 장(십자 선)이 반의반 바퀴(90°) 돌면서,
+
+     1) 가리기  문짝이 지나간 자리가 흰 면으로 덮입니다. 300ms.           .is-covering
+     2) 빈 화면  선도 사라진 흰 화면. 약 117ms — 이때 화면을 바꿉니다.     .is-covered
+     3) 열기    다시 X 자로 나타난 문짝이 같은 방향으로 90° 돌면서,       .is-revealing
+                제자리에 남은 선과 도는 선 사이로 새 화면이 드러납니다. 367ms.
+                다 열린 뒤에도 X 선이 83ms 남았다가 사라집니다.
+
+   <div class="rr-wipe"><i></i></div>      ← .rr-stage 의 맨 끝에 둡니다. <i> 는 가운데 축(동그라미).
+
+   클래스는 RR.wipe() 가 붙였다 뗍니다(마크업도 없으면 만들어 넣습니다):
+     RR.wipe(stage, function () { …화면 바꾸기… })     가렸다가, 바꾸고, 다시 엽니다
+     RR.wipe.cover(stage, done)  /  RR.wipe.reveal(stage, done)      페이지를 넘어갈 때는 따로따로
+
+   회전각은 --rr-wipe 하나로 움직입니다(0 → 90deg). 흰 면은 conic-gradient, 선은 십자 모양 배경을 돌려 그립니다.
+   ========================================================================== */
+
+@property --rr-wipe { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
+
+.rr-wipe {
+  --rr-wipe: 0deg;
+  --_line: 6px;                       /* 문짝 선의 굵기 */
+  position: absolute;
+  inset: 0;
+  z-index: var(--rr-z-wipe);
+  display: none;
+  overflow: hidden;                   /* 전환 중에는 아래 화면을 누를 수 없습니다 */
+}
+.rr-wipe:is(.is-covering, .is-covered, .is-revealing) {
+  display: block;
+}
+
+/* 흰 면: 90° 마다 되풀이되는 부채꼴. 가릴 때는 선이 지나간 만큼 희고, 열 때는 그만큼 뚫립니다.
+   (경계에 0.1° 의 여유를 두어 계단 현상을 누그러뜨립니다) */
+.rr-wipe.is-covering {
+  background: repeating-conic-gradient(from calc(135deg - var(--rr-wipe)),
+    var(--rr-paper) 0 calc(var(--rr-wipe) - 0.1deg), transparent var(--rr-wipe) 90deg);
+  animation: rr-wipe-cover 300ms linear both;
+}
+.rr-wipe.is-covered {
+  background: var(--rr-paper);
+}
+.rr-wipe.is-revealing {
+  background: repeating-conic-gradient(from calc(135deg - var(--rr-wipe)),
+    transparent 0 calc(var(--rr-wipe) - 0.1deg), var(--rr-paper) var(--rr-wipe) 90deg);
+  animation: rr-wipe-reveal 367ms linear 17ms both;
+}
+
+/* 문짝: 화면 대각선보다 긴 십자. ::before 는 도는 문짝, ::after 는 열 때 제자리에 남는 문짝. */
+.rr-wipe::before,
+.rr-wipe::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2400px;
+  height: 2400px;
+  margin: -1200px 0 0 -1200px;
+  background:
+    linear-gradient(var(--rr-ink), var(--rr-ink)) center / 100% var(--_line) no-repeat,
+    linear-gradient(var(--rr-ink), var(--rr-ink)) center / var(--_line) 100% no-repeat;
+  rotate: calc(45deg - var(--rr-wipe));
+}
+.rr-wipe::after {
+  display: none;
+  rotate: 45deg;
+}
+.rr-wipe.is-revealing::after {
+  display: block;
+}
+.rr-wipe.is-covered::before {
+  display: none;
+}
+
+/* 가운데 축 */
+.rr-wipe > i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  border: var(--_line) solid var(--rr-ink);
+  border-radius: 50%;
+  background: var(--rr-paper);
+}
+.rr-wipe.is-covered > i {
+  display: none;
+}

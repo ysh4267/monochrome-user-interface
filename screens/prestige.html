@@ -43,7 +43,7 @@
               </li>
             </ul>
           </div>
-          <a class="rr-rbtn rr-rbtn--solid rr-rbtn--lg" href="hud.html"><span class="rr-rbtn__label">다시 개업</span></a>
+          <a class="rr-rbtn rr-rbtn--solid rr-rbtn--lg" href="hud.html" data-wipe-to="hud.html"><span class="rr-rbtn__label">다시 개업</span></a>
         </footer>
       </section>
     </div>
@@ -154,6 +154,22 @@
         });
       }
       render();
+
+      // 회전문 닦기로 넘어왔으면: 시트는 튀어 오르지 않고 문짝 사이로 드러나며 250ms 동안 또렷해지고,
+      // 스핀 에너지는 화면이 가려져 있을 때부터 0 에서 굴러 오릅니다(0.9초).
+      if (DEMO.arrived) {
+        var sheet = document.querySelector('.rr-sheet');
+        sheet.classList.remove('is-live');
+        sheet.style.opacity = 0;
+        document.getElementById('energy').textContent = '0';
+        document.addEventListener('demo:arrive', function () {
+          RR.count('#energy', energy, { from: 0, ms: 900 });
+        });
+        document.addEventListener('demo:reveal', function () {
+          sheet.style.transition = 'opacity 250ms linear 40ms';
+          sheet.style.opacity = 1;
+        });
+      }
     })();
   </script>
 </body>

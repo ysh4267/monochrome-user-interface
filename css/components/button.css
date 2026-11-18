@@ -86,11 +86,21 @@
   transition-duration: 400ms, 400ms, 400ms, var(--rr-dur-press);
 }
 
-/* 살 수 있음: 검은 채움 + 1.7초 주기 숨쉬기(±2.5%) */
+/* 살 수 있음: 검은 채움 + 1.7초 주기 숨쉬기(±2.5%).
+   검게 바뀔 때는 60ms 만에 빠르게(처음에 확), 흰색으로 돌아갈 때는 위의 400ms 로 천천히 바뀝니다. */
 .rr-btn.is-affordable .rr-btn__disc {
   background: var(--rr-ink);
   color: var(--rr-paper);
   animation: rr-breathe calc(var(--rr-dur-breathe) / 2) var(--rr-ease-sine) infinite alternate;
+  transition-duration: 60ms, 60ms, 60ms, var(--rr-dur-hover-out);
+  transition-delay: 8ms, 8ms, 8ms, 0s;
+  transition-timing-function: var(--rr-ease-out);
+}
+.rr-btn.is-affordable:hover:not(:disabled, .is-disabled) .rr-btn__disc {
+  transition-duration: 60ms, 60ms, 60ms, var(--rr-dur-hover);
+}
+.rr-btn.is-affordable:active:not(:disabled, .is-disabled) .rr-btn__disc {
+  transition-duration: 60ms, 60ms, 60ms, var(--rr-dur-press);
 }
 
 /* 잠김 */

@@ -15,7 +15,7 @@
   display: inline-flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 9px;
+  gap: 8px;
 }
 
 .rr-dock {
@@ -32,12 +32,97 @@
 }
 
 .rr-dock__item {
+  --_pivot: calc(var(--rr-tip-offset) + var(--rr-btn-size) / 2);   /* 툴팁 아랫변에서 버튼 중심까지 */
   position: relative;            /* 툴팁의 기준점. 봉우리(::before)보다 위에 그려지게도 합니다. */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 13px;
   width: var(--rr-btn-size);
+}
+.rr-dock__item[hidden],
+.rr-dock__tag[hidden],
+.rr-track[hidden] {
+  display: none;
+}
+
+/* ── 버튼 갈아 끼우기 ───────────────────────────────────────────────────────
+   하위 메뉴를 열고 닫을 때 독의 버튼이 통째로 바뀝니다. 묶음은 data-rr-group="이름" 으로 나누고,
+   안 보이는 묶음에는 hidden 을 답니다. 아래 클래스는 RR.dock.swap() 이 붙였다 뗍니다(원본 계측).
+     .is-leaving   제자리에서 117ms 동안 흐려집니다. 오른쪽 것부터 20ms 간격(--rr-n).
+                   가운데 큰 버튼은 끝까지 남았다가 묶음이 바뀌는 순간 사라집니다.
+     .is-entering  첫 칸에서 제 칸까지(--rr-d) 용수철처럼 날아옵니다. 단축키 번호 순서로 35ms 간격(--rr-n).
+                   날아오는 동안 버튼만(값 표시는 빼고) 1.18배까지 부풀었다 돌아옵니다.
+     .is-first     첫 칸의 버튼. 제자리에서 부풀며 나타나고, 배지까지 통째로 반 바퀴 돌아 들어옵니다.
+     .is-swapping  (독에) 날아오다 넘친 버튼이 독 밖으로 삐져나오지 않게 좌우를 잘라 줍니다.
+     .is-rising    (독에) 가운데 큰 버튼이 들어오는 동안. 봉우리가 뒤늦게 솟습니다.              */
+
+.rr-dock__item.is-leaving,
+.rr-dock__tag.is-leaving {
+  pointer-events: none;
+  animation: rr-fade-out 117ms cubic-bezier(0.5, 1, 0.89, 1) both;
+  animation-delay: calc(var(--rr-n, 0) * 20ms);
+}
+.rr-dock__item.is-entering {
+  --_d: var(--rr-d, 0px);
+  --_wait: calc(var(--rr-n, 0) * 35ms + 3ms);
+  animation: rr-item-fly 320ms linear var(--_wait) backwards;
+}
+.rr-dock__item.is-entering .rr-btn {
+  animation: rr-btn-grow 320ms linear var(--_wait) backwards;
+}
+.rr-dock__item.is-entering.is-first {
+  --_wait: 8ms;
+  animation-name: rr-item-pop;
+  animation-duration: 50ms;
+}
+.rr-dock__item.is-entering.is-first .rr-btn {
+  animation-name: rr-btn-pop;
+  animation-duration: 270ms;
+}
+.rr-dock__item.is-entering.is-first .rr-btn__body {
+  animation: rr-icon-flip 360ms linear var(--_wait) backwards;
+}
+/* 알림 점은 버튼이 자리를 잡을 즈음에 톡 나타납니다 */
+.rr-dock__item.is-entering .rr-btn__dot {
+  animation: rr-pop-in 120ms var(--rr-ease-pop) calc(var(--_wait) + 275ms) backwards;
+}
+.rr-dock__tag.is-entering {
+  animation-delay: var(--rr-wait, 20ms);
+}
+.rr-dock.is-swapping {
+  clip-path: inset(-900px 0 0 0 round 0 0 var(--rr-radius-dock) var(--rr-radius-dock));
+}
+/* 누르는 순간 툴팁은 바로 사라지고, 갈아 끼우는 동안에는 뜨지 않습니다 */
+.rr-dock > .rr-dock__item.is-leaving > .rr-tip,
+.rr-dock.is-swapping > .rr-dock__item > .rr-tip {
+  visibility: hidden;
+}
+
+/* 가운데 큰 버튼의 등장: 먼저 자리가 벌어지고(독이 그만큼 넓어짐), 옆 버튼들이 거의 다 앉은 뒤에
+   독 안에서 구르며 솟아올라 폭발과 함께 자리를 잡습니다. 터지는 순간 독 전체가 움찔하고(.is-boom),
+   봉우리는 그 뒤에 솟습니다. 솟기 전에는 독 윗선 위로 나온 부분이 잘려 보입니다(--_cut).          */
+.rr-dock__item--center.is-entering {
+  --_w: var(--rr-btn-lg-size);
+  --_m: 6px;
+  animation: rr-slot-open 550ms linear 85ms backwards;
+}
+.rr-dock__item--center.is-entering .rr-btn {
+  --_cut: calc(var(--_rise) + 1px - var(--_pt));
+  animation: rr-center-clip 600ms linear 470ms backwards;
+}
+.rr-dock__item--center.is-entering .rr-btn__body {
+  animation: rr-center-in 600ms linear 470ms backwards;
+}
+.rr-dock__item--center.is-entering > .rr-price {
+  animation: rr-fade-in 60ms linear 800ms backwards;
+}
+.rr-dock.is-rising::before {
+  transform-origin: 50% 43.5px;          /* 윗선의 중심선을 축으로 */
+  animation: rr-hump-in 110ms var(--rr-ease-out) 720ms backwards;
+}
+.rr-dock.is-boom {
+  animation: rr-dock-boom 220ms linear;
 }
 
 /* ── 가운데 봉우리 ─────────────────────────────────────────────────────────
@@ -62,6 +147,7 @@
 .rr-dock__item--center {
   --_rise: calc(var(--rr-btn-lg-size) - var(--rr-btn-size));     /* 큰 버튼이 위로 솟는 높이(48px) */
   --rr-tip-offset: calc(var(--_pt) + 15px + var(--_rise));
+  --_pivot: calc(var(--rr-tip-offset) + var(--rr-btn-lg-size) / 2 - var(--_rise) - 1px);
   gap: 10.5px;
   width: var(--rr-btn-lg-size);
   margin: 0 6px;
@@ -131,9 +217,11 @@
   white-space: nowrap;
 }
 
-/* 독 윗선에 걸터앉는 꼬리표: 꼬리표의 아랫선이 독의 윗선과 겹칩니다 */
+/* 독 윗선에 걸터앉는 꼬리표: 꼬리표의 아랫선이 독의 윗선과 겹칩니다.
+   나타날 때(hidden 을 떼면)마다 한가운데에서 톡 커지며 1.19배까지 넘쳤다 돌아옵니다. 사라질 때는 바로 없어집니다. */
 .rr-dock__tag {
   position: absolute;
   bottom: 100%;
   left: 16px;
+  animation: rr-pop 340ms linear backwards;
 }

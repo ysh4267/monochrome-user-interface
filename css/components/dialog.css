@@ -309,8 +309,20 @@ dialog.rr-dialog::backdrop {
   box-shadow: 8px 8px 0 var(--rr-shadow);
   text-align: center;
 }
+/* 등장(.is-live, 원본 엔딩 계측): 40px 아래에서 던져 올려져 35px 넘게 솟았다가 떨어져 두 번 튀고 앉습니다.
+   그동안 오른쪽으로 기울어 있던 상자가 반대로(-3.2°) 넘어갔다가 1초쯤에 걸쳐 바로 서고, 650ms 동안 또렷해집니다.
+   작은 글줄은 1.65초 뒤부터 0.8초에 걸쳐 나타납니다. 퇴장(.is-leaving)은 제자리에서 0.8초 동안 흐려집니다. */
 .rr-msgbox.is-live {
-  animation: rr-dialog-in var(--rr-dur-dialog) backwards;
+  animation:
+    rr-msgbox-in 1150ms linear backwards,
+    rr-msgbox-fade 650ms linear backwards;
+}
+.rr-msgbox.is-live .rr-msgbox__sub {
+  animation: rr-fade-in 800ms linear 1650ms backwards;
+}
+.rr-msgbox.is-leaving {
+  pointer-events: none;
+  animation: rr-fade-out 800ms var(--rr-ease-out) both;
 }
 .rr-msgbox__title {
   font-size: 48px;

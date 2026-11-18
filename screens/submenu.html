@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>하위 메뉴 · 진행 패널 · 흑백 모노크롬 유저 인터페이스</title>
+  <title>하위 메뉴 · 단계 게이지 · 흑백 모노크롬 유저 인터페이스</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../css/rr.css">
@@ -22,7 +22,7 @@
 
       <div class="rr-hud__tr">
         <div class="rr-stats">
-          <div class="rr-stats__main"><i class="rr-coin"></i><span class="rr-num" id="money">100</span></div>
+          <div class="rr-stats__main"><i class="rr-coin"></i><span class="rr-num" id="money">50</span></div>
           <div class="rr-stats__rate"><i class="rr-icon rr-icon--people"></i><span id="rate">215</span> / 분</div>
           <div class="rr-stats__sub">이번 판 입장 786명</div>
           <div class="rr-stats__sub is-strong">인류의 0.0000096%</div>
@@ -32,7 +32,8 @@
       <div class="rr-hud__bottom">
         <div class="rr-dockwrap">
 
-          <div class="rr-track" id="track" style="--rr-level: 5; --rr-max: 20">
+          <!-- 단계 게이지: "길" 묶음과 함께 나타나고 사라집니다 -->
+          <div class="rr-track" id="track" data-rr-group="routes" style="--rr-level: 5; --rr-max: 20">
             <div class="rr-track__head"><span>홍보 › 손님 길</span><b id="track-title">홍보 5단계</b></div>
             <div class="rr-track__rail">
               <span class="rr-track__dots"></span>
@@ -47,21 +48,123 @@
           </div>
 
           <div class="rr-dock" id="dock">
-            <div class="rr-dock__item">
-              <a class="rr-btn rr-btn--back" href="hud.html" aria-label="뒤로">
+
+            <!-- ── 기본 묶음 (뒤로 가면 나옵니다) ─────────────────────────── -->
+            <div class="rr-dock__item" data-rr-group="main" hidden>
+              <button class="rr-btn" id="b-open" data-rr-swap="routes" aria-describedby="tip-open">
+                <span class="rr-btn__body">
+                  <span class="rr-btn__disc"><i class="rr-icon rr-icon--megaphone"></i></span>
+                  <span class="rr-btn__key">1</span>
+                  <span class="rr-btn__more"><i class="rr-icon rr-icon--chevron-right"></i></span>
+                </span>
+              </button>
+              <div class="rr-price" id="p-open"><i class="rr-icon rr-icon--ring"></i><span>120</span></div>
+              <div class="rr-tip" id="tip-open" role="tooltip">
+                <div class="rr-tip__head"><b class="rr-tip__title">홍보</b><span class="rr-tip__lv" id="open-lv">5단계 / 20</span></div>
+                <p class="rr-tip__desc">손님이 찾아오는 길을 늘립니다. 길마다 따로 키울 수 있습니다.</p>
+                <div class="rr-tip__now" id="open-now">분당 215명 · 4명씩</div>
+                <div class="rr-tip__foot">
+                  <span class="rr-price rr-price--lg" id="tp-open"><i class="rr-icon rr-icon--ring"></i><span>120</span></span>
+                  <span class="rr-cta">눌러서 손님 길 열기</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rr-dock__item" data-rr-group="main" hidden>
+              <button class="rr-btn" id="b-gear" aria-describedby="tip-gear">
+                <span class="rr-btn__body">
+                  <span class="rr-btn__disc"><i class="rr-icon rr-icon--gear"></i></span>
+                  <span class="rr-btn__key">2</span>
+                </span>
+              </button>
+              <div class="rr-price" id="p-gear"><i class="rr-icon rr-icon--ring"></i><span>60</span></div>
+              <div class="rr-tip" id="tip-gear" role="tooltip">
+                <div class="rr-tip__head"><b class="rr-tip__title">기어 교체</b><span class="rr-tip__lv" id="gear-lv">Lv.2 / 9</span></div>
+                <p class="rr-tip__desc">같은 손놀림으로 문이 더 많이 돕니다.</p>
+                <div class="rr-tip__now">손잡이 3바퀴 = 문 1바퀴</div>
+                <div class="rr-tip__next">손잡이 2.5바퀴 = 문 1바퀴 · 수동 최고 속도 +5%</div>
+                <div class="rr-tip__foot">
+                  <span class="rr-price rr-price--lg" id="tp-gear"><i class="rr-icon rr-icon--ring"></i><span>60</span></span>
+                  <span class="rr-cta rr-cta--ghost" id="cta-gear">10링 부족</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rr-dock__item" data-rr-group="main" hidden>
+              <button class="rr-btn" id="b-fly" aria-describedby="tip-fly">
+                <span class="rr-btn__body">
+                  <span class="rr-btn__disc"><i class="rr-icon rr-icon--flywheel"></i></span>
+                  <span class="rr-btn__key">3</span>
+                </span>
+              </button>
+              <div class="rr-price" id="p-fly"><i class="rr-icon rr-icon--ring"></i><span>25</span></div>
+              <div class="rr-tip" id="tip-fly" role="tooltip">
+                <div class="rr-tip__head"><b class="rr-tip__title">플라이휠</b><span class="rr-tip__lv" id="fly-lv">Lv.0 / 6</span></div>
+                <p class="rr-tip__desc">손을 떼도 문이 오래 돕니다.</p>
+                <div class="rr-tip__now">관성 없음</div>
+                <div class="rr-tip__next">관성 ×1.2</div>
+                <div class="rr-tip__foot">
+                  <span class="rr-price rr-price--lg" id="tp-fly"><i class="rr-icon rr-icon--ring"></i><span>25</span></span>
+                  <span class="rr-cta" id="cta-fly">클릭해서 구매</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rr-dock__item" data-rr-group="main" hidden>
+              <button class="rr-btn" id="b-bolt" aria-describedby="tip-bolt">
+                <span class="rr-btn__body">
+                  <span class="rr-btn__disc"><i class="rr-icon rr-icon--bolt"></i></span>
+                  <span class="rr-btn__key">4</span>
+                </span>
+              </button>
+              <div class="rr-price" id="p-bolt"><i class="rr-icon rr-icon--ring"></i><span>40</span></div>
+              <div class="rr-tip" id="tip-bolt" role="tooltip">
+                <div class="rr-tip__head"><b class="rr-tip__title">자동 구동</b><span class="rr-tip__lv" id="bolt-lv">Lv.0 / 9</span></div>
+                <p class="rr-tip__desc">손을 놓아도 문이 돕니다. 손으로 돌리면 더 빨라집니다.</p>
+                <div class="rr-tip__now">자동 회전 없음</div>
+                <div class="rr-tip__next">자동 회전 2.4°/초</div>
+                <div class="rr-tip__foot">
+                  <span class="rr-price rr-price--lg" id="tp-bolt"><i class="rr-icon rr-icon--ring"></i><span>40</span></span>
+                  <span class="rr-cta" id="cta-bolt">클릭해서 구매</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rr-dock__item" data-rr-group="main" hidden>
+              <button class="rr-btn" id="b-star" aria-describedby="tip-star">
+                <span class="rr-btn__body">
+                  <span class="rr-btn__disc"><i class="rr-icon rr-icon--star"></i></span>
+                  <span class="rr-btn__key">9</span>
+                </span>
+              </button>
+              <div class="rr-price" id="p-star"><i class="rr-icon rr-icon--ring"></i><span>150</span></div>
+              <div class="rr-tip" id="tip-star" role="tooltip">
+                <div class="rr-tip__head"><b class="rr-tip__title">특별 손님</b><span class="rr-tip__lv" id="star-lv">Lv.0 / 5</span></div>
+                <p class="rr-tip__desc">가끔 귀한 손님이 찾아와 팁을 두고 갑니다.</p>
+                <div class="rr-tip__now">특별 손님 없음</div>
+                <div class="rr-tip__next">수인 친구 분당 0.5명</div>
+                <div class="rr-tip__foot">
+                  <span class="rr-price rr-price--lg" id="tp-star"><i class="rr-icon rr-icon--ring"></i><span>150</span></span>
+                  <span class="rr-cta rr-cta--ghost" id="cta-star">50링 부족</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── "길" 묶음 (하위 메뉴) ──────────────────────────────────── -->
+            <div class="rr-dock__item" data-rr-group="routes">
+              <button class="rr-btn rr-btn--back" data-rr-swap="main" aria-label="뒤로">
                 <span class="rr-btn__body">
                   <span class="rr-btn__disc"><i class="rr-icon rr-icon--chevron-left"></i></span>
                   <span class="rr-btn__key">1</span>
                 </span>
-              </a>
+              </button>
             </div>
 
-            <div class="rr-dock__item">
+            <div class="rr-dock__item" data-rr-group="routes">
               <button class="rr-btn" id="b-walk" aria-describedby="tip-walk">
                 <span class="rr-btn__body">
                   <span class="rr-btn__disc"><i class="rr-icon rr-icon--walk"></i></span>
                   <span class="rr-btn__key">2</span>
-                  <span class="rr-btn__dot"></span>
                 </span>
               </button>
               <div class="rr-price" id="p-walk"><i class="rr-icon rr-icon--ring"></i><span>200</span></div>
@@ -77,20 +180,19 @@
               </div>
             </div>
 
-            <div class="rr-dock__item">
+            <div class="rr-dock__item" data-rr-group="routes">
               <button class="rr-btn" id="b-bus" aria-describedby="tip-bus">
                 <span class="rr-btn__body">
                   <span class="rr-btn__disc"><i class="rr-icon rr-icon--bus"></i></span>
                   <span class="rr-btn__key">3</span>
-                  <span class="rr-btn__dot"></span>
                 </span>
               </button>
               <div class="rr-price" id="p-bus"><i class="rr-icon rr-icon--ring"></i><span>120</span></div>
               <div class="rr-tip" id="tip-bus" role="tooltip">
-                <div class="rr-tip__head"><b class="rr-tip__title">버스</b><span class="rr-tip__lv" id="bus-lv">Lv.1 / 12</span></div>
-                <p class="rr-tip__desc">버스가 정류장마다 손님을 태워 옵니다.</p>
-                <div class="rr-tip__now" id="bus-now">45초마다 24명</div>
-                <div class="rr-tip__next" id="bus-next">40초마다 32명</div>
+                <div class="rr-tip__head"><b class="rr-tip__title">버스</b><span class="rr-tip__lv" id="bus-lv">Lv.0 / 15</span></div>
+                <p class="rr-tip__desc">버스가 더 자주, 더 많은 손님을 태우고 옵니다.</p>
+                <div class="rr-tip__now" id="bus-now">아직 오지 않음</div>
+                <div class="rr-tip__next" id="bus-next">45초마다 24명</div>
                 <div class="rr-tip__foot">
                   <span class="rr-price rr-price--lg" id="tp-bus"><i class="rr-icon rr-icon--ring"></i><span>120</span></span>
                   <span class="rr-cta rr-cta--ghost" id="cta-bus">20링 부족</span>
@@ -98,7 +200,7 @@
               </div>
             </div>
 
-            <div class="rr-dock__item">
+            <div class="rr-dock__item" data-rr-group="routes">
               <button class="rr-btn" id="b-train" disabled aria-describedby="tip-train">
                 <span class="rr-btn__body">
                   <span class="rr-btn__disc"><i class="rr-icon rr-icon--train"></i></span>
@@ -107,32 +209,33 @@
               </button>
               <div class="rr-price rr-price--note" id="p-train">도보 +7</div>
               <div class="rr-tip" id="tip-train" role="tooltip">
-                <div class="rr-tip__head"><b class="rr-tip__title">기차</b><span class="rr-tip__lv">Lv.0 / 8</span></div>
+                <div class="rr-tip__head"><b class="rr-tip__title">기차</b><span class="rr-tip__lv" id="train-lv">Lv.0 / 8</span></div>
                 <p class="rr-tip__desc">기차가 한꺼번에 많은 손님을 실어 옵니다.</p>
-                <div class="rr-tip__now">아직 오지 않음</div>
-                <div class="rr-tip__next">20초마다 2,657명</div>
+                <div class="rr-tip__now" id="train-now">아직 오지 않음</div>
+                <div class="rr-tip__next" id="train-next">20초마다 2,657명</div>
                 <div class="rr-tip__foot">
-                  <span class="rr-price rr-price--lg is-affordable"><i class="rr-icon rr-icon--ring"></i>32만</span>
+                  <span class="rr-price rr-price--lg is-affordable" id="tp-train"><i class="rr-icon rr-icon--ring"></i><span>32만</span></span>
                   <span class="rr-cta rr-cta--ghost" id="cta-train">도보 7레벨 더 올리면 열립니다 (홍보 12단계)</span>
                 </div>
               </div>
             </div>
 
-            <div class="rr-dock__item">
+            <div class="rr-dock__item" data-rr-group="routes">
               <button class="rr-btn" id="b-plane" disabled aria-describedby="tip-plane">
                 <span class="rr-btn__body">
                   <span class="rr-btn__disc"><i class="rr-icon rr-icon--plane"></i></span>
                   <span class="rr-btn__key">5</span>
+                  <span class="rr-btn__dot"></span>
                 </span>
               </button>
               <div class="rr-price rr-price--note" id="p-plane">도보 +10</div>
               <div class="rr-tip" id="tip-plane" role="tooltip">
-                <div class="rr-tip__head"><b class="rr-tip__title">비행기</b><span class="rr-tip__lv">Lv.0 / 5</span></div>
+                <div class="rr-tip__head"><b class="rr-tip__title">비행기</b><span class="rr-tip__lv" id="plane-lv">Lv.0 / 5</span></div>
                 <p class="rr-tip__desc">전 세계에서 손님이 날아옵니다.</p>
-                <div class="rr-tip__now">아직 오지 않음</div>
-                <div class="rr-tip__next">60초마다 4.8만명</div>
+                <div class="rr-tip__now" id="plane-now">아직 오지 않음</div>
+                <div class="rr-tip__next" id="plane-next">60초마다 4.8만명</div>
                 <div class="rr-tip__foot">
-                  <span class="rr-price rr-price--lg is-affordable"><i class="rr-icon rr-icon--ring"></i>900만</span>
+                  <span class="rr-price rr-price--lg is-affordable" id="tp-plane"><i class="rr-icon rr-icon--ring"></i><span>900만</span></span>
                   <span class="rr-cta rr-cta--ghost" id="cta-plane">도보 10레벨 더 올리면 열립니다 (홍보 15단계)</span>
                 </div>
               </div>
@@ -147,64 +250,153 @@
   <script src="../js/rr.js"></script>
   <script src="screen.js"></script>
   <script>
-    // 화면 예제용: 도보를 사면 단계가 올라 진행 막대가 자라고, 12·15단계에서 기차·비행기가 열립니다.
+    // 화면 예제용 로직. 원본의 규칙을 그대로 따릅니다.
+    //   · 길마다 표지가 하나씩 있고, 표지는 "열리는 단계 + 그 길의 레벨" 자리에 꽂힙니다.
+    //   · 홍보 단계(막대 끝)는 그중 가장 앞선 값입니다. 단계가 닿으면 다음 길이 열립니다.
+    //   · 맨 앞 표지는 크게, 가진 길은 검게, 열렸지만 아직 안 산 길은 흰 바탕으로, 잠긴 길은 회색으로.
+    //   "1"(뒤로) 을 누르면 기본 묶음으로 돌아가고, 확성기를 누르면 다시 열립니다(버튼 갈아 끼우기 연출).
     (function () {
-      var money = 100, level = 5, busLevel = 1;
-      var walkCost = 200, busCost = 120;
       function $(id) { return document.getElementById(id); }
-      function fmt(n) { return Math.round(n).toLocaleString('ko-KR'); }
+      function fmt(n) {
+        if (n >= 1e8) return (Math.round(n / 1e7) / 10) + '억';
+        if (n >= 1e4) return Math.round(n / 1e4).toLocaleString('ko-KR') + '만';
+        return Math.round(n).toLocaleString('ko-KR');
+      }
 
-      function price(ids, cost) {
-        var ok = money >= cost;
-        $(ids.btn).classList.toggle('is-affordable', ok);
-        [ids.dock, ids.tip].forEach(function (id) {
-          $(id).classList.toggle('is-affordable', ok);
-          $(id).lastElementChild.textContent = fmt(cost);
-        });
-        $(ids.cta).className = 'rr-cta' + (ok ? '' : ' rr-cta--ghost');
-        $(ids.cta).textContent = ok ? '클릭해서 구매' : fmt(cost - money) + '링 부족';
+      var money = 50;
+      var routes = [
+        { id: 'walk',  name: '도보',   unlock: 0,  level: 5, max: 20, cost: 200,     grow: 1.18 },
+        { id: 'bus',   name: '버스',   unlock: 5,  level: 0, max: 15, cost: 120,     grow: 1.3 },
+        { id: 'train', name: '기차',   unlock: 12, level: 0, max: 8,  cost: 320000,  grow: 1.6 },
+        { id: 'plane', name: '비행기', unlock: 15, level: 0, max: 5,  cost: 9000000, grow: 2 }
+      ];
+      var extras = [
+        { id: 'gear', level: 2, max: 9, cost: 60,  grow: 1.9 },
+        { id: 'fly',  level: 0, max: 6, cost: 25,  grow: 2.2 },
+        { id: 'bolt', level: 0, max: 9, cost: 40,  grow: 2.1 },
+        { id: 'star', level: 0, max: 5, cost: 150, grow: 2.5 }
+      ];
+
+      function stage() {
+        var s = 0, changed = true;
+        while (changed) {
+          changed = false;
+          routes.forEach(function (r) {
+            if (r.unlock <= s && r.unlock + r.level > s) { s = r.unlock + r.level; changed = true; }
+          });
+        }
+        return Math.min(20, s);
       }
-      function gate(name, at) {
-        var open = level >= at;
-        $('b-' + name).disabled = !open;
-        $('pin-' + name).classList.toggle('is-open', open);
-        $('p-' + name).textContent = open ? '준비 완료' : '도보 +' + (at - level);
-        $('cta-' + name).textContent = open ? '열렸습니다' : '도보 ' + (at - level) + '레벨 더 올리면 열립니다 (홍보 ' + at + '단계)';
+      // 맨 앞 길: 단계에 닿아 있는, 가진 길 가운데 첫째
+      function lead(s) {
+        return routes.filter(function (r) { return r.level > 0 && r.unlock + r.level >= s; })[0] || routes[0];
       }
+
+      var quiet = true;   // 처음 상태를 잡는 동안에는 "살 수 있게 됨" 연출을 틀지 않습니다
+      function price(id, cost, ok, maxed) {
+        RR.afford($('b-' + id), ok && !maxed, { quiet: quiet });
+        var dock = $('p-' + id), tip = $('tp-' + id);
+        if (maxed) {
+          dock.className = 'rr-price rr-price--note';
+          dock.textContent = '최대 단계';
+          tip.innerHTML = '';
+        } else {
+          dock.className = 'rr-price' + (ok ? ' is-affordable' : '');
+          tip.className = 'rr-price rr-price--lg' + (ok ? ' is-affordable' : '');
+          dock.innerHTML = tip.innerHTML = '<i class="rr-icon rr-icon--ring"></i><span>' + fmt(cost) + '</span>';
+        }
+        var cta = $('cta-' + id);
+        if (cta) {
+          cta.className = 'rr-cta' + (ok && !maxed ? '' : ' rr-cta--ghost');
+          cta.textContent = maxed ? '최대 단계' : ok ? '클릭해서 구매' : fmt(cost - money) + '링 부족';
+        }
+      }
+
       function refresh() {
+        var s = stage(), front = lead(s);
         $('money').textContent = fmt(money);
-        price({ btn: 'b-walk', dock: 'p-walk', tip: 'tp-walk', cta: 'cta-walk' }, walkCost);
-        price({ btn: 'b-bus', dock: 'p-bus', tip: 'tp-bus', cta: 'cta-bus' }, busCost);
-        $('track').style.setProperty('--rr-level', level);
-        $('pin-walk').style.setProperty('--rr-at', level);
-        $('pin-bus').style.setProperty('--rr-at', level);
-        $('track-now').textContent = level;
-        $('track-title').textContent = '홍보 ' + level + '단계';
-        var per = 215 + (level - 5) * 55;
+
+        routes.forEach(function (r) {
+          var open = s >= r.unlock, maxed = r.level >= r.max;
+          var btn = $('b-' + r.id), pin = $('pin-' + r.id);
+          btn.disabled = !open;
+          pin.style.setProperty('--rr-at', open ? r.unlock + r.level : r.unlock);
+          pin.classList.toggle('is-open', open && r.level === 0);
+          pin.classList.toggle('is-owned', open && r.level > 0 && r !== front);
+          pin.classList.toggle('is-current', open && r === front);
+          $(r.id + '-lv').textContent = 'Lv.' + r.level + ' / ' + r.max;
+          if (open) {
+            price(r.id, r.cost, money >= r.cost, maxed);
+          } else {
+            RR.afford(btn, false);
+            $('p-' + r.id).className = 'rr-price rr-price--note';
+            $('p-' + r.id).textContent = front.name + ' +' + (r.unlock - s);
+            $('cta-' + r.id).className = 'rr-cta rr-cta--ghost';
+            $('cta-' + r.id).textContent = front.name + ' ' + (r.unlock - s) + '레벨 더 올리면 열립니다 (홍보 ' + r.unlock + '단계)';
+          }
+        });
+        extras.forEach(function (x) {
+          price(x.id, x.cost, money >= x.cost, x.level >= x.max);
+          $(x.id + '-lv').textContent = 'Lv.' + x.level + ' / ' + x.max;
+        });
+
+        // 게이지
+        $('track').style.setProperty('--rr-level', s);
+        $('track-now').textContent = s;
+        $('track-title').textContent = '홍보 ' + s + '단계';
+        RR.track.layout('#track');
+
+        // 확성기 버튼: 가장 싼 길의 값을 보여 주고, 하나라도 살 수 있으면 검게
+        var cheapest = routes.filter(function (r) { return s >= r.unlock && r.level < r.max; })
+          .sort(function (a, b) { return a.cost - b.cost; })[0];
+        if (cheapest) {
+          var can = money >= cheapest.cost;
+          RR.afford($('b-open'), can, { quiet: quiet });
+          $('p-open').className = 'rr-price' + (can ? ' is-affordable' : '');
+          $('tp-open').className = 'rr-price rr-price--lg' + (can ? ' is-affordable' : '');
+          $('p-open').lastElementChild.textContent = $('tp-open').lastElementChild.textContent = fmt(cheapest.cost);
+        }
+        var walk = routes[0], per = 215 + (walk.level - 5) * 55;
         $('rate').textContent = fmt(per);
-        $('walk-lv').textContent = 'Lv.' + level + ' / 20';
+        $('open-lv').textContent = s + '단계 / 20';
+        $('open-now').textContent = '분당 ' + fmt(per) + '명 · 4명씩';
         $('walk-now').textContent = '분당 ' + fmt(per) + '명 · 4명씩';
         $('walk-next').textContent = '분당 ' + fmt(per + 55) + '명 · 4명씩';
-        $('bus-lv').textContent = 'Lv.' + busLevel + ' / 12';
-        gate('train', 12);
-        gate('plane', 15);
       }
 
-      $('b-walk').addEventListener('click', function () {
-        if (money < walkCost || level >= 20) { RR.jolt('#dock'); return; }
-        money -= walkCost; level += 1; walkCost = Math.round(walkCost * 1.18);
+      function buy(item, btn) {
+        if (item.level >= item.max) return;
+        if (money < item.cost) { RR.jolt('#dock'); return; }
+        money -= item.cost;
+        item.level += 1;
+        item.cost = Math.round(item.cost * item.grow);
         refresh();
-        RR.purchase(this, { level: level, max: level >= 20 });
-      });
-      $('b-bus').addEventListener('click', function () {
-        if (money < busCost) { RR.jolt('#dock'); return; }
-        money -= busCost; busLevel += 1; busCost = Math.round(busCost * 1.3);
-        refresh();
-        RR.purchase(this, { level: busLevel });
+        RR.purchase(btn, { level: item.level, max: item.level >= item.max });
+      }
+      routes.forEach(function (r) { $('b-' + r.id).addEventListener('click', function () { buy(r, this); }); });
+      extras.forEach(function (x) { $('b-' + x.id).addEventListener('click', function () { buy(x, this); }); });
+
+      // 숨겨져 있던 게이지는 다시 보이는 순간에 표지 자리를 잡습니다
+      $('dock').addEventListener('rr:swap', function () { RR.track.layout('#track', { instant: true }); });
+
+      // 단축키: 보이는 버튼의 번호를 누르면 그 버튼을 누른 것과 같습니다
+      document.addEventListener('keydown', function (e) {
+        if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+        var hit = Array.prototype.filter.call(document.querySelectorAll('#dock .rr-dock__item:not([hidden]) .rr-btn__key'), function (k) {
+          return k.textContent.trim() === e.key;
+        })[0];
+        if (hit) hit.closest('.rr-btn').click();
       });
 
       refresh();
-      if (!DEMO.shot) setInterval(function () { money += 12 + level * 3; refresh(); }, 500);
+      quiet = false;
+      if (!DEMO.shot) setInterval(function () { money += 12 + stage() * 3; refresh(); }, 500);
+      if (DEMO.query.get('group') === 'main') {
+        // 검증용: 기본 묶음으로 시작
+        Array.prototype.forEach.call(document.querySelectorAll('[data-rr-group]'), function (n) {
+          n.hidden = n.getAttribute('data-rr-group') !== 'main';
+        });
+      }
     })();
   </script>
 </body>

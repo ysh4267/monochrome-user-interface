@@ -31,11 +31,29 @@
   right: 0;
   border-left: var(--rr-stroke) solid var(--rr-ink);
 }
+/* 등장(.is-live)과 퇴장(.is-leaving) — 원본 엔딩에서 계측한 값입니다.
+   왼쪽 패널: 화면 밖에서 통째로 밀려 들어옵니다(890ms, 처음에 빠르고 끝에서 느려짐). 흐려지지 않습니다.
+   오른쪽 패널: 더 빨리 밀려 들어오면서(550ms) 890ms 에 걸쳐 서서히 또렷해집니다.
+   퇴장: 220ms 만에 흐려지며 제 쪽으로 20px 물러납니다.                                      */
 .rr-side.is-live.rr-side--left {
-  animation: rr-slide-in-left 320ms var(--rr-ease-out) backwards;
+  animation: rr-side-in-left 890ms var(--rr-ease-out) backwards;
 }
 .rr-side.is-live.rr-side--right {
-  animation: rr-slide-in-right 320ms var(--rr-ease-out) backwards;
+  animation:
+    rr-side-in-right 550ms var(--rr-ease-out-fast) backwards,
+    rr-fade-in 890ms linear backwards;
+}
+.rr-side.is-leaving {
+  --_away: -20px;
+  pointer-events: none;
+  animation: rr-side-out 220ms var(--rr-ease-in) both;
+}
+.rr-side--right.is-leaving {
+  --_away: 20px;
+}
+/* 패널이 다 들어온 뒤에 통계의 첫 줄이 나타납니다 */
+.rr-side.is-live {
+  --rr-tally-wait: 900ms;
 }
 
 /* ── 로고 ──────────────────────────────────────────────────────────────────
@@ -167,7 +185,10 @@
      <div class="rr-tally__row rr-tally__row--sm"><dt>고양이 26 · 여우 21</dt><dd>만난 수인 친구</dd></div>
    </dl>
    <p class="rr-tally__hint">클릭하면 계속합니다</p>
-   .is-live 를 붙이면 줄이 위에서부터 차례로 나타납니다(줄마다 style="--rr-i: n").          */
+   .is-live 를 붙이면 줄이 위에서부터 차례로 나타납니다(줄마다 style="--rr-i: n", 안내 글에도).
+   원본의 호흡: 1.15초마다 한 줄씩, 12px 아래에서 올라오며 400ms 동안 또렷해집니다.
+   줄 머리의 숫자는 그때 0 에서 굴러 오릅니다(0.9초) — RR.tally(dl) 을 한 번 부르면 됩니다.
+   간격은 --rr-tally-step, 첫 줄까지 기다리는 시간은 --rr-tally-wait 로 바꿉니다.              */
 
 .rr-tally {
   display: flex;
@@ -211,9 +232,12 @@
   font-size: 14.5px;
   line-height: 20px;
 }
-.rr-tally.is-live > .rr-tally__row {
-  animation: rr-rise-in 260ms var(--rr-ease-out) backwards;
-  animation-delay: calc(var(--rr-i, 0) * 90ms);
+.rr-tally.is-live > .rr-tally__row,
+.rr-tally.is-live + .rr-tally__hint {
+  --_at: calc(var(--rr-tally-wait, 0ms) + var(--rr-i, 0) * var(--rr-tally-step, 1150ms));
+  animation:
+    rr-fade-in 400ms linear var(--_at) backwards,
+    rr-rise 330ms var(--rr-ease-out) var(--_at) backwards;
 }
 
 /* ── 크레딧 ────────────────────────────────────────────────────────────────

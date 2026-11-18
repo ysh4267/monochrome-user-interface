@@ -1,5 +1,5 @@
 /* ==========================================================================
-   진행 패널 (하위 메뉴를 열면 독 위에 뜨는 단계 눈금)
+   단계 게이지 (하위 메뉴를 열면 독 위에 뜨는 진행 패널)
    --------------------------------------------------------------------------
    <div class="rr-track" style="--rr-level:5; --rr-max:20">
      <div class="rr-track__head"><span>홍보 › 손님 길</span><b>홍보 5단계</b></div>
@@ -13,20 +13,53 @@
        <span class="rr-track__max">20</span>
      </div>
    </div>
-   --rr-level 현재 단계, --rr-max 최대 단계, --rr-at 표지가 꽂히는 단계,
-   --rr-shift 같은 단계에 표지가 여럿일 때 옆으로 비켜 세우는 거리.
-   표지 상태:  (기본) 아직 잠김 — 옅은 회색  /  .is-open 열림 — 검은 선  /  .is-current 지금 고른 것 — 검은 채움
+
+   --rr-level  막대가 닿는 단계        --rr-max    최대 단계
+   --rr-at     표지가 꽂히는 단계      --rr-shift  표지끼리 겹칠 때 원만 옆으로 비켜 세우는 거리
+                                                   (RR.track.layout() 이 34px 간격으로 대신 계산해 줍니다)
+   표지 상태:  (기본) 잠김 — 옅은 회색      .is-open 열림 — 흰 바탕에 검은 선
+               .is-owned 가진 것 — 검은 채움   .is-current 맨 앞 — 검은 채움, 한 치수 큼
+
+   움직임(원본 계측):
+   · 값이 바뀌면 막대·숫자·표지가 지수 감속으로 따라갑니다(처음에 확 가고 끝에서 길게 멎음, 시상수 97ms).
+   · .is-entering  판이 22px 위에서 떨어지며 100ms 만에 또렷해지고 6px 지나쳤다 돌아옵니다.
+                   그동안 막대와 모든 표지가 왼쪽 끝(0단계)에서 제자리까지 함께 뻗어 나옵니다.
+   · .is-leaving   제자리에서 100ms 만에 흐려집니다.
+   두 클래스는 RR.dock.swap() 이 붙였다 뗍니다. 직접 쓰려면 붙이고 0.7초 뒤에 떼세요.
    ========================================================================== */
 
+/* 숫자·길이로 등록해 두어야 transition / animation 으로 부드럽게 보간됩니다 */
+@property --rr-level { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --rr-at    { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --rr-grow  { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --rr-shift { syntax: "<length>"; inherits: true; initial-value: 0px; }
+
+/* 테는 독(3px)보다 굵은 3.6px 입니다. border 는 소수 굵기를 버리므로 안쪽 그림자로 그립니다. */
 .rr-track {
   --rr-level: 0;
   --rr-max: 20;
   position: relative;
   height: 137px;
-  padding: 15px 25px 0 21px;
-  border: var(--rr-stroke) solid var(--rr-ink);
+  padding: 17px 28px 0 24px;
   border-radius: 24px;
   background: var(--rr-paper);
+  box-shadow: inset 0 0 0 3.6px var(--rr-ink);
+  transition: --rr-level var(--rr-dur-track) var(--rr-ease-out-fast);
+}
+
+/* 독의 첫 버튼(20ms)과 함께 값이 자라기 시작하고, 판은 30ms 뒤에 떨어집니다 */
+.rr-track.is-entering {
+  animation:
+    rr-track-in 300ms linear 50ms backwards,
+    rr-track-grow var(--rr-dur-track) var(--rr-ease-out-fast) 20ms backwards;
+}
+/* 잠긴 표지는 한 박자(약 10ms) 늦게, 조금 더 느긋하게 따라 나옵니다 */
+.rr-track.is-entering .rr-track__pin:not(.is-open, .is-owned, .is-current) {
+  animation: rr-track-grow calc(var(--rr-dur-track) * 1.05) var(--rr-ease-out-fast) 30ms backwards;
+}
+.rr-track.is-leaving {
+  pointer-events: none;
+  animation: rr-fade-out 100ms cubic-bezier(0.5, 1, 0.89, 1) both;
 }
 
 .rr-track__head {
@@ -44,14 +77,14 @@
 
 .rr-track__rail {
   position: absolute;
-  top: 98px;                 /* 레일 중심선 */
-  right: 38.5px;
-  left: 39px;
+  top: 101px;                /* 레일 중심선 */
+  right: 42.2px;
+  left: 42.1px;
   height: 0;
   container-type: inline-size;
 }
 
-/* 남은 단계의 점: 1단계마다 작은 점, 5단계마다 큰 점. 맨 끝에는 세로 눈금. */
+/* 남은 단계의 점: 1단계마다 작은 점(지름 2.2px), 5단계마다 큰 점(4.3px). 맨 끝에는 가는 세로선이 하나 더. */
 .rr-track__dots {
   --_l: calc(100cqw / var(--rr-max));
   position: absolute;
@@ -61,82 +94,79 @@
   left: -5px;
   background:
     radial-gradient(circle, var(--rr-ink) 0 2px, transparent 2.6px) calc(var(--_l) * 2.5 + 5px) 50% / calc(var(--_l) * 5) 100% repeat-x,
-    radial-gradient(circle, var(--rr-ink) 0 0.8px, transparent 1.3px) calc(var(--_l) / 2 + 5px) 50% / var(--_l) 100% repeat-x;
+    radial-gradient(circle, var(--rr-ink) 0 0.85px, transparent 1.45px) calc(var(--_l) / 2 + 5px) 50% / var(--_l) 100% repeat-x;
 }
 .rr-track__dots::after {
   content: "";
   position: absolute;
-  top: -0.5px;
-  right: 3px;
-  bottom: -0.5px;
-  width: 4px;
-  border-radius: 2px;
-  background: var(--rr-ink);
-  box-shadow: 0 0 0 2px var(--rr-paper);
+  top: -1px;
+  right: 2.5px;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(90deg, transparent 1.35px, var(--rr-ink) 2.05px 2.95px, transparent 3.65px);
 }
 
 .rr-track__fill {
   position: absolute;
   top: -3px;
   left: -3px;
-  width: calc(var(--rr-level) / var(--rr-max) * 100% + 6px);
+  width: calc(var(--rr-level) * var(--rr-grow, 1) / var(--rr-max) * 100% + 6px);
   height: 6px;
   border-radius: 3px;
   background: var(--rr-ink);
   box-shadow: 0 0 0 3px var(--rr-paper);
-  transition: width 260ms var(--rr-ease-out);
 }
 
 .rr-track__now,
 .rr-track__max {
   position: absolute;
-  top: 8px;
+  top: 7px;
   transform: translateX(-50%);
   font-size: 16.5px;
   line-height: 22px;
 }
 .rr-track__now {
-  left: calc(var(--rr-level) / var(--rr-max) * 100%);
-  transition: left 260ms var(--rr-ease-out);
+  left: calc(var(--rr-level) * var(--rr-grow, 1) / var(--rr-max) * 100%);
 }
 .rr-track__max {
-  top: 6.5px;
+  top: 5px;
   left: 100%;
   color: var(--rr-grey);
   font-size: 12.5px;
 }
 
 /* ── 표지(핀) ──────────────────────────────────────────────────────────────
-   레일 위 한 점에서 선이 올라가 원을 받칩니다. 원이 옆으로 비켜 서면(--rr-shift)
-   선도 따라 기울어야 하므로 각도와 길이를 CSS 삼각함수로 구합니다.
-   잠긴 표지는 선 하나, 열린 표지는 원의 양옆에 닿는 두 가닥(풍선 꼬리)입니다.             */
+   레일 위 한 점(--rr-at)에 꽂힌 선 끝에 원이 달려 있습니다. 선은 원의 맨 아래에서 꽂힌 점까지 곧게 가는
+   가는 한 가닥이라, 원이 옆으로 비켜 서면(--rr-shift) 선이 비스듬히 눕습니다. 그 길이와 각도는
+   CSS 삼각함수로 구합니다. 원의 테(2.7px)도 소수 굵기라 안쪽 그림자로 그립니다.                     */
 
 .rr-track__pin {
   --rr-shift: 0px;
-  --_h: 30px;                                   /* 레일에서 원 중심까지 높이 */
-  --_d: 32px;                                   /* 원 지름 */
-  --_len: hypot(var(--rr-shift), var(--_h));
-  --_tilt: atan2(var(--rr-shift), var(--_h));
-  --_spread: asin(tan(atan2(calc(var(--_d) * 0.42), var(--_len))));
+  --_h: 30px;                                               /* 레일에서 원 중심까지 높이 */
+  --_d: 32px;                                               /* 원 지름 */
+  --_end: 2px;                                              /* 선은 막대 윗변(레일 중심선의 2px 위)에서 끝남 */
+  --_drop: calc(var(--_h) - var(--_d) / 2 - var(--_end));   /* 원 아래 끝에서 선 끝까지의 높이 */
   position: absolute;
   top: 0;
-  left: calc(var(--rr-at) / var(--rr-max) * 100%);
+  left: calc(var(--rr-at) * var(--rr-grow, 1) / var(--rr-max) * 100%);
   width: 0;
   height: 0;
   color: var(--rr-grey-light);
-  transition: left 260ms var(--rr-ease-out), color 200ms linear;
+  transition:
+    --rr-at var(--rr-dur-track) var(--rr-ease-out-fast),
+    --rr-shift var(--rr-dur-track) var(--rr-ease-out-fast),
+    color 200ms linear;
 }
-.rr-track__pin::before,
-.rr-track__pin::after {
+.rr-track__pin::before {
   content: "";
   position: absolute;
-  bottom: 0;
-  left: -1.25px;
-  width: 2.5px;
-  height: var(--_len);
+  bottom: var(--_end);
+  left: -1px;
+  width: 2px;
+  height: calc(hypot(var(--rr-shift), var(--_drop)) + 1.5px);   /* 끝을 원의 테 밑으로 살짝 밀어 넣음 */
   background: currentColor;
   transform-origin: 50% 100%;
-  transform: rotate(var(--_tilt));
+  transform: rotate(atan2(var(--rr-shift), var(--_drop)));
 }
 .rr-track__pin > b {
   position: absolute;
@@ -146,51 +176,30 @@
   place-items: center;
   width: var(--_d);
   height: var(--_d);
-  border: var(--rr-stroke) solid currentColor;
   border-radius: 50%;
   background: var(--rr-paper);
+  box-shadow: inset 0 0 0 2.7px currentColor;
   font-size: calc(var(--_d) * 0.54);   /* 독 버튼과 같은 비율(42 / 78) */
   line-height: 1;
-  transition: background-color 200ms linear, color 200ms linear;
+  transition:
+    background-color 200ms linear,
+    color 200ms linear;
 }
 
-/* 열린 표지: 검은 선, 두 가닥 꼬리 */
-.rr-track__pin:is(.is-open, .is-current) {
+/* 열림: 검은 선 */
+.rr-track__pin:is(.is-open, .is-owned, .is-current) {
   color: var(--rr-ink);
 }
-.rr-track__pin:is(.is-open, .is-current)::before,
-.rr-track__pin:is(.is-open, .is-current)::after {
-  left: -1px;
-  width: 2px;
-}
-.rr-track__pin:is(.is-open, .is-current)::before {
-  transform: rotate(calc(var(--_tilt) - var(--_spread)));
-}
-.rr-track__pin:is(.is-open, .is-current)::after {
-  transform: rotate(calc(var(--_tilt) + var(--_spread)));
-}
-.rr-track__pin.is-open {
-  --_d: 31px;
-}
 
-/* 지금 고른 표지: 더 크고 검게 채움. 꼬리도 속이 찬 세모입니다. */
-.rr-track__pin.is-current {
-  --_d: 38px;
-  z-index: 1;
-}
-.rr-track__pin.is-current > b {
-  border-color: var(--rr-ink);
+/* 가진 것: 검게 채우고 아이콘은 흰색 */
+.rr-track__pin:is(.is-owned, .is-current) > b {
   background: var(--rr-ink);
+  box-shadow: none;
   color: var(--rr-paper);
 }
-.rr-track__pin.is-current::before {
-  left: -9px;
-  width: 18px;
-  height: 22px;
-  background: var(--rr-ink);
-  clip-path: polygon(50% 100%, 0 0, 100% 0);
-  transform: none;
-}
-.rr-track__pin.is-current::after {
-  display: none;
+
+/* 맨 앞(막대 끝에 선 것): 한 치수 크고 다른 표지 위에 겹쳐 보입니다 */
+.rr-track__pin.is-current {
+  --_d: 40px;
+  z-index: 1;
 }
