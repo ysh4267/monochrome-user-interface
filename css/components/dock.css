@@ -9,6 +9,9 @@
      </div>
    </div>
    버튼 중심 간격은 100px(80 + 20). 버튼 수에 따라 독 너비가 저절로 정해집니다.
+   칸의 너비는 버튼(80px)이 기본이고, 값 표시가 그보다 넓으면("5,500만"처럼 긴 값이 살 수 있게 되어
+   굵고 커졌을 때) 그만큼 넓어집니다. 그래서 값이 바뀌거나 살 수 있게 되는 순간 독 상자의 너비가
+   몇 픽셀씩 늘었다 줄고(원본 계측: 한 칸에 +3.3px), 함께 묶인 게이지도 같은 너비로 따라갑니다.
    ========================================================================== */
 
 .rr-dockwrap {
@@ -40,7 +43,10 @@
   flex-direction: column;
   align-items: center;
   gap: 13px;
-  width: var(--rr-btn-size);
+  min-width: var(--rr-btn-size); /* 값 표시가 버튼보다 넓으면 칸이 그만큼 넓어집니다 */
+}
+.rr-dock__item > .rr-price {
+  padding: 0 2.3px;              /* 값 표시의 양옆 여유: 이것까지 80px 를 넘어야 칸이 넓어집니다 */
 }
 .rr-dock__item[hidden],
 .rr-dock__tag[hidden],
@@ -165,21 +171,25 @@
 
 /* ── 값 표시 ───────────────────────────────────────────────────────────────
    <div class="rr-price is-affordable"><i class="rr-icon rr-icon--ring"></i>54만</div>
-   살 수 있으면 검정, 모자라면 회색. "최대 단계" 같은 안내 글자도 같은 자리에 씁니다.      */
+   살 수 있으면 검정, 모자라면 회색. "최대 단계" 같은 안내 글자도 같은 자리에 씁니다.
+   글자는 모자랄 때 16px, 살 수 있을 때 17px 로 조금 크고 굵습니다(원본 계측: "5,500만"의 폭 71 → 78px).
+   고리의 크기는 그대로입니다.                                                             */
 
 .rr-price {
+  --_fs: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   height: 24px;
   color: var(--rr-grey);
-  font-size: 17px;
+  font-size: var(--_fs);
   line-height: 24px;
   white-space: nowrap;
   transition: color 300ms linear;
 }
 .rr-price.is-affordable {
+  --_fs: 17px;
   color: var(--rr-ink);
   font-weight: var(--rr-weight-medium);
 }
