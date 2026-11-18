@@ -1,7 +1,7 @@
 /* ==========================================================================
    구매 효과 (버튼을 눌러 샀을 때 터지는 연출)
    --------------------------------------------------------------------------
-   원본의 구매 한 번은 여덟 가지가 겹쳐 일어납니다. 전부 CSS 애니메이션이고,
+   원본의 구매 한 번은 아홉 가지가 겹쳐 일어납니다. 전부 CSS 애니메이션이고,
    JS(RR.purchase)는 아래 마크업을 버튼 안에 꽂아 주고 클래스를 붙였다 떼는 일만 합니다.
 
      1) 스파이크     .rr-burst__spikes          가는 방사선이 130ms 동안 튀어나갔다 사라짐
@@ -12,6 +12,7 @@
      6) 독의 부풂    .rr-dock.is-punch          독 상자만 1.0445배로 부풀었다 0.992배로 움츠러들고 돌아옴
      7) 묶음의 떨림  .is-shake                  독과 게이지가 한 덩어리로 좌우·위아래로 떪(0.27초, 살 때마다 다름)
      8) 툴팁의 펀치  .rr-dock__item.is-punch    툴팁만 0.82배 → 1.28배로 출렁이며 -8° → +5° 로 기우뚱
+     9) 집중선       .rr-focus                  버튼에서 화면 끝까지 뻗는 가는 방사선이 0.28초 동안 옅어짐(무대 안에서만)
 
    5)~8)은 원본에서 서로 따로 놉니다: 독은 커지되 기울지 않고, 게이지는 떨기만 하고(크기 변화 없음),
    툴팁은 독을 따라 커지지도 같이 떨지도 않습니다. 그래서 독·묶음의 변형을 변수(--rr-dock-scale,
@@ -213,7 +214,24 @@
   animation: rr-tip-in var(--rr-dur-tip) linear, rr-tip-punch 533ms linear, var(--_shake) 267ms linear 17ms;
 }
 
-/* 9) 살 수 있게 된 순간: 버튼이 톡 튀고(.is-afford) 눈길 끌기 링이 한 번 퍼집니다(.is-ping).
+/* 9) 집중선 — 사는 순간, 큰 버튼이 내려앉는 순간, 그 버튼을 중심으로 화면 끝까지 뻗는 가는 방사선 쉰여 가닥.
+      선마다 굵기(0.12°~0.67°)와 진하기(0.2~0.85)가 다르고, 나타난 프레임이 가장 진하며 0.28초 동안 옅어집니다.
+      배경 위 · HUD 아래 층에 그려집니다. RR.focus(button) 이 무대(.rr-stage) 바로 안에 꽂았다가 치웁니다.
+        <svg class="rr-focus" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+          <path d="M… Z" fill-opacity="0.5"/> …
+        </svg>                                                                                              */
+.rr-focus {
+  position: absolute;
+  inset: 0;
+  z-index: calc(var(--rr-z-hud) - 1);
+  width: 100%;
+  height: 100%;
+  fill: var(--rr-ink);
+  pointer-events: none;
+  animation: rr-focus 283ms linear both;
+}
+
+/* 10) 살 수 있게 된 순간: 버튼이 톡 튀고(.is-afford) 눈길 끌기 링이 한 번 퍼집니다(.is-ping).
       RR.afford(button, true) 가 둘을 함께 틀어 줍니다. 링만 쓰려면 RR.ping(button). */
 .rr-btn.is-afford .rr-btn__body {
   animation: rr-afford 220ms linear;

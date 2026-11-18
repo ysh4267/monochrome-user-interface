@@ -145,10 +145,11 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 
 ```js
 RR.open('#settings');  RR.close('#settings');
-RR.purchase(button, { level: 3 });        // 구매 효과 전부: 버튼의 펀치 · 독 상자의 부풂 · 독+게이지의 떨림 · 툴팁의 펀치(넷이 각자) + 폭발 + 레벨 표
+RR.purchase(button, { level: 3 });        // 구매 효과 전부: 버튼의 펀치 · 독 상자의 부풂 · 독+게이지의 떨림 · 툴팁의 펀치(넷이 각자) + 폭발 + 레벨 표 + 집중선
 RR.burst(el, { stars: 9, dots: 8, squares: 0 });
 RR.levelTag(el, 'Lv.3');
 RR.shake(dockwrap);                        // 떨림만(크기·기울기 없이). 부를 때마다 궤적과 방향이 달라짐. RR.jolt 는 예전 이름
+RR.focus(button);                          // 집중선: 버튼에서 화면 끝까지 뻗는 가는 방사선(무대 .rr-stage 안에서만)
 RR.afford(button, true);                   // 살 수 있게 됨: 검게 바뀌며 톡 튀고 링이 퍼짐
 RR.ping(button);                           // 링만
 RR.dock.swap(dock, 'routes');              // 독의 버튼을 그 묶음으로 갈아 끼우기 (게이지도 함께)

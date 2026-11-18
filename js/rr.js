@@ -80,11 +80,12 @@
      RR.burst(host, { stars: 8, dots: 8, squares: 0 })  host 한가운데에서 터뜨립니다.
      RR.levelTag(host, 'Lv.3')                           host 위에 레벨 표를 띄웁니다.
      RR.shake(node)                                      node 를 한 번 떱니다(크기·기울기 없이 좌우·위아래로만, 매번 다르게).
+     RR.focus(button)                                    button 을 중심으로 화면 끝까지 뻗는 집중선을 한 번 칩니다(무대 안에서만).
      RR.ping(button)                                     버튼 둘레에 눈길 끄는 링을 한 번 퍼뜨립니다.
      RR.afford(button, true)                             살 수 있게 됨: 검게 바뀌며 톡 튀고 링이 퍼집니다.
      RR.purchase(button, { level: 3 })                   아래의 움직임을 한꺼번에 틉니다. 원본처럼 넷이 각자 움직입니다.
-         버튼의 펀치 · 독 상자의 부풂 · 아래 묶음(독 + 게이지)의 떨림 · 툴팁의 펀치  +  폭발과 레벨 표
-         { punch: false } 독의 부풂 없이,  { shake: false } 떨림 없이.                                    */
+         버튼의 펀치 · 독 상자의 부풂 · 아래 묶음(독 + 게이지)의 떨림 · 툴팁의 펀치  +  폭발 · 레벨 표 · 집중선
+         { punch: false } 독의 부풂 없이,  { shake: false } 떨림 없이,  { focus: false } 집중선 없이.          */
 
   RR.burst = function (target, opts) {
     var host = resolve(target);
@@ -162,6 +163,40 @@
     if (n) replay(n, 'is-ping', 440);
   };
 
+  /* RR.focus(target, { lines: 55 })   집중선: target 을 중심으로 화면 끝까지 뻗는 가는 방사선을 한 번 칩니다.
+     원본에서는 살 때마다, 큰 버튼이 내려앉을 때, 큰 알림이 내리꽂힐 때 배경 위(HUD 아래)에 0.28초 동안 보입니다.
+     선의 방향·굵기·시작하는 거리는 매번 무작위입니다. 화면 전체를 덮는 무대(.rr-stage) 안에서만 그립니다. */
+  RR.focus = function (target, opts) {
+    var n = resolve(target);
+    var stage = n && n.closest('.rr-stage');
+    if (!stage || calm()) return null;
+    opts = opts || {};
+    var sr = stage.getBoundingClientRect(), r = n.getBoundingClientRect();
+    var W = stage.offsetWidth, H = stage.offsetHeight;
+    var cx = (r.left + r.width / 2 - sr.left) / sr.width * W;       /* 무대가 축소돼 있어도 무대의 좌표로 */
+    var cy = (r.top + r.height / 2 - sr.top) / sr.height * H;
+    var far = Math.hypot(W, H), i, a, w, r0, path;
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = doc.createElementNS(ns, 'svg');
+    function pt(angle, dist) { return (cx + Math.cos(angle) * dist).toFixed(1) + ' ' + (cy + Math.sin(angle) * dist).toFixed(1); }
+    svg.setAttribute('class', 'rr-focus');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('aria-hidden', 'true');
+    for (i = 0; i < (opts.lines || 55); i++) {
+      a = rand(0, Math.PI * 2);
+      w = (0.12 + 0.55 * Math.pow(Math.random(), 1.5)) * Math.PI / 360;   /* 굵기 0.12°~0.67°(평균 0.34°), 반각 */
+      r0 = 220 + 500 * Math.pow(Math.random(), 3);                       /* 중심에서 220~720px 떨어진 곳부터 */
+      path = doc.createElementNS(ns, 'path');
+      path.setAttribute('d', 'M' + pt(a - w, r0) + 'L' + pt(a - w, far) + 'L' + pt(a + w, far) + 'L' + pt(a + w, r0) + 'Z');
+      path.setAttribute('fill-opacity', rand(0.2, 0.85).toFixed(2));    /* 선마다 진하기가 다릅니다 */
+      svg.appendChild(path);
+    }
+    stage.appendChild(svg);
+    setTimeout(function () { svg.remove(); }, 320);
+    return svg;
+  };
+
   /* RR.afford(button, true | false)   "살 수 있음" 표시(.is-affordable)를 켜고 끕니다.
      꺼져 있다가 켜지는 순간에는 원본처럼 버튼이 톡 튀고 링이 한 번 퍼집니다.
      처음 상태를 잡을 때처럼 연출 없이 바꾸려면 RR.afford(button, true, { quiet: true }). */
@@ -187,6 +222,7 @@
     if (item) replay(item, 'is-punch', 600);                /* 그 칸의 툴팁: 제 펀치(독과 따로) */
     if (dock && opts.punch !== false) replay(dock, 'is-punch', 440);   /* 독 상자: 부풀었다 움츠러듦 */
     if (opts.shake !== false && opts.jolt !== false) RR.shake(btn.closest('.rr-dockwrap') || dock);   /* 독 + 게이지: 떨림 */
+    if (opts.focus !== false) RR.focus(btn);                /* 화면 전체의 집중선 (무대 안에서만) */
     RR.burst(btn, opts);
     if (opts.level != null) RR.levelTag(btn, opts.max ? 'MAX!' : 'Lv.' + opts.level, opts);
     emit(btn, 'rr:buy', opts);
@@ -389,6 +425,7 @@
           setTimeout(function () {
             var big = center.querySelector('.rr-btn');
             if (big) RR.burst(big, { stars: 14, squares: 12, dots: 10, reach: 1.5 });
+            if (big) RR.focus(big);
             replay(dock, 'is-boom', 440);
           }, CENTER_AT + BOOM_AT);
           last = Math.max(last, CENTER_AT + CENTER_MS + 60);
