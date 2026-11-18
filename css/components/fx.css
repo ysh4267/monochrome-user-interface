@@ -218,13 +218,15 @@
 
 /* 7) 묶음의 떨림. .rr-dockwrap(게이지 + 독)에, 묶는 틀이 없으면 독에 붙입니다.
       data-rr-shake="a|b|c" 로 궤적을 고르고 --rr-shake-flip-x / -y 를 -1 로 주면 좌우·위아래가 뒤집힙니다.
-      RR.shake(node) 가 매번 무작위로 정해 줍니다(클래스만 붙이면 a 궤적 그대로). */
+      RR.shake(node) 가 매번 무작위로 정해 줍니다(클래스만 붙이면 a 궤적 그대로).
+      "d" · "e" 는 단계가 오른 구매에서 0.1초 뒤에 한 번 더 오는 큰 떨림입니다(RR.shake(node, { strong: true })). */
 .is-shake {
   --_shake: rr-shake-a;
+  --_shake-ms: 267ms;
   translate:
     calc(var(--rr-shake-x) * var(--rr-shake-flip-x, 1))
     calc(var(--rr-shake-y) * var(--rr-shake-flip-y, 1));
-  animation: var(--_shake) 267ms linear;
+  animation: var(--_shake) var(--_shake-ms) linear;
 }
 .is-shake[data-rr-shake="b"] {
   --_shake: rr-shake-b;
@@ -232,9 +234,17 @@
 .is-shake[data-rr-shake="c"] {
   --_shake: rr-shake-c;
 }
+.is-shake[data-rr-shake="d"] {
+  --_shake: rr-shake-d;
+  --_shake-ms: 350ms;
+}
+.is-shake[data-rr-shake="e"] {
+  --_shake: rr-shake-e;
+  --_shake-ms: 283ms;
+}
 /* 묶는 틀 없이 독이 혼자일 때는 부풂과 떨림을 한 요소가 함께 틉니다 */
 .rr-dock.is-punch.is-shake {
-  animation: rr-dock-punch 417ms linear, var(--_shake) 267ms linear;
+  animation: rr-dock-punch 417ms linear, var(--_shake) var(--_shake-ms) linear;
 }
 
 /* 8) 툴팁. 독 안에 들어 있지만 원본에서는 독과 따로 놉니다(상쇄하는 식은 tooltip.css 의 translate / scale).
@@ -243,18 +253,18 @@
       펀치  산 버튼의 칸(.is-punch)에서는 제 크기와 기울기가 출렁입니다. 크기의 축은 버튼 중심, 기울기의 축은 아랫변 가운데.
       나타날 때의 rr-tip-in 을 목록에 그대로 두는 것은, 펀치나 떨림이 끝난 뒤 그것이 다시 재생되지 않게 하려는 것입니다. */
 .is-shake .rr-tip {
-  animation: var(--_shake) 267ms linear 17ms;
+  animation: var(--_shake) var(--_shake-ms) linear 17ms;
 }
 .is-shake .rr-dock__item:hover > .rr-tip,
 .is-shake .rr-dock__item:focus-within > .rr-tip,
 .is-shake .rr-tip.is-open {
-  animation: rr-tip-in var(--rr-dur-tip) linear, var(--_shake) 267ms linear 17ms;
+  animation: rr-tip-in var(--rr-dur-tip) linear, var(--_shake) var(--_shake-ms) linear 17ms;
 }
 .rr-dock__item.is-punch > .rr-tip {
   animation: rr-tip-in var(--rr-dur-tip) linear, rr-tip-punch 533ms linear;
 }
 .is-shake .rr-dock__item.is-punch > .rr-tip {
-  animation: rr-tip-in var(--rr-dur-tip) linear, rr-tip-punch 533ms linear, var(--_shake) 267ms linear 17ms;
+  animation: rr-tip-in var(--rr-dur-tip) linear, rr-tip-punch 533ms linear, var(--_shake) var(--_shake-ms) linear 17ms;
 }
 
 /* 9) 집중선 — 사는 순간, 큰 버튼이 내려앉는 순간, 그 버튼을 중심으로 화면 끝까지 뻗는 가는 방사선 쉰여 가닥.

@@ -520,7 +520,7 @@ RR.count()</span></div>
     <!-- ───────────────────────── 효과 ───────────────────────── -->
     <section class="g-sec" id="fx">
       <h2>구매 효과 <code>css/components/fx.css</code></h2>
-      <p class="g-lead">구매 한 번에 열 가지가 겹쳐 일어납니다. 터지는 것 다섯 — 버튼 가장자리에서 튀어나가 느려지며 짧아지는 가닥 스물여덟 줄(0.2~0.35초) · 충격파 원 둘(굵게 나와 가늘어지며 0.4초 · 0.65초) · 포물선으로 떨어지는 별과 천천히 흩어지는 점(0.6~0.9초) · 레벨 표(1.7초) · 집중선(0.28초) — 과, <b>각자 따로 움직이는 것 다섯</b>입니다. 터지는 것들은 눌려 있던 버튼의 자리를 중심으로 삼고, 독이 떨거나 부풀어도 따라 움직이지 않습니다. ① 버튼은 제 크기만 출렁이고(0.8배 → 1.3배 → 0.93배, 기울지 않음), ② 독 상자는 통째로 4.4% 부풀었다 0.8% 움츠러들며(기울지 않음), ③ 아래 묶음(독 + 게이지)은 한 덩어리로 좌우·위아래로 떨고(살 때마다 다른 방향, 크기 변화 없음), ④ 툴팁은 독을 따라 커지지도 같이 떨지도 않고 제 펀치(0.82배 → 1.28배, −8° → +5°)를 치면서 버튼을 한 프레임 늦게 따라가며, ⑤ 산 칸의 값 표시는 누른 순간 사라졌다가 새 값이 아래에서 솟아 4px 지나쳤다 앉습니다(0.35초). 아래에서 다섯을 따로 틀어 보세요 — 게이지는 떨기만 하고, 툴팁은 독이 부풀 때 가만히 있습니다. 값이 바뀌면 그 길이에 맞춰 독 상자와 게이지의 너비도 바뀝니다. 화면 전체를 쓰는 <a href="#screens">화면 예제</a>에서는 사는 순간 버튼에서 화면 끝까지 뻗는 집중선(<code>.rr-focus</code>, 0.28초)도 함께 보입니다.</p>
+      <p class="g-lead">구매 한 번에 열 가지가 겹쳐 일어납니다. 터지는 것 다섯 — 버튼 가장자리에서 튀어나가 느려지며 짧아지는 가닥 스물여덟 줄(0.2~0.35초) · 충격파 원 둘(굵게 나와 가늘어지며 0.4초 · 0.65초) · 포물선으로 떨어지는 별과 천천히 흩어지는 점(0.6~0.9초) · 레벨 표(1.7초) · 집중선(0.28초) — 과, <b>각자 따로 움직이는 것 다섯</b>입니다. 터지는 것들은 눌려 있던 버튼의 자리를 중심으로 삼고, 독이 떨거나 부풀어도 따라 움직이지 않습니다. ① 버튼은 제 크기만 출렁이고(0.8배 → 1.3배 → 0.93배, 기울지 않음), ② 독 상자는 통째로 4.4% 부풀었다 0.8% 움츠러들며(기울지 않음), ③ 아래 묶음(독 + 게이지)은 한 덩어리로 좌우·위아래로 떨고(살 때마다 다른 방향, 크기 변화 없음 — 그 구매로 게이지의 단계가 오르면 0.1초 뒤에 위로 12px 쯤 튀는 큰 떨림이 한 번 더 옵니다), ④ 툴팁은 독을 따라 커지지도 같이 떨지도 않고 제 펀치(0.82배 → 1.28배, −8° → +5°)를 치면서 버튼을 한 프레임 늦게 따라가며, ⑤ 산 칸의 값 표시는 누른 순간 사라졌다가 새 값이 아래에서 솟아 4px 지나쳤다 앉습니다(0.35초). 아래에서 다섯을 따로 틀어 보세요 — 게이지는 떨기만 하고, 툴팁은 독이 부풀 때 가만히 있습니다. 값이 바뀌면 그 길이에 맞춰 독 상자와 게이지의 너비도 바뀝니다. 화면 전체를 쓰는 <a href="#screens">화면 예제</a>에서는 사는 순간 버튼에서 화면 끝까지 뻗는 집중선(<code>.rr-focus</code>, 0.28초)도 함께 보입니다.</p>
       <div class="g-demo rr" style="padding-top: 250px">
         <div class="g-item g-item--left">
           <div class="rr-dockwrap" id="g-fx-wrap" style="min-width: 438px">
@@ -567,6 +567,7 @@ RR.count()</span></div>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-btn"><span class="rr-rbtn__label">① 버튼만</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-dock"><span class="rr-rbtn__label">② 독의 부풂만</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-shake"><span class="rr-rbtn__label">③ 묶음의 떨림만</span></button>
+            <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-strong"><span class="rr-rbtn__label">③′ 단계가 오를 때의 큰 떨림</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-tip"><span class="rr-rbtn__label">④ 툴팁의 펀치만</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-price"><span class="rr-rbtn__label">⑤ 값의 바뀜만</span></button>
             <button class="rr-rbtn rr-rbtn--sm" id="g-fx-part-afford"><span class="rr-rbtn__label">살 수 있음 ↔ 모자람</span></button>
@@ -866,6 +867,7 @@ RR.wipe.cover(box, done) · RR.wipe.reveal(box, done)</span>
     $('g-fx-part-btn').addEventListener('click', function () { RR.replay('#g-fx-btn', 'is-bought', 690); });
     $('g-fx-part-dock').addEventListener('click', function () { RR.replay('#g-fx-dock', 'is-punch', 440); });
     $('g-fx-part-shake').addEventListener('click', function () { RR.shake('#g-fx-wrap'); });
+    $('g-fx-part-strong').addEventListener('click', function () { RR.shake('#g-fx-wrap', { strong: true }); });
     $('g-fx-part-tip').addEventListener('click', function () { RR.replay('#g-fx-item', 'is-punch', 600); });
     $('g-fx-part-price').addEventListener('click', function () { RR.replay('#g-fx-price', 'is-changed', 370); });
     // 값 표시가 굵어지면 칸이 넓어집니다: 독 상자와 게이지의 너비가 그만큼 늘었다 줄어듭니다

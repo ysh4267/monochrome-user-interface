@@ -120,7 +120,7 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 | `.is-bought` | `.rr-btn` | 산 순간: 버튼의 색과 크기가 출렁임(기울지 않음) |
 | `.is-punch` | `.rr-dock` | 산 순간: 독 상자가 통째로 부풀었다 움츠러듦(`--rr-dock-scale`) |
 | `.is-punch` | `.rr-dock__item` | 산 순간: 그 칸의 툴팁이 제 펀치를 침(독과 따로) |
-| `.is-shake` | `.rr-dockwrap` 또는 `.rr-dock` | 산 순간: 독 + 게이지가 한 덩어리로 떪. `data-rr-shake="a\|b\|c"`로 궤적, `--rr-shake-flip-x` `-y`로 방향 |
+| `.is-shake` | `.rr-dockwrap` 또는 `.rr-dock` | 산 순간: 독 + 게이지가 한 덩어리로 떪. `data-rr-shake="a\|b\|c"`로 궤적(`d\|e`는 단계가 올랐을 때의 큰 떨림), `--rr-shake-flip-x` `-y`로 방향 |
 | `.is-changed` | `.rr-price` | 산 순간: 그 칸의 값이 사라졌다가 아래에서 솟아 4px 지나쳤다 앉음(새 값은 붙이기 전에 써 둡니다) |
 | `.is-boom` | `.rr-dock` | 큰 버튼이 내려앉을 때: 독이 통째로 눌렸다 늘어남 |
 | `.is-leaving` | `.rr-notice` `.rr-side` `.rr-msgbox` | 퇴장 연출 |
@@ -148,9 +148,11 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 RR.open('#settings');  RR.close('#settings');
 RR.purchase(button, { level: 3 });        // 구매 효과 전부: 버튼의 펀치 · 독 상자의 부풂 · 독+게이지의 떨림 · 툴팁의 펀치 · 값 표시의 바뀜(각자) + 폭발 + 레벨 표 + 집중선
                                            //   끄기: { punch: false } { shake: false } { focus: false } { price: false }
+                                           //   { stageUp: true } 이 구매로 게이지의 단계가 올랐을 때: 0.1초 뒤 아래 묶음이 한 번 더 크게 떪
 RR.burst(el, { streaks: 28, stars: 11, dots: 9, squares: 0 });   // 폭발만: 튀어나가는 가닥 · 충격파 원 둘 · 포물선으로 떨어지는 별 · 흩어지는 점
 RR.levelTag(el, 'Lv.3');
 RR.shake(dockwrap);                        // 떨림만(크기·기울기 없이). 부를 때마다 궤적과 방향이 달라짐. RR.jolt 는 예전 이름
+RR.shake(dockwrap, { strong: true });      // 단계가 올랐을 때의 큰 떨림: 위로 12px 쯤 튀었다 0.3초 동안 잦아듦
 RR.focus(button);                          // 집중선: 버튼에서 화면 끝까지 뻗는 가는 방사선(무대 .rr-stage 안에서만)
 RR.afford(button, true);                   // 살 수 있게 됨: 검게 바뀌며 톡 튀고 링이 퍼짐
 RR.ping(button);                           // 링만

@@ -88,7 +88,7 @@
          버튼의 펀치 · 독 상자의 부풂 · 아래 묶음(독 + 게이지)의 떨림 · 툴팁의 펀치  +  폭발 · 레벨 표 · 집중선
          그 칸의 값 표시는 사라졌다가 아래에서 솟아오릅니다(새 값은 부르기 전에 써 두세요).
          { punch: false } 독의 부풂 없이,  { shake: false } 떨림 없이,  { focus: false } 집중선 없이,
-         { price: false } 값 표시는 그대로.                                                                  */
+         { price: false } 값 표시는 그대로.  { stageUp: true } 이 구매로 게이지의 단계가 올랐음: 0.1초 뒤 큰 떨림이 한 번 더. */
 
   RR.burst = function (target, opts) {
     var host = resolve(target);
@@ -180,15 +180,19 @@
   };
 
   /* 떨림은 살 때마다 다릅니다: 원본에서 잰 궤적 셋(a·b·c) 가운데 하나를 골라 좌우·위아래를 무작위로 뒤집습니다.
-     RR.shake(node, { track: 'a', flipX: false, flipY: false }) 처럼 정해 줄 수도 있습니다. */
+     RR.shake(node, { track: 'a', flipX: false, flipY: false }) 처럼 정해 줄 수도 있습니다.
+     RR.shake(node, { strong: true }) 는 단계가 올랐을 때의 큰 떨림(d·e)입니다: 위로 먼저 튀므로 위아래는 뒤집지 않습니다. */
   RR.shake = function (target, opts) {
     var n = resolve(target);
     if (!n) return;
     opts = opts || {};
-    n.setAttribute('data-rr-shake', opts.track || 'abc'.charAt(Math.floor(Math.random() * 3)));
+    var tracks = opts.strong ? 'de' : 'abc';
+    var track = opts.track || tracks.charAt(Math.floor(Math.random() * tracks.length));
+    var big = track === 'd' || track === 'e';
+    n.setAttribute('data-rr-shake', track);
     n.style.setProperty('--rr-shake-flip-x', (opts.flipX == null ? Math.random() < 0.5 : opts.flipX) ? -1 : 1);
-    n.style.setProperty('--rr-shake-flip-y', (opts.flipY == null ? Math.random() < 0.5 : opts.flipY) ? -1 : 1);
-    replay(n, 'is-shake', 300);
+    n.style.setProperty('--rr-shake-flip-y', (opts.flipY == null ? !big && Math.random() < 0.5 : opts.flipY) ? -1 : 1);
+    replay(n, 'is-shake', big ? 380 : 300);
   };
   RR.jolt = RR.shake;                                      /* 예전 이름 */
 
@@ -257,7 +261,12 @@
     var price = item && opts.price !== false && item.querySelector(':scope > .rr-price');
     if (price) replay(price, 'is-changed', 370);            /* 그 칸의 값 표시: 사라졌다가 아래에서 솟아오름 */
     if (dock && opts.punch !== false) replay(dock, 'is-punch', 440);   /* 독 상자: 부풀었다 움츠러듦 */
-    if (opts.shake !== false && opts.jolt !== false) RR.shake(btn.closest('.rr-dockwrap') || dock);   /* 독 + 게이지: 떨림 */
+    var group = btn.closest('.rr-dockwrap') || dock;
+    if (opts.shake !== false && opts.jolt !== false) {
+      RR.shake(group);                                      /* 독 + 게이지: 떨림 */
+      /* 이 구매로 단계가 올랐으면 0.1초 뒤에 한 번 더, 크게 */
+      if (opts.stageUp) setTimeout(function () { RR.shake(group, { strong: true }); }, 92);
+    }
     if (opts.focus !== false) RR.focus(btn);                /* 화면 전체의 집중선 (무대 안에서만) */
     var burst = { pressed: true };                          /* 폭발: 눌려 있던 자리를 중심으로 */
     Object.keys(opts).forEach(function (k) { burst[k] = opts[k]; });

@@ -514,9 +514,11 @@
         routes.forEach(function (r) {
           $('b-' + r.id).addEventListener('click', function () {
             if (r.level >= r.max || r.unlock + r.level >= 20) return;
+            var before = stage();
             r.level += 1;
             refresh();
-            RR.purchase(this, { level: r.level, max: r.level >= r.max });
+            // 단계가 올랐으면(게이지가 늘어나면) 0.1초 뒤에 아래 묶음이 한 번 더 크게 떱니다
+            RR.purchase(this, { level: r.level, max: r.level >= r.max, stageUp: stage() > before });
           });
         });
         // 숨겨져 있던 게이지는 다시 보이는 순간에 표지 자리를 잡습니다

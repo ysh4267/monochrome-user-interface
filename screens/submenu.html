@@ -369,11 +369,13 @@
       function buy(item, btn) {
         if (item.level >= item.max) return;
         if (money < item.cost) { RR.shake('.rr-dockwrap'); return; }   // 돈이 모자라면 아래 묶음만 떱니다(화면 예제의 연출)
+        var before = stage();
         money -= item.cost;
         item.level += 1;
         item.cost = Math.round(item.cost * item.grow);
         refresh();
-        RR.purchase(btn, { level: item.level, max: item.level >= item.max });
+        // 이 구매로 홍보 단계가 올랐으면(게이지가 늘어나면) 0.1초 뒤에 아래 묶음이 한 번 더 크게 떱니다
+        RR.purchase(btn, { level: item.level, max: item.level >= item.max, stageUp: stage() > before });
       }
       routes.forEach(function (r) { $('b-' + r.id).addEventListener('click', function () { buy(r, this); }); });
       extras.forEach(function (x) { $('b-' + x.id).addEventListener('click', function () { buy(x, this); }); });
