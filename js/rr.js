@@ -593,12 +593,20 @@
 
     if ((n = t.closest('[data-rr-tab]'))) {
       var tabs = n.closest('.rr-tabs');
-      Array.prototype.forEach.call(tabs.querySelectorAll('[data-rr-tab]'), function (tab) {
+      var allTabs = list(tabs.querySelectorAll('[data-rr-tab]'));
+      var wasTab = allTabs.filter(function (tab) { return tab.classList.contains('is-active'); })[0];
+      allTabs.forEach(function (tab) {
         var on = tab === n;
         tab.classList.toggle('is-active', on);
         tab.setAttribute('aria-selected', on ? 'true' : 'false');
         var panel = doc.querySelector(tab.getAttribute('data-rr-tab'));
-        if (panel) panel.classList.toggle('is-active', on);
+        if (!panel) return;
+        panel.classList.toggle('is-active', on);
+        /* 새 내용은 옮겨 간 쪽에서 밀려 들어옵니다(dialog.css 의 .is-switched) */
+        if (on && wasTab && wasTab !== n) {
+          panel.style.setProperty('--rr-tab-dir', allTabs.indexOf(n) > allTabs.indexOf(wasTab) ? 1 : -1);
+          replay(panel, 'is-switched', 320);
+        }
       });
       emit(n, 'rr:change', { tab: n.getAttribute('data-rr-tab') });
     }
@@ -611,7 +619,11 @@
         var idx = parseInt(stepper.getAttribute('data-rr-index') || '0', 10);
         idx = (idx + parseInt(n.getAttribute('data-rr-step'), 10) + options.length) % options.length;
         stepper.setAttribute('data-rr-index', idx);
-        stepper.querySelector('.rr-stepper__value').textContent = options[idx];
+        var shown = stepper.querySelector('.rr-stepper__value');
+        shown.textContent = options[idx];
+        /* 새 값은 누른 화살표 쪽에서 밀려 들어옵니다(dialog.css 의 .is-switched) */
+        shown.style.setProperty('--rr-step-dir', parseInt(n.getAttribute('data-rr-step'), 10) < 0 ? -1 : 1);
+        replay(shown, 'is-switched', 220);
         emit(stepper, 'rr:change', { index: idx, value: options[idx] });
       }
     }

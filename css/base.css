@@ -30,6 +30,12 @@
   box-sizing: border-box;
 }
 
+/* hidden 속성은 컴포넌트의 display 지정보다 우선합니다. 나타났다 사라지는 것(알림, 알약, 꼬리표, 버튼 묶음 …)은
+   hidden 을 붙였다 떼면 되고, 다시 보일 때마다 등장 애니메이션이 처음부터 재생됩니다. */
+.rr [hidden] {
+  display: none !important;
+}
+
 /* 리셋은 :where() 로 감싸 우선순위를 0으로 둡니다. 컴포넌트 클래스가 언제나 이깁니다. */
 :where(.rr) button {
   margin: 0;

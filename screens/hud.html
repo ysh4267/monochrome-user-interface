@@ -59,7 +59,7 @@
           <span class="rr-combo__tag">입장료 +60%</span>
           <span class="rr-combo__bar"></span>
         </div>
-        <span class="rr-pill rr-pill--round" style="position: absolute; left: 908px; top: 268px">0.35 : 1</span>
+        <span class="rr-pill rr-pill--round" id="ratio" style="position: absolute; left: 908px; top: 268px">0.35 : 1</span>
         <span class="rr-gain" style="position: absolute; left: 1066px; top: 289px"><i class="rr-icon rr-icon--ring"></i>+16,608</span>
         <span class="rr-gain" style="position: absolute; left: 1172px; top: 282px"><i class="rr-icon rr-icon--ring"></i>+22,176</span>
         <span class="rr-tag" style="position: absolute; left: 1238px; top: 487px; height: 30px; padding: 0 11px; font-size: 16px; gap: 7px"><i class="rr-icon rr-icon--cat" style="font-size: 15px"></i>2 / 4</span>
@@ -595,6 +595,18 @@
         var n = Math.round(15000 + Math.random() * 16000).toLocaleString('ko-KR');
         RR.gain('#floats', '+' + n, 1030 + Math.random() * 170, 270 + Math.random() * 60);
       }, 650);
+
+      // 비율 알약: 톡 나타나고(0.35 : 1), 0.25초 뒤 "최고 속도"로 바뀌며 한 번 튀고, 1.2초 뒤 바로 사라집니다(원본 19:51).
+      var ratio = document.getElementById('ratio');
+      if (ratio) {
+        setInterval(function () {
+          ratio.hidden = false;
+          ratio.textContent = '0.35 : 1';
+          RR.replay(ratio, 'is-live', 250);
+          setTimeout(function () { ratio.textContent = '최고 속도'; RR.replay(ratio, 'is-punch', 240); }, 250);
+          setTimeout(function () { ratio.hidden = true; }, 1200);
+        }, 2400);
+      }
     })();
   </script>
 </body>

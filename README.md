@@ -106,6 +106,7 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 | `.is-selected` | `.rr-menu__item` | 고른 메뉴 |
 | `.is-active` | `.rr-tab` `.rr-tabpanel` | 켜진 탭 |
 | `.is-live` | 토스트·말풍선·획득 라벨·정산 카드·옆 패널·통계 등 | 등장 연출 한 번 재생 |
+| `.is-punch` | `.rr-pill` `.rr-keytag` | 글이나 상태가 바뀔 때 한 번 톡 튐 |
 | `.is-leaving` | `.rr-notice` `.rr-side` `.rr-msgbox` | 퇴장 연출 |
 | `.is-entering` `.is-leaving` | `.rr-track` `.rr-dock__item` | 게이지·독 버튼의 등장/퇴장 (`RR.dock.swap`이 붙였다 뗍니다) |
 | `.is-picked` `.is-passed` | `.rr-card` | 고른 카드 / 고르지 않은 카드 |
@@ -122,6 +123,7 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 | `data-rr-group="이름"` | 독의 칸·꼬리표, 게이지를 묶음으로 나눕니다(안 보이는 묶음에는 `hidden`) |
 | `data-rr-swap="이름"` | 누르면 독의 버튼을 그 묶음으로 갈아 끼웁니다 |
 | `data-rr-on` / `data-rr-off` | 켜고 끄는 꼬리표(`.rr-keytag--toggle`)의 두 문구. 누를 때마다 바뀝니다 |
+| `hidden` | 키트 안에서는 어떤 컴포넌트든 숨깁니다. 다시 보일 때 등장 애니메이션(꼬리표·알림 점 등)이 처음부터 재생됩니다 |
 | `data-rr-motion="system\|off"` | (`<html>`에) 모션 줄이기 |
 
 ## 스크립트 (선택)

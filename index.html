@@ -336,11 +336,11 @@
           <div class="g-row"><button class="rr-rbtn rr-rbtn--sm" id="g-gain-btn"><span class="rr-rbtn__label">획득 띄우기</span></button><span class="g-cap">.rr-gain · RR.gain()</span></div>
         </div>
         <div class="g-item">
-          <div class="g-row">
-            <span class="rr-pill rr-pill--round">0.35 : 1</span>
-            <span class="rr-pill rr-pill--round">최고 속도</span>
+          <div class="g-row" style="width: 250px; height: 48px; justify-content: center">
+            <span class="rr-pill rr-pill--round" id="g-pill">0.35 : 1</span>
           </div>
-          <span class="g-cap">.rr-pill--round</span>
+          <div class="g-row"><button class="rr-rbtn rr-rbtn--sm" id="g-pill-btn"><span class="rr-rbtn__label">알약 띄우기</span></button><span class="g-cap">.rr-pill--round.is-live → .is-punch
+톡 나타남 230ms · 글이 바뀌며 튐 220ms</span></div>
         </div>
         <div class="g-item">
           <div class="g-row" style="width: 230px; height: 60px; justify-content: center">
@@ -724,6 +724,13 @@ RR.wipe.cover(box, done) · RR.wipe.reveal(box, done)</span>
     });
     $('g-gain-btn').addEventListener('click', function () {
       RR.gain('#g-gains', '+' + Math.round(12000 + Math.random() * 20000).toLocaleString('ko-KR'), 20 + Math.random() * 150, 44);
+    });
+    // 비율 알약: 톡 나타나고, 글이 바뀔 때 한 번 튑니다
+    $('g-pill-btn').addEventListener('click', function () {
+      var p = $('g-pill');
+      p.textContent = '0.35 : 1';
+      RR.replay(p, 'is-live', 250);
+      setTimeout(function () { p.textContent = '최고 속도'; RR.replay(p, 'is-punch', 240); }, 600);
     });
     // 말풍선: 흰 알약으로 차오르다가 다 차면 검은 말풍선으로 펑 튑니다
     $('g-gulp-btn').addEventListener('click', function () {

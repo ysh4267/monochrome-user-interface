@@ -186,6 +186,40 @@
   100%  { transform: none; }
 }
 
+/* 검은 알약(비율·"최고 속도")이 톡 나타남 (233ms, 17ms 단위로 계측): 0.44배 → 1.12배 → 제 크기 */
+@keyframes rr-pill-in {
+  0%    { transform: scale(0.44); }
+  7.3%  { transform: scale(0.61); }
+  14.2% { transform: scale(0.76); }
+  21.5% { transform: scale(0.9); }
+  28.8% { transform: scale(0.98); }
+  35.6% { transform: scale(1.05); }
+  43%   { transform: scale(1.09); }
+  50.2% { transform: scale(1.1); }
+  57%   { transform: scale(1.12); }
+  64.4% { transform: scale(1.12); }
+  71.7% { transform: scale(1.1); }
+  78.5% { transform: scale(1.09); }
+  85.8% { transform: scale(1.05); }
+  93%   { transform: scale(1.02); }
+  100%  { transform: none; }
+}
+/* 알약의 글이 바뀔 때 (220ms): 1.24배 → 0.88배 → 1.04배 → 제 크기 */
+@keyframes rr-pill-punch {
+  0%    { transform: scale(1.14); }
+  7.7%  { transform: scale(1.24); }
+  15%   { transform: scale(1.2); }
+  22.7% { transform: scale(1.06); }
+  30.5% { transform: scale(0.94); }
+  37.7% { transform: scale(0.88); }
+  45.5% { transform: scale(0.88); }
+  53%   { transform: scale(0.96); }
+  60.5% { transform: scale(1.03); }
+  83%   { transform: scale(1.04); }
+  91%   { transform: scale(1); }
+  100%  { transform: none; }
+}
+
 /* 단축키 꼬리표를 켜고 끌 때 톡 튐 (220ms, 17ms 단위로 계측): 1.12배 → 0.92배 → 1.037배 → 제 크기 */
 @keyframes rr-keytag-punch {
   0%    { transform: none; }
@@ -242,6 +276,41 @@
   0%   { opacity: 0; transform: translateY(10px) scale(0.98); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
   30%  { opacity: 1; transform: translateY(-14px) scale(1.013); animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
   100% { opacity: 1; transform: none; }
+}
+
+/* 설정 탭을 바꿨을 때 새 내용 (300ms, 17ms 단위로 계측): 옮겨 간 쪽에서 28px 밀려 들어와 11px 지나쳤다 돌아옴 */
+@keyframes rr-tab-in {
+  0%    { transform: translateX(calc(var(--rr-tab-dir, 1) * 28px)); }
+  5.6%  { transform: translateX(calc(var(--rr-tab-dir, 1) * 15px)); }
+  11.1% { transform: translateX(calc(var(--rr-tab-dir, 1) * 6px)); }
+  16.7% { transform: translateX(0); }
+  22.2% { transform: translateX(calc(var(--rr-tab-dir, 1) * -5px)); }
+  27.8% { transform: translateX(calc(var(--rr-tab-dir, 1) * -9px)); }
+  33.3% { transform: translateX(calc(var(--rr-tab-dir, 1) * -11px)); }
+  44.4% { transform: translateX(calc(var(--rr-tab-dir, 1) * -11px)); }
+  50%   { transform: translateX(calc(var(--rr-tab-dir, 1) * -10px)); }
+  55.6% { transform: translateX(calc(var(--rr-tab-dir, 1) * -9px)); }
+  61.1% { transform: translateX(calc(var(--rr-tab-dir, 1) * -7px)); }
+  66.7% { transform: translateX(calc(var(--rr-tab-dir, 1) * -5px)); }
+  77.8% { transform: translateX(calc(var(--rr-tab-dir, 1) * -3px)); }
+  88.9% { transform: translateX(calc(var(--rr-tab-dir, 1) * -1px)); }
+  100%  { transform: none; }
+}
+
+/* 좌우 선택기의 값이 바뀔 때 (200ms, 17ms 단위로 계측): 누른 화살표 쪽에서 16px 밀려 들어와 7px 지나쳤다 돌아옴 */
+@keyframes rr-step-in {
+  0%    { transform: translateX(calc(var(--rr-step-dir, 1) * 16px)); }
+  8.5%  { transform: translateX(calc(var(--rr-step-dir, 1) * 11.5px)); }
+  16.5% { transform: translateX(calc(var(--rr-step-dir, 1) * 4px)); }
+  25%   { transform: translateX(calc(var(--rr-step-dir, 1) * -1px)); }
+  33.5% { transform: translateX(calc(var(--rr-step-dir, 1) * -5.4px)); }
+  41.5% { transform: translateX(calc(var(--rr-step-dir, 1) * -7px)); }
+  58.5% { transform: translateX(calc(var(--rr-step-dir, 1) * -7px)); }
+  66.5% { transform: translateX(calc(var(--rr-step-dir, 1) * -5.4px)); }
+  75%   { transform: translateX(calc(var(--rr-step-dir, 1) * -4.6px)); }
+  83.5% { transform: translateX(calc(var(--rr-step-dir, 1) * -2.3px)); }
+  91.5% { transform: translateX(calc(var(--rr-step-dir, 1) * -0.8px)); }
+  100%  { transform: none; }
 }
 
 /* 큰 숫자가 절반 크기에서 커지며 등장 */

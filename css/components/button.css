@@ -175,7 +175,7 @@
   font-size: 12px;
 }
 
-/* 알림 점: 1시 30분 방향. 흰 테가 링을 끊어 줍니다. */
+/* 알림 점: 1시 30분 방향. 흰 테가 링을 끊어 줍니다. 나타날 때(hidden 을 떼면) 톡 커집니다. */
 .rr-btn__dot {
   position: absolute;
   top: calc(50% - var(--_dot-r) * 0.7071 - 8px);
@@ -185,6 +185,7 @@
   border-radius: 50%;
   background: var(--rr-ink);
   box-shadow: 0 0 0 3px var(--rr-paper);
+  animation: rr-pop-in 120ms var(--rr-ease-pop) backwards;
 }
 
 /* ── 사각 버튼 ────────────────────────────────────────────────────────────

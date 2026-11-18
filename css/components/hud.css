@@ -162,7 +162,17 @@
   animation: none;
 }
 
-/* ── 알약 라벨 ────────────────────────────────────────────────────────── */
+/* ── 알약 라벨 ─────────────────────────────────────────────────────────────
+   <span class="rr-pill rr-pill--round is-live">0.35 : 1</span>
+   .is-live   톡 나타납니다: 0.44배에서 커져 1.12배까지 넘쳤다 돌아옴(230ms). 사라질 때는 연출 없이 바로.
+   .is-punch  글이 바뀔 때 한 번: 1.24배 → 0.88배 → 1.04배 → 제 크기(220ms).  RR.replay(pill, 'is-punch')   */
+
+.rr-pill.is-live {
+  animation: rr-pill-in 233ms linear backwards;
+}
+.rr-pill.is-punch {
+  animation: rr-pill-punch 220ms linear;
+}
 
 .rr-pill {
   display: inline-flex;

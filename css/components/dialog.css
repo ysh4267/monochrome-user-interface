@@ -126,22 +126,28 @@ dialog.rr-dialog::backdrop {
   left: 0;
   height: 5px;
   background: var(--rr-ink);
-  transform: scaleX(0);
-  transition: transform 120ms var(--rr-ease-out);
+  opacity: 0;                      /* 밑줄은 움직이지 않고 바로 옮겨 갑니다 */
 }
 .rr-tab.is-active {
   color: var(--rr-ink);
   font-weight: var(--rr-weight-bold);
 }
 .rr-tab.is-active::after {
-  transform: scaleX(1);
+  opacity: 1;
 }
 
+/* 탭을 바꾸면 앞의 내용은 바로 사라지고, 새 내용은 옮겨 간 쪽에서 28px 밀려 들어와 11px 지나쳤다 돌아오며(300ms)
+   90ms 만에 또렷해집니다. 방향(--rr-tab-dir: 오른쪽 탭으로 1, 왼쪽 탭으로 -1)과 .is-switched 는 rr.js 가 붙입니다. */
 .rr-tabpanel {
   display: none;
 }
 .rr-tabpanel.is-active {
   display: block;
+}
+.rr-tabpanel.is-active.is-switched {
+  animation:
+    rr-tab-in 300ms linear,
+    rr-fade-in 90ms linear;
 }
 
 /* ── 설정 행 ───────────────────────────────────────────────────────────────
@@ -230,6 +236,13 @@ dialog.rr-dialog::backdrop {
   place-items: center;
   font-size: 18px;
   white-space: nowrap;
+}
+/* 값을 바꾸면 새 글자가 누른 화살표 쪽에서 16px 밀려 들어와 7px 지나쳤다 돌아오며(200ms) 115ms 만에 또렷해집니다.
+   방향(--rr-step-dir: 다음 1, 이전 -1)과 .is-switched 는 rr.js 가 붙입니다. */
+.rr-stepper__value.is-switched {
+  animation:
+    rr-step-in 200ms linear,
+    rr-fade-in 115ms linear;
 }
 
 /* ── 이름–값 표 ────────────────────────────────────────────────────────── */
