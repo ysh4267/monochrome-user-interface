@@ -67,6 +67,23 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
+/* 툴팁이 나타남 (183ms, 한 프레임씩 계측 · 0% = 마우스를 올린 프레임): 100ms 동안 또렷해지며
+   아랫변 가운데를 축으로 0.92배 → 1.04배(83ms)까지 넘쳤다가 제 크기로. 그동안 5.7px 아래에서 올라옵니다. */
+@keyframes rr-tip-in {
+  0%    { opacity: 0.2;  transform: translateY(5.7px) scale(0.922); }
+  9.1%  { opacity: 0.41; transform: translateY(5.1px) scale(0.971); }
+  18.2% { opacity: 0.56; transform: translateY(4.2px) scale(1.004); }
+  27.3% { opacity: 0.71; transform: translateY(2.6px) scale(1.025); }
+  36.4% { opacity: 0.88; transform: translateY(1.9px) scale(1.036); }
+  45.5% { opacity: 1;    transform: translateY(1.3px) scale(1.039); }
+  54.5% { opacity: 1;    transform: translateY(1px) scale(1.035); }
+  63.6% { opacity: 1;    transform: translateY(0.8px) scale(1.028); }
+  72.7% { opacity: 1;    transform: translateY(0.5px) scale(1.019); }
+  81.8% { opacity: 1;    transform: translateY(0.3px) scale(1.01); }
+  90.9% { opacity: 1;    transform: scale(1.003); }
+  100%  { opacity: 1;    transform: none; }
+}
+
 /* 꼬리표가 톡 나타남 (340ms, 17ms 단위로 계측): 한가운데에서 커지며 1.19배까지 넘쳤다가 천천히 제 크기로.
    사라질 때는 연출 없이 바로 없어집니다. */
 @keyframes rr-pop {
@@ -475,12 +492,28 @@
   100% { opacity: 0; transform: scale(1.06); }
 }
 
-/* 충격파: 버튼 가장자리(반지름 45px)에서 시작해 반지름 --_to 까지 퍼지고, 마지막 1/4 구간에서 사라짐 */
-@keyframes rr-ring {
-  0%   { opacity: 0; inset: -45px; }
-  1%   { opacity: 1; }
-  75%  { opacity: 0.8; }
-  100% { opacity: 0; inset: calc(var(--_to, 200px) * -1); }
+/* 충격파 (한 프레임씩 계측): 반지름이 --_r0 에서 --_r1 까지 감속하며 퍼지고, 선은 6px 에서 가늘어집니다.
+   inset 은 선의 바깥 가장자리이므로 선 굵기의 절반을 더해 선의 중심이 계측한 반지름에 오게 합니다.
+   빠른 원(300ms): 40 → 65(50ms) → 87(100ms) → 105(150ms) → 119(200ms) → 129(250ms) → 138px */
+@keyframes rr-ring-fast {
+  0%    { opacity: 1;   border-width: 6px;   inset: calc(var(--_r0) * -1 - 3px); }
+  16.7% { opacity: 1;   border-width: 5px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.255) * -1 - 2.5px); }
+  33.3% { opacity: 1;   border-width: 4px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.48) * -1 - 2px); }
+  50%   { opacity: 1;   border-width: 3.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.663) * -1 - 1.75px); }
+  66.7% { opacity: 0.9; border-width: 3px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.806) * -1 - 1.5px); }
+  83.3% { opacity: 0.7; border-width: 2.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.908) * -1 - 1.25px); }
+  94.4% { opacity: 0.5; border-width: 2px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.969) * -1 - 1px); }
+  100%  { opacity: 0;   border-width: 2px;   inset: calc(var(--_r1) * -1 - 1px); }
+}
+/* 느린 원(283ms): 43 → 58.5(50ms) → 71(100ms) → 80(150ms) → 86(200ms) → 91(250ms) → 93px, 100ms 뒤부터 옅어집니다 */
+@keyframes rr-ring-slow {
+  0%    { opacity: 1;    border-width: 6px;   inset: calc(var(--_r0) * -1 - 3px); }
+  17.6% { opacity: 1;    border-width: 5px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.31) * -1 - 2.5px); }
+  35.3% { opacity: 1;    border-width: 3.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.56) * -1 - 1.75px); }
+  52.9% { opacity: 0.8;  border-width: 2.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.74) * -1 - 1.25px); }
+  70.6% { opacity: 0.6;  border-width: 2px;   inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.86) * -1 - 1px); }
+  88.2% { opacity: 0.45; border-width: 1.5px; inset: calc((var(--_r0) + (var(--_r1) - var(--_r0)) * 0.96) * -1 - 0.75px); }
+  100%  { opacity: 0;    border-width: 1.5px; inset: calc(var(--_r1) * -1 - 0.75px); }
 }
 
 @keyframes rr-star {
@@ -498,12 +531,36 @@
   100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + var(--fall))); }
 }
 
+/* 레벨 표 (1.7초, 한 프레임씩 계측). 나타날 때: 130ms 동안 또렷해지며, 윗변보다 20px 위의 점을 축으로 0.6배에서 자라
+   83ms 에 제 크기, 167ms 에 1.12배까지 넘쳤다가 350ms 에 돌아옵니다(축이 위에 있어 아래로 내려앉듯 커집니다).
+   사라질 때(1.47초~): 기운 방향 그대로 위로 14px 떠오르며 0.23초 동안 옅어집니다. 기울기는 rotate 속성이 맡습니다. */
 @keyframes rr-lvtag {
-  0%   { opacity: 0; transform: rotate(-14deg) scale(0.3); }
-  5%   { opacity: 1; transform: rotate(-6deg) scale(1.22); }
-  9%   { opacity: 1; transform: rotate(-8deg) scale(1); }
-  86%  { opacity: 1; transform: rotate(-8deg) scale(1); }
-  100% { opacity: 0; transform: rotate(-8deg) translateY(-4px) scale(1); }
+  0%    { opacity: 0;    transform: translateY(-19px) scale(0.6); }
+  1%    { opacity: 0.14; transform: translateY(-15.2px) scale(0.68); }
+  2%    { opacity: 0.28; transform: translateY(-10.9px) scale(0.77); }
+  2.9%  { opacity: 0.39; transform: translateY(-5.7px) scale(0.88); }
+  3.9%  { opacity: 0.51; transform: translateY(-2.6px) scale(0.945); }
+  4.9%  { opacity: 0.65; transform: translateY(0) scale(1); }
+  5.9%  { opacity: 0.77; transform: translateY(1.9px) scale(1.04); }
+  6.9%  { opacity: 0.92; transform: translateY(3.3px) scale(1.07); }
+  7.8%  { opacity: 1;    transform: translateY(4.75px) scale(1.1); }
+  9.8%  { opacity: 1;    transform: translateY(5.7px) scale(1.12); }
+  11.8% { opacity: 1;    transform: translateY(5.5px) scale(1.116); }
+  13.7% { opacity: 1;    transform: translateY(4.75px) scale(1.1); }
+  14.7% { opacity: 1;    transform: translateY(3.5px) scale(1.074); }
+  15.7% { opacity: 1;    transform: translateY(2.75px) scale(1.058); }
+  16.7% { opacity: 1;    transform: translateY(2px) scale(1.042); }
+  17.6% { opacity: 1;    transform: translateY(1.2px) scale(1.026); }
+  18.6% { opacity: 1;    transform: translateY(0.75px) scale(1.016); }
+  20.6% { opacity: 1;    transform: none; }
+  86.3% { opacity: 1;    transform: none; }
+  88.2% { opacity: 0.87; transform: translateY(-0.4px); }
+  90.2% { opacity: 0.72; transform: translateY(-2.5px); }
+  92.2% { opacity: 0.55; transform: translateY(-5.2px); }
+  94.1% { opacity: 0.39; transform: translateY(-8.5px); }
+  96.1% { opacity: 0.26; transform: translateY(-12.2px); }
+  98%   { opacity: 0.15; transform: translateY(-13.6px); }
+  100%  { opacity: 0;    transform: translateY(-14px); }
 }
 
 /* 산 버튼의 색: 검정 → 회색 → 제 색. 끝 키프레임을 비워 두어 사고 난 뒤의 상태로 자연히 이어집니다 */
@@ -520,43 +577,181 @@
   100%    { opacity: 1; }
 }
 
-/* 구매 펀치 (400ms, 17ms 단위로 계측): 버튼이 움찔 줄었다(0.845) 크게 넘치고(1.24) 0.91 까지 되튄 뒤 돌아옵니다.
-   67ms 부터는 왼쪽으로 8° 까지 기울었다 풀립니다. 툴팁은 독이 아니라 이 버튼에 붙어 있어서 같은 값으로,
-   버튼 중심을 축 삼아 함께 움직입니다. transform 과 겹치도록 scale / rotate 속성을 따로 씁니다.        */
-@keyframes rr-punch {
-  0%    { scale: 1;     rotate: 0deg; }
-  4.2%  { scale: 0.97;  rotate: 0deg; }
-  8.3%  { scale: 0.92;  rotate: -0.3deg; }
-  12.5% { scale: 0.845; rotate: -0.5deg; }
-  16.7% { scale: 0.845; rotate: -2.9deg; }
-  20.8% { scale: 0.86;  rotate: -5.5deg; }
-  25%   { scale: 1;     rotate: -7.2deg; }
-  29.2% { scale: 1.09;  rotate: -7.5deg; }
-  33.3% { scale: 1.18;  rotate: -8deg; }
-  37.5% { scale: 1.23;  rotate: -5.6deg; }
-  42%   { scale: 1.24;  rotate: -3deg; }
-  50%   { scale: 1.17;  rotate: 0deg; }
-  58%   { scale: 1.1;   rotate: 1deg; }
-  62.5% { scale: 1;     rotate: 1deg; }
-  72.5% { scale: 0.91;  rotate: 0.4deg; }
-  85%   { scale: 0.95;  rotate: 0deg; }
-  95%   { scale: 1;     rotate: 0deg; }
-  100%  { scale: 1;     rotate: 0deg; }
+/* ── 구매 순간의 움직임 ─────────────────────────────────────────────────────
+   사는 순간 화면 아래에서는 네 가지가 "각자" 움직입니다(원본을 한 프레임씩 계측, 0% = 누른 프레임).
+     버튼        제 크기만 출렁입니다(기울지 않음)                              rr-btn-punch
+     독          통째로 4.4% 부풀었다 0.8% 움츠러듭니다(기울지 않음)            rr-dock-punch
+     아래 묶음    독과 게이지가 한 덩어리로 좌우·위아래로 떱니다(크기 변화 없음)   rr-shake-a / b / c
+     툴팁        독을 따라 커지지도, 같이 떨지도 않고 제 펀치를 칩니다            rr-tip-punch
+   값을 등록된 변수에 실어 두는 까닭: 툴팁은 독 안에 들어 있어서, 바깥(독·묶음)의 변형을 읽어 상쇄해야
+   따로 놀 수 있습니다(fx.css). transform 과 겹치도록 scale / rotate / translate 속성을 따로 씁니다.   */
+@property --rr-shake-x    { syntax: "<length>"; inherits: true;  initial-value: 0px; }
+@property --rr-shake-y    { syntax: "<length>"; inherits: true;  initial-value: 0px; }
+@property --rr-dock-scale { syntax: "<number>"; inherits: true;  initial-value: 1; }
+@property --rr-tip-scale  { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --rr-tip-hop    { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --rr-tip-press  { syntax: "<length>"; inherits: false; initial-value: 0px; }
+
+/* 버튼 (667ms 중 583ms 동안): 움찔 줄었다(0.825) 크게 넘치고(1.30) 0.93 → 1.035 → 0.99 로 잦아듭니다.
+   50~83ms 는 폭발에 가려 계측이 안 되어 앞뒤를 이은 값입니다. 떼는 순간에는 떠 있던 자리보다 4.6px 더 튀어 오릅니다. */
+@keyframes rr-btn-punch {
+  0%    { scale: 0.975; translate: 0 0; }
+  2.5%  { scale: 0.931; translate: 0 0; }
+  5%    { scale: 0.89;  translate: 0 -1px; }
+  7.5%  { scale: 0.84;  translate: 0 -4px; }
+  10%   { scale: 0.825; translate: 0 -4.6px; }
+  12.5% { scale: 0.86;  translate: 0 -4.6px; }
+  15%   { scale: 0.965; translate: 0 -2px; }
+  17.5% { scale: 1.081; translate: 0 -1.5px; }
+  20%   { scale: 1.188; translate: 0 -1.5px; }
+  22.5% { scale: 1.271; translate: 0 -1.5px; }
+  25%   { scale: 1.301; translate: 0 -1.5px; }
+  27.5% { scale: 1.279; translate: 0 -1.5px; }
+  30%   { scale: 1.228; translate: 0 0; }
+  32.5% { scale: 1.156; }
+  35%   { scale: 1.081; }
+  37.5% { scale: 1.01; }
+  40%   { scale: 0.955; }
+  42.5% { scale: 0.93; }
+  45%   { scale: 0.935; }
+  47.5% { scale: 0.95; }
+  50%   { scale: 0.972; }
+  52.5% { scale: 0.996; }
+  55%   { scale: 1.016; }
+  57.5% { scale: 1.03; }
+  60%   { scale: 1.035; }
+  62.5% { scale: 1.03; }
+  65%   { scale: 1.021; }
+  67.5% { scale: 1.013; }
+  70%   { scale: 1.004; }
+  72.5% { scale: 0.996; }
+  75%   { scale: 0.991; }
+  80%   { scale: 0.992; }
+  85%   { scale: 0.997; }
+  87.5% { scale: 1; }
+  100%  { scale: 1; translate: 0 0; }
 }
 
-/* 독의 덜컹 (300ms): 50ms 에 -3.5° 까지 갔다가 117ms 에 0, 살짝(+1°) 넘쳤다 멎습니다. 크기는 안 변합니다. */
-@keyframes rr-jolt {
-  0%    { transform: none; }
-  11%   { transform: rotate(-2.4deg) translate(-3px, 3px); }
-  16.7% { transform: rotate(-3.5deg) translate(-4px, 4px); }
-  22%   { transform: rotate(-2.8deg) translate(-3px, 3px); }
-  28%   { transform: rotate(-1.9deg) translate(-2px, 2px); }
-  33%   { transform: rotate(-0.5deg) translate(-1px, 1px); }
-  39%   { transform: none; }
-  47%   { transform: rotate(1deg) translate(1px, -1px); }
-  55%   { transform: rotate(0.8deg) translate(1px, -1px); }
-  75%   { transform: rotate(0.2deg); }
-  100%  { transform: none; }
+/* 독 (417ms): 50ms 에 1.0445배, 200ms 에 0.992배, 약 280ms 에 제 크기. 안의 버튼도 함께 커집니다. */
+@keyframes rr-dock-punch {
+  0%   { --rr-dock-scale: 1.002; }
+  4%   { --rr-dock-scale: 1.013; }
+  8%   { --rr-dock-scale: 1.031; }
+  12%  { --rr-dock-scale: 1.0445; }
+  16%  { --rr-dock-scale: 1.043; }
+  20%  { --rr-dock-scale: 1.041; }
+  24%  { --rr-dock-scale: 1.033; }
+  28%  { --rr-dock-scale: 1.024; }
+  32%  { --rr-dock-scale: 1.014; }
+  36%  { --rr-dock-scale: 1.006; }
+  40%  { --rr-dock-scale: 0.998; }
+  44%  { --rr-dock-scale: 0.994; }
+  48%  { --rr-dock-scale: 0.992; }
+  52%  { --rr-dock-scale: 0.993; }
+  56%  { --rr-dock-scale: 0.994; }
+  60%  { --rr-dock-scale: 0.996; }
+  64%  { --rr-dock-scale: 0.998; }
+  68%  { --rr-dock-scale: 1; }
+  76%  { --rr-dock-scale: 1.002; }
+  88%  { --rr-dock-scale: 1.002; }
+  100% { --rr-dock-scale: 1; }
+}
+
+/* 아래 묶음의 흔들림 (267ms): 살 때마다 방향이 다른 떨림입니다. 첫 프레임부터 크게(4~8px) 어긋나 있다가
+   10~12Hz 로 떨며 잦아듭니다. 아래 셋은 서로 다른 구매에서 잰 실제 궤적이고, RR.shake 가 하나를 골라
+   좌우·위아래를 무작위로 뒤집어 씁니다(--rr-shake-flip-x / -y). 크기와 기울기는 변하지 않습니다.      */
+@keyframes rr-shake-a {
+  0%     { --rr-shake-x: -6.8px; --rr-shake-y: 1px; }
+  6.25%  { --rr-shake-x: -1.5px; --rr-shake-y: 4.1px; }
+  12.5%  { --rr-shake-x: 3.4px;  --rr-shake-y: 6.9px; }
+  18.75% { --rr-shake-x: 2.4px;  --rr-shake-y: 2.5px; }
+  25%    { --rr-shake-x: -1px;   --rr-shake-y: -1.3px; }
+  31.25% { --rr-shake-x: -3.4px; --rr-shake-y: -3px; }
+  37.5%  { --rr-shake-x: -2.9px; --rr-shake-y: 1.2px; }
+  43.75% { --rr-shake-x: -2.3px; --rr-shake-y: 4.2px; }
+  50%    { --rr-shake-x: -0.8px; --rr-shake-y: 3.7px; }
+  56.25% { --rr-shake-x: -0.7px; --rr-shake-y: 0.5px; }
+  62.5%  { --rr-shake-x: -1.8px; --rr-shake-y: -1.8px; }
+  68.75% { --rr-shake-x: -2.5px; --rr-shake-y: -2.1px; }
+  75%    { --rr-shake-x: -1.1px; --rr-shake-y: -2.2px; }
+  81.25% { --rr-shake-x: -0.2px; --rr-shake-y: -0.2px; }
+  87.5%  { --rr-shake-x: -0.2px; --rr-shake-y: -0.5px; }
+  93.75% { --rr-shake-x: 0px;    --rr-shake-y: -0.6px; }
+  100%   { --rr-shake-x: 0px;    --rr-shake-y: 0px; }
+}
+@keyframes rr-shake-b {
+  0%     { --rr-shake-x: -2.5px; --rr-shake-y: -3.5px; }
+  6.25%  { --rr-shake-x: -2.4px; --rr-shake-y: -6.8px; }
+  12.5%  { --rr-shake-x: -3.6px; --rr-shake-y: -5px; }
+  18.75% { --rr-shake-x: 2px;    --rr-shake-y: 0.5px; }
+  25%    { --rr-shake-x: 5.1px;  --rr-shake-y: 0.8px; }
+  31.25% { --rr-shake-x: 0.9px;  --rr-shake-y: -2.4px; }
+  37.5%  { --rr-shake-x: -0.7px; --rr-shake-y: -1.6px; }
+  43.75% { --rr-shake-x: 2px;    --rr-shake-y: 0.4px; }
+  50%    { --rr-shake-x: 1.1px;  --rr-shake-y: -1px; }
+  56.25% { --rr-shake-x: -0.5px; --rr-shake-y: -1.4px; }
+  62.5%  { --rr-shake-x: 0.2px;  --rr-shake-y: 0.7px; }
+  68.75% { --rr-shake-x: -0.3px; --rr-shake-y: 0.4px; }
+  75%    { --rr-shake-x: -1px;   --rr-shake-y: -2.2px; }
+  81.25% { --rr-shake-x: -0.3px; --rr-shake-y: -1.7px; }
+  87.5%  { --rr-shake-x: 0.4px;  --rr-shake-y: -0.3px; }
+  100%   { --rr-shake-x: 0px;    --rr-shake-y: 0px; }
+}
+@keyframes rr-shake-c {
+  0%     { --rr-shake-x: 8px;    --rr-shake-y: 1.5px; }
+  6.25%  { --rr-shake-x: 5.6px;  --rr-shake-y: 3.9px; }
+  12.5%  { --rr-shake-x: 5.9px;  --rr-shake-y: 5.8px; }
+  18.75% { --rr-shake-x: 5.3px;  --rr-shake-y: 1.6px; }
+  25%    { --rr-shake-x: 3.5px;  --rr-shake-y: -3.1px; }
+  31.25% { --rr-shake-x: 0.7px;  --rr-shake-y: -2.4px; }
+  37.5%  { --rr-shake-x: -1.3px; --rr-shake-y: 1.2px; }
+  43.75% { --rr-shake-x: -2.1px; --rr-shake-y: 1px; }
+  50%    { --rr-shake-x: -0.4px; --rr-shake-y: -0.4px; }
+  56.25% { --rr-shake-x: 0.3px;  --rr-shake-y: 0.7px; }
+  62.5%  { --rr-shake-x: -0.1px; --rr-shake-y: 0.1px; }
+  68.75% { --rr-shake-x: -1.1px; --rr-shake-y: -3.7px; }
+  75%    { --rr-shake-x: -0.9px; --rr-shake-y: -1.6px; }
+  81.25% { --rr-shake-x: -0.3px; --rr-shake-y: -0.1px; }
+  87.5%  { --rr-shake-x: 0px;    --rr-shake-y: 0px; }
+  100%   { --rr-shake-x: 0px;    --rr-shake-y: 0px; }
+}
+
+/* 툴팁 (533ms): 누른 프레임에는 가만히 있다가 다음 프레임부터 움직입니다.
+   크기(--rr-tip-scale)는 버튼 중심을 축으로 0.824(67ms) → 1.28(167ms) → 0.95(300ms) → 1.03(417ms) → 1,
+   기울기(rotate)는 툴팁 아랫변 가운데를 축으로 -8°(100ms) → +5°(233ms) → -2°(350ms) → 0.
+   --rr-tip-hop 은 버튼이 튀어 오를 때 따라 올라가는 높이입니다.                                   */
+@keyframes rr-tip-punch {
+  0%      { --rr-tip-scale: 1;     rotate: 0deg;     --rr-tip-hop: 0px; }
+  3.125%  { --rr-tip-scale: 0.956; rotate: -0.9deg;  --rr-tip-hop: 0px; }
+  6.25%   { --rr-tip-scale: 0.889; rotate: -2.53deg; --rr-tip-hop: 0px; }
+  9.375%  { --rr-tip-scale: 0.833; rotate: -4.5deg;  --rr-tip-hop: -4.5px; }
+  12.5%   { --rr-tip-scale: 0.824; rotate: -6.36deg; --rr-tip-hop: -7px; }
+  15.625% { --rr-tip-scale: 0.874; rotate: -7.65deg; --rr-tip-hop: -7px; }
+  18.75%  { --rr-tip-scale: 0.964; rotate: -7.98deg; --rr-tip-hop: -1px; }
+  21.875% { --rr-tip-scale: 1.072; rotate: -7.23deg; --rr-tip-hop: 0px; }
+  25%     { --rr-tip-scale: 1.175; rotate: -5.72deg; }
+  28.125% { --rr-tip-scale: 1.252; rotate: -3.68deg; }
+  31.25%  { --rr-tip-scale: 1.28;  rotate: -1.39deg; }
+  34.375% { --rr-tip-scale: 1.264; rotate: 0.91deg; }
+  37.5%   { --rr-tip-scale: 1.224; rotate: 2.88deg; }
+  40.625% { --rr-tip-scale: 1.168; rotate: 4.33deg; }
+  43.75%  { --rr-tip-scale: 1.105; rotate: 5deg; }
+  46.875% { --rr-tip-scale: 1.044; rotate: 4.72deg; }
+  50%     { --rr-tip-scale: 0.993; rotate: 3.84deg; }
+  53.125% { --rr-tip-scale: 0.959; rotate: 2.59deg; }
+  56.25%  { --rr-tip-scale: 0.95;  rotate: 1.15deg; }
+  59.375% { --rr-tip-scale: 0.957; rotate: -0.25deg; }
+  62.5%   { --rr-tip-scale: 0.969; rotate: -1.41deg; }
+  65.625% { --rr-tip-scale: 0.984; rotate: -1.96deg; }
+  68.75%  { --rr-tip-scale: 1;     rotate: -1.93deg; }
+  71.875% { --rr-tip-scale: 1.016; rotate: -1.74deg; }
+  75%     { --rr-tip-scale: 1.026; rotate: -1.38deg; }
+  78.125% { --rr-tip-scale: 1.03;  rotate: -0.99deg; }
+  81.25%  { --rr-tip-scale: 1.028; rotate: -0.57deg; }
+  84.375% { --rr-tip-scale: 1.024; rotate: -0.21deg; }
+  87.5%   { --rr-tip-scale: 1.018; rotate: 0deg; }
+  93.75%  { --rr-tip-scale: 1.009; rotate: 0deg; }
+  100%    { --rr-tip-scale: 1;     rotate: 0deg;     --rr-tip-hop: 0px; }
 }
 
 /* ── 독의 버튼 갈아 끼우기 (하위 메뉴 열기·닫기) ─────────────────────────────
@@ -682,41 +877,73 @@
   0%, 20%   { clip-path: inset(var(--_cut) -400px -400px -400px); }
   20.5%, 100% { clip-path: inset(-400px); }
 }
-/* 큰 버튼이 들어올 자리가 벌어짐 (550ms, 17ms 단위로 계측): 폭 0(양옆 간격 하나만 남김)에서 200ms 만에 제 폭에 닿고,
-   13% 더 벌어졌다가 돌아옵니다. 독은 그만큼 넓어졌다 좁아집니다. --_w 는 제 폭, --_m 은 제 옆 여백입니다. */
+/* 큰 버튼이 들어올 자리가 벌어짐 = 독의 너비가 늘어남 (533ms, 한 프레임씩 계측). 독은 묶음이 바뀌는 순간 큰 버튼 자리만
+   뺀 너비로 한 번에 바뀌어 있다가, 117ms 뒤부터 이만큼 넓어집니다: 처음 100ms 는 일정한 빠르기(프레임마다 11%),
+   217ms 에 제 폭, 9.5% 더 벌어졌다가(350ms) 467ms 에 돌아와 1.3% 모자란 채로(500ms) 큰 버튼의 착지를 맞습니다.
+   --_w 는 제 폭, --_m 은 제 옆 여백입니다.                                                                */
 @keyframes rr-slot-open {
-  0%    { width: 0;                     min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2); }
-  6%    { width: calc(var(--_w) * 0.27); min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.27); }
-  12%   { width: calc(var(--_w) * 0.5);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.5); }
-  18%   { width: calc(var(--_w) * 0.68); min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.68); }
-  24%   { width: calc(var(--_w) * 0.86); min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.86); }
-  30%   { width: calc(var(--_w) * 0.95); min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.95); }
-  35%   { width: var(--_w); margin-inline: var(--_m); }
-  42%   { width: var(--_w); margin-inline: calc(var(--_m) + 5px); }
-  48%   { width: var(--_w); margin-inline: calc(var(--_m) + 8px); }
-  55%   { width: var(--_w); margin-inline: calc(var(--_m) + 10px); }
-  61%   { width: var(--_w); margin-inline: calc(var(--_m) + 10px); }
-  70%   { width: var(--_w); margin-inline: calc(var(--_m) + 8px); }
-  79%   { width: var(--_w); margin-inline: calc(var(--_m) + 5px); }
-  88%   { width: var(--_w); margin-inline: calc(var(--_m) + 2.5px); }
-  100%  { width: var(--_w); margin-inline: var(--_m); }
+  0%      { width: 0;                       min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2); }
+  3.125%  { width: calc(var(--_w) * 0.14);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.14); }
+  6.25%   { width: calc(var(--_w) * 0.25);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.25); }
+  9.375%  { width: calc(var(--_w) * 0.36);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.36); }
+  12.5%   { width: calc(var(--_w) * 0.47);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.47); }
+  15.625% { width: calc(var(--_w) * 0.56);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.56); }
+  18.75%  { width: calc(var(--_w) * 0.665); min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.665); }
+  21.875% { width: calc(var(--_w) * 0.73);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.73); }
+  25%     { width: calc(var(--_w) * 0.79);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.79); }
+  28.125% { width: calc(var(--_w) * 0.85);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.85); }
+  31.25%  { width: calc(var(--_w) * 0.91);  min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.91); }
+  34.375% { width: calc(var(--_w) * 0.945); min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.945); }
+  37.5%   { width: calc(var(--_w) * 0.975); min-width: 0; margin-inline: calc(var(--rr-btn-gap) / -2 + (var(--rr-btn-gap) / 2 + var(--_m)) * 0.975); }
+  40.625% { width: var(--_w); margin-inline: var(--_m); }
+  43.75%  { width: var(--_w); margin-inline: calc(var(--_m) + 2px); }
+  46.875% { width: var(--_w); margin-inline: calc(var(--_m) + 3.6px); }
+  50%     { width: var(--_w); margin-inline: calc(var(--_m) + 4.2px); }
+  53.125% { width: var(--_w); margin-inline: calc(var(--_m) + 5.6px); }
+  56.25%  { width: var(--_w); margin-inline: calc(var(--_m) + 6.8px); }
+  59.375% { width: var(--_w); margin-inline: calc(var(--_m) + 7.4px); }
+  65.625% { width: var(--_w); margin-inline: calc(var(--_m) + 7.6px); }
+  68.75%  { width: var(--_w); margin-inline: calc(var(--_m) + 6.2px); }
+  71.875% { width: var(--_w); margin-inline: calc(var(--_m) + 5.4px); }
+  75%     { width: var(--_w); margin-inline: calc(var(--_m) + 4.4px); }
+  78.125% { width: var(--_w); margin-inline: calc(var(--_m) + 2.8px); }
+  81.25%  { width: var(--_w); margin-inline: calc(var(--_m) + 1.6px); }
+  84.375% { width: var(--_w); margin-inline: calc(var(--_m) + 0.8px); }
+  87.5%   { width: var(--_w); margin-inline: var(--_m); }
+  90.625% { width: var(--_w); margin-inline: calc(var(--_m) - 0.6px); }
+  93.75%  { width: var(--_w); margin-inline: calc(var(--_m) - 1px); }
+  96.875% { width: var(--_w); margin-inline: calc(var(--_m) - 0.6px); }
+  100%    { width: var(--_w); margin-inline: var(--_m); }
 }
-/* 큰 버튼이 터지는 순간 독 전체가 움찔합니다 (220ms): 1.08배로 부풀며 10px 내려앉았다가 0.96배로 줄고 제자리로 */
+/* 큰 버튼이 터지며 내려앉는 순간의 독 (417ms, 한 프레임씩 계측): 통째로 눌렸다 늘어나는 찌그러짐입니다.
+   옆으로 7.8% 퍼지며 7.8% 납작해지고(50ms) → 4.4% 좁아지며 5.4% 길쭉해지고(167ms) → 1.2% 퍼졌다(267ms) → 제 모양.
+   그동안 15px 아래로 내리찍혔다가 5px 위로 되튀고, 좌우로도 떱니다. 안의 버튼도 독과 함께 찌그러집니다.   */
 @keyframes rr-dock-boom {
-  0%    { transform: translateY(3px) scale(1.03); }
-  7.5%  { transform: translateY(9px) scale(1.07); }
-  15%   { transform: translateY(10px) scale(1.08); }
-  23%   { transform: translateY(9px) scale(1.075); }
-  30%   { transform: translateY(8px) scale(1.07); }
-  38%   { transform: translateY(2px) scale(1.05); }
-  45%   { transform: translateY(0) scale(1.02); }
-  53%   { transform: translateY(-3.5px) scale(0.995); }
-  60%   { transform: translateY(-3px) scale(0.97); }
-  68%   { transform: translateY(-2px) scale(0.96); }
-  76%   { transform: translateY(-2px) scale(0.96); }
-  83%   { transform: translateY(-1px) scale(0.97); }
-  91%   { transform: translateY(0) scale(0.98); }
-  100%  { transform: none; }
+  0%   { transform: translate(-13.7px, 1.8px) scale(1.006, 1.002); }
+  4%   { transform: translate(6px, 12.4px) scale(1.007, 0.98); }
+  8%   { transform: translate(-6.4px, 14.8px) scale(1.065, 0.943); }
+  12%  { transform: translate(-2.4px, 9.1px) scale(1.078, 0.922); }
+  16%  { transform: translate(-3.3px, 0.7px) scale(1.074, 0.928); }
+  20%  { transform: translate(-1px, -2.5px) scale(1.046, 0.95); }
+  24%  { transform: translate(1px, -3.8px) scale(1.02, 0.98); }
+  28%  { transform: translate(-1.3px, -5.2px) scale(0.991, 1.005); }
+  32%  { transform: translate(0, -4.7px) scale(0.97, 1.037); }
+  36%  { transform: translate(2.9px, -2.9px) scale(0.962, 1.052); }
+  40%  { transform: translate(5.6px, -1.7px) scale(0.956, 1.054); }
+  44%  { transform: translate(3px, -1.5px) scale(0.964, 1.051); }
+  48%  { transform: translate(-1.1px, -2.4px) scale(0.978, 1.04); }
+  52%  { transform: translate(-2px, -1.7px) scale(0.995, 1.012); }
+  56%  { transform: translate(-2.2px, -1.4px) scale(1.01, 1.002); }
+  60%  { transform: translate(2.5px, 0.4px) scale(1.011, 0.99); }
+  64%  { transform: translate(2.1px, 0.4px) scale(1.012, 0.991); }
+  68%  { transform: translate(0.8px, 1.9px) scale(1.01, 0.99); }
+  72%  { transform: translate(0.7px, 0.4px) scale(1.008, 0.998); }
+  76%  { transform: translate(-0.6px, 0.3px) scale(1.003, 1.002); }
+  80%  { transform: translate(-0.5px, -0.5px) scale(1, 1.008); }
+  84%  { transform: translate(-0.7px, -0.9px) scale(0.997, 1.012); }
+  92%  { transform: translate(-0.5px, -0.9px) scale(0.997, 1.012); }
+  96%  { transform: translate(-0.2px, -0.4px) scale(0.999, 1.005); }
+  100% { transform: none; }
 }
 /* 봉우리가 솟음: 폭발 뒤 독이 움츠러들 때 납작한 윗선에서 부풀어 살짝 넘쳤다가 앉습니다 */
 @keyframes rr-hump-in {

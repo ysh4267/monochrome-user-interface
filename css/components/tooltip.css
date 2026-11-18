@@ -13,7 +13,12 @@
    </div>
 
    .rr-dock__item 안에 넣으면 hover/포커스 때 버튼 위에 저절로 뜹니다(JS 불필요).
-   나타날 때: 110ms 페이드 + 아래에서 10px 올라오며 0.94→1 확대.  사라질 때: 즉시.
+   나타날 때(rr-tip-in, 183ms): 100ms 동안 또렷해지며 아랫변 가운데를 축으로 0.92배에서 1.04배까지
+                                넘쳤다가 제 크기로, 5.7px 아래에서 올라옵니다.  사라질 때: 즉시.
+   버튼을 누르면: 버튼을 따라 6px 내려앉습니다(한 프레임 늦게). 떼면 40ms 만에 돌아옵니다.
+   독과는 따로 놉니다: 독이 부풀어도(--rr-dock-scale) 따라 커지지 않고, 독이 떨어도(--rr-shake-x / -y) 한 몸으로
+   떨지 않습니다. 아래 translate / scale 이 바깥의 변형을 상쇄하고, 제 움직임(누름·펀치·한 프레임 늦은 떨림)만 얹습니다.
+   살 때의 펀치와 떨림을 트는 규칙은 fx.css 에 있습니다(.rr-dock__item.is-punch, .is-shake).
    너비는 내용에 따라 360~386px. 기본 너비(360)일 때 버튼 한가운데에 오고, 넓어지면 원본처럼
    왼쪽으로만 늘어납니다(오른쪽 끝은 항상 버튼 중심 + 180px).
    다른 곳에서 쓰려면 .rr-tip--static(그냥 놓기) 이나 .is-open(직접 띄우기)을 쓰세요.
@@ -37,8 +42,20 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(10px) scale(0.94);
-  transform-origin: calc(100% - var(--_half)) 100%;
+  transform-origin: calc(100% - var(--_half)) 100%;       /* 아랫변에서 버튼 중심의 바로 위: 기울기의 축 */
+
+  /* 독과 따로 놀기. --_sx / --_sy 는 칸(.rr-dock__item)이 넘겨주는 "지금 묶음이 떠는 만큼",
+     --rr-shake-x / -y 는 툴팁 자신의 떨림(평소 0, 묶음이 떨 때 17ms 늦게 재생), --_pivot 은 아랫변에서 버튼 중심까지입니다.
+       가로  제 떨림 - 묶음의 떨림
+       세로  제 떨림 - 묶음의 떨림 + 버튼의 눌림 + 튀어 오름 + (크기의 축을 버튼 중심으로 옮기는 만큼)
+       크기  제 배율 ÷ 독의 배율                                                                    */
+  --rr-shake-x: 0px;
+  --rr-shake-y: 0px;
+  --_s: calc(var(--rr-tip-scale) / var(--rr-dock-scale));
+  translate:
+    calc((var(--rr-shake-x) - var(--_sx, 0px)) * var(--rr-shake-flip-x, 1))
+    calc((var(--rr-shake-y) - var(--_sy, 0px)) * var(--rr-shake-flip-y, 1) + var(--rr-tip-press) + var(--rr-tip-hop) + (1 - var(--_s)) * var(--_pivot, 0px));
+  scale: var(--_s);
 }
 
 .rr-dock__item:hover > .rr-tip,
@@ -46,10 +63,12 @@
 .rr-tip.is-open {
   opacity: 1;
   visibility: visible;
-  transform: none;
-  transition:
-    opacity var(--rr-dur-tip) linear,
-    transform 90ms var(--rr-ease-out-fast);
+  animation: rr-tip-in var(--rr-dur-tip) linear;
+  transition: --rr-tip-press 40ms linear;
+}
+.rr-dock__item:has(> .rr-btn:active:not(:disabled, .is-disabled)) > .rr-tip {
+  --rr-tip-press: calc(var(--rr-press-drop) - var(--rr-hover-lift));
+  transition: --rr-tip-press var(--rr-dur-press) var(--rr-ease-out) 17ms;
 }
 
 /* 독 밖에서 그냥 놓고 쓰는 경우 */

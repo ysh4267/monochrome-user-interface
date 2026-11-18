@@ -91,6 +91,16 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 
 **게이지의 표지 추가** — `.rr-track__pin`을 하나 더 넣고 `--rr-at`(꽂히는 단계)만 주면 됩니다. 겹치는 표지는 `RR.track.layout(track)`이 비켜 세웁니다.
 
+**독 안에 두되 독과 따로 움직이게 하기** — 사는 순간 독 상자는 부풀고(`--rr-dock-scale`), 독과 게이지는 한 덩어리로 떱니다(`--rr-shake-x`, `--rr-shake-y`). 이 값들은 등록된 변수(`@property`)라서 안쪽 요소가 읽을 수 있습니다. 툴팁·레벨 표·폭발이 독 안에 들어 있으면서도 원본처럼 독을 따라 커지거나 같이 떨지 않는 것은 이 값을 되돌려 놓기 때문입니다. 새 요소도 같은 식으로 쓰면 됩니다.
+
+```css
+.my-badge {                       /* 독 안에 있지만, 독이 떨거나 부풀어도 제자리·제 크기 */
+  translate: calc(var(--rr-shake-x) * var(--rr-shake-flip-x, 1) * -1)
+             calc(var(--rr-shake-y) * var(--rr-shake-flip-y, 1) * -1);
+  scale: calc(1 / var(--rr-dock-scale));
+}
+```
+
 **화면 추가** — `screens/`의 아무 파일이나 복사해 시작하세요. 화면마다 다른 것은 요소의 자리(여백 몇 줄)뿐입니다.
 
 ## 상태 클래스와 속성
@@ -107,6 +117,11 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 | `.is-active` | `.rr-tab` `.rr-tabpanel` | 켜진 탭 |
 | `.is-live` | 토스트·말풍선·획득 라벨·정산 카드·옆 패널·통계 등 | 등장 연출 한 번 재생 |
 | `.is-punch` | `.rr-pill` `.rr-keytag` | 글이나 상태가 바뀔 때 한 번 톡 튐 |
+| `.is-bought` | `.rr-btn` | 산 순간: 버튼의 색과 크기가 출렁임(기울지 않음) |
+| `.is-punch` | `.rr-dock` | 산 순간: 독 상자가 통째로 부풀었다 움츠러듦(`--rr-dock-scale`) |
+| `.is-punch` | `.rr-dock__item` | 산 순간: 그 칸의 툴팁이 제 펀치를 침(독과 따로) |
+| `.is-shake` | `.rr-dockwrap` 또는 `.rr-dock` | 산 순간: 독 + 게이지가 한 덩어리로 떪. `data-rr-shake="a\|b\|c"`로 궤적, `--rr-shake-flip-x` `-y`로 방향 |
+| `.is-boom` | `.rr-dock` | 큰 버튼이 내려앉을 때: 독이 통째로 눌렸다 늘어남 |
 | `.is-leaving` | `.rr-notice` `.rr-side` `.rr-msgbox` | 퇴장 연출 |
 | `.is-entering` `.is-leaving` | `.rr-track` `.rr-dock__item` | 게이지·독 버튼의 등장/퇴장 (`RR.dock.swap`이 붙였다 뗍니다) |
 | `.is-picked` `.is-passed` | `.rr-card` | 고른 카드 / 고르지 않은 카드 |
@@ -130,9 +145,10 @@ icons/rocket.svg  →  <i class="rr-icon rr-icon--rocket"></i>
 
 ```js
 RR.open('#settings');  RR.close('#settings');
-RR.purchase(button, { level: 3 });        // 구매 효과 전부 (버튼 펀치 + 툴팁도 함께 + 폭발 + 레벨 표 + 독 덜컹)
+RR.purchase(button, { level: 3 });        // 구매 효과 전부: 버튼의 펀치 · 독 상자의 부풂 · 독+게이지의 떨림 · 툴팁의 펀치(넷이 각자) + 폭발 + 레벨 표
 RR.burst(el, { stars: 9, dots: 8, squares: 0 });
-RR.levelTag(el, 'Lv.3');   RR.jolt(dock);
+RR.levelTag(el, 'Lv.3');
+RR.shake(dockwrap);                        // 떨림만(크기·기울기 없이). 부를 때마다 궤적과 방향이 달라짐. RR.jolt 는 예전 이름
 RR.afford(button, true);                   // 살 수 있게 됨: 검게 바뀌며 톡 튀고 링이 퍼짐
 RR.ping(button);                           // 링만
 RR.dock.swap(dock, 'routes');              // 독의 버튼을 그 묶음으로 갈아 끼우기 (게이지도 함께)

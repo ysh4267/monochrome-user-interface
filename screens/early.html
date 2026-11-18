@@ -124,7 +124,7 @@
       items.forEach(function (it) {
         $(it.btn).addEventListener('click', function () {
           var cost = it.costs[Math.min(it.level, it.costs.length - 1)];
-          if (money < cost) { RR.jolt('#dock'); return; }      // 돈이 모자라면 독만 덜컹
+          if (money < cost) { RR.shake('#dock'); return; }     // 돈이 모자라면 독만 떱니다
           money -= cost;
           it.level += 1;
           refresh();

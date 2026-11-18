@@ -1,15 +1,21 @@
 /* ==========================================================================
    구매 효과 (버튼을 눌러 샀을 때 터지는 연출)
    --------------------------------------------------------------------------
-   원본의 구매 한 번은 여섯 가지가 겹쳐 일어납니다. 전부 CSS 애니메이션이고,
-   JS(RR.purchase)는 아래 마크업을 버튼 안에 꽂아 주고 끝나면 치우는 일만 합니다.
+   원본의 구매 한 번은 여덟 가지가 겹쳐 일어납니다. 전부 CSS 애니메이션이고,
+   JS(RR.purchase)는 아래 마크업을 버튼 안에 꽂아 주고 클래스를 붙였다 떼는 일만 합니다.
 
-     1) 스파이크   .rr-burst__spikes   가는 방사선이 130ms 동안 튀어나갔다 사라짐
-     2) 충격파     .rr-burst__ring ×2  얇은 원 둘이 0.6초 동안 퍼지며 옅어짐
-     3) 별·점      .rr-burst__p        별은 감속하며 1초, 점은 포물선으로 1.2초
-     4) 레벨 표    .rr-lvtag           "Lv.1" 이 톡 튀어나와 1.7초 뒤 사라짐
-     5) 버튼 되튐  .rr-btn.is-bought   검정(아이콘 숨김) → 회색 → 제 색, 1.25배 → 0.9배 → 1배
-     6) 독 흔들림  .is-jolt            독 전체가 -3.5° 기울었다 380ms 안에 복귀
+     1) 스파이크     .rr-burst__spikes          가는 방사선이 130ms 동안 튀어나갔다 사라짐
+     2) 충격파       .rr-burst__ring ×2         굵게 나온 원 둘이 가늘어지며 0.3초 남짓 퍼지고 옅어짐
+     3) 별·점        .rr-burst__p               별은 감속하며 1초, 점은 포물선으로 1.2초
+     4) 레벨 표      .rr-lvtag                  "Lv.1" 이 내려앉듯 커지며 나타나 1.7초 뒤 떠오르며 사라짐
+     5) 버튼 되튐    .rr-btn.is-bought          검정(아이콘 숨김) → 회색 → 제 색, 0.83배 → 1.3배 → 0.93배 → 1배
+     6) 독의 부풂    .rr-dock.is-punch          독 상자만 1.0445배로 부풀었다 0.992배로 움츠러들고 돌아옴
+     7) 묶음의 떨림  .is-shake                  독과 게이지가 한 덩어리로 좌우·위아래로 떪(0.27초, 살 때마다 다름)
+     8) 툴팁의 펀치  .rr-dock__item.is-punch    툴팁만 0.82배 → 1.28배로 출렁이며 -8° → +5° 로 기우뚱
+
+   5)~8)은 원본에서 서로 따로 놉니다: 독은 커지되 기울지 않고, 게이지는 떨기만 하고(크기 변화 없음),
+   툴팁은 독을 따라 커지지도 같이 떨지도 않습니다. 그래서 독·묶음의 변형을 변수(--rr-dock-scale,
+   --rr-shake-x / -y)로 흘려보내고, 독 안에 든 툴팁이 그 값을 읽어 상쇄한 뒤 제 움직임을 얹습니다.
 
    <span class="rr-burst">
      <i class="rr-burst__spikes"></i>
@@ -19,6 +25,7 @@
    </span>
    ========================================================================== */
 
+/* 폭발과 레벨 표는 버튼 안에 꽂히지만 원본에서는 독과 함께 떨지 않습니다: 묶음의 떨림을 그만큼 되돌려 놓습니다. */
 .rr-burst {
   position: absolute;
   top: 50%;
@@ -27,6 +34,9 @@
   width: 0;
   height: 0;
   pointer-events: none;
+  translate:
+    calc(var(--rr-shake-x) * var(--rr-shake-flip-x, 1) * -1)
+    calc(var(--rr-shake-y) * var(--rr-shake-flip-y, 1) * -1);
 }
 .rr-btn.is-bursting,
 .rr-dock__item:has(.is-bursting) {
@@ -48,20 +58,23 @@
   animation: rr-spikes 130ms linear both;
 }
 
-/* 2) 충격파 — 빠른 바깥 링(반지름 45→200px, 일정한 속도 320ms)과
-      느린 안쪽 링(45→155px, 감속하며 450ms). 선 굵기가 변하지 않게 크기(inset)를 움직입니다. */
+/* 2) 충격파 — 버튼 가장자리에서 떨어져 나오는 굵은 원 둘(원본 계측, 지름 80px 버튼 기준).
+      느린 원(--2)이 먼저(50ms) 나와 반지름 43 → 93px 로 감속하며 옅어지고(283ms),
+      빠른 원이 뒤따라(83ms) 나와 140ms 쯤 앞지른 뒤 40 → 138px 까지 퍼집니다(300ms).
+      선은 6px 로 시작해 2px 까지 가늘어집니다. 크기는 버튼 크기(--_size)에 비례합니다. */
 .rr-burst__ring {
-  --_to: 200px;
+  --_r0: calc(var(--_size, 80px) * 0.5);
+  --_r1: calc(var(--_size, 80px) * 1.725);
   position: absolute;
-  inset: -45px;
-  border: 2px solid var(--rr-ink);
+  inset: calc(var(--_r0) * -1);
+  border: 6px solid var(--rr-ink);
   border-radius: 50%;
-  animation: rr-ring 320ms linear 40ms both;
+  animation: rr-ring-fast 300ms linear 83ms both;
 }
 .rr-burst__ring--2 {
-  --_to: 155px;
-  border-width: 1.5px;
-  animation: rr-ring 450ms cubic-bezier(0.5, 1, 0.89, 1) 80ms both;
+  --_r0: calc(var(--_size, 80px) * 0.5375);
+  --_r1: calc(var(--_size, 80px) * 1.1625);
+  animation: rr-ring-slow 283ms linear 50ms both;
 }
 
 /* 3) 별·점 */
@@ -112,32 +125,36 @@
 .rr-burst__p:nth-of-type(16) { --dx: 96px;   --dy: -18px;  --fall: 70px; --size: 9px; }
 .rr-burst__p:nth-of-type(17) { --dx: -22px;  --dy: -70px;  --fall: 120px; --size: 7px; }
 
-/* 4) 레벨 표 */
+/* 4) 레벨 표 (원본 계측): 97×55px 상자가 -8.5° 기울어, 중심이 버튼 중심에서 오른쪽 30.5px · 위 93px 에 놓입니다
+      (툴팁의 아랫자락에 걸칩니다). 독과 함께 떨거나 부풀지 않습니다: 묶음의 떨림과 독의 배율을 되돌려 놓습니다. */
 .rr-lvtag {
   position: absolute;
-  bottom: calc(100% - 14px);
-  left: calc(50% + 4px);
+  top: calc(50% - 93px);
+  left: calc(50% + 30.5px);
   z-index: calc(var(--rr-z-fx) + 1);
-  padding: 2px 13px 4px;
+  padding: 7px 17px 8px;
   border: var(--rr-stroke) solid var(--rr-ink);
   border-radius: 8px;
   background: var(--rr-paper);
   color: var(--rr-ink);
-  font-size: 27px;
+  font-size: 28px;
   font-weight: var(--rr-weight-medium);
   line-height: 34px;
   letter-spacing: 0.03em;
   white-space: nowrap;
   pointer-events: none;
-  transform: rotate(-8deg);
-  transform-origin: 20% 100%;
+  translate:
+    calc(-50% - var(--rr-shake-x) * var(--rr-shake-flip-x, 1))
+    calc(-50% - var(--rr-shake-y) * var(--rr-shake-flip-y, 1));
+  rotate: -8.5deg;
+  scale: calc(1 / var(--rr-dock-scale));
   animation: rr-lvtag 1700ms linear both;
 }
 .rr-lvtag--max {
   font-weight: var(--rr-weight-bold);
 }
 
-/* 5) 버튼 되튐: 색은 원판이, 크기와 기울기(펀치)는 배지까지 통째로 */
+/* 5) 버튼 되튐: 색은 원판이, 크기(펀치)는 배지까지 통째로. 기울지는 않습니다. */
 .rr-btn.is-bought .rr-btn__disc {
   animation: rr-bought 400ms linear;
 }
@@ -146,20 +163,57 @@
   animation: rr-icon-back 300ms linear;
 }
 .rr-btn.is-bought .rr-btn__body {
-  animation: rr-punch 400ms linear;
+  animation: rr-btn-punch 667ms linear;
 }
-/* 툴팁은 독이 아니라 버튼에 붙어 있습니다: 버튼 중심을 축으로 같은 펀치를 따라 합니다 */
+
+/* 6) 독의 부풂. 배율을 변수에 실어 두어, 안에 든 툴팁이 그만큼을 나눠 상쇄할 수 있습니다. */
+.rr-dock.is-punch {
+  scale: var(--rr-dock-scale);
+  animation: rr-dock-punch 417ms linear;
+}
+
+/* 7) 묶음의 떨림. .rr-dockwrap(게이지 + 독)에, 묶는 틀이 없으면 독에 붙입니다.
+      data-rr-shake="a|b|c" 로 궤적을 고르고 --rr-shake-flip-x / -y 를 -1 로 주면 좌우·위아래가 뒤집힙니다.
+      RR.shake(node) 가 매번 무작위로 정해 줍니다(클래스만 붙이면 a 궤적 그대로). */
+.is-shake {
+  --_shake: rr-shake-a;
+  translate:
+    calc(var(--rr-shake-x) * var(--rr-shake-flip-x, 1))
+    calc(var(--rr-shake-y) * var(--rr-shake-flip-y, 1));
+  animation: var(--_shake) 267ms linear;
+}
+.is-shake[data-rr-shake="b"] {
+  --_shake: rr-shake-b;
+}
+.is-shake[data-rr-shake="c"] {
+  --_shake: rr-shake-c;
+}
+/* 묶는 틀 없이 독이 혼자일 때는 부풂과 떨림을 한 요소가 함께 틉니다 */
+.rr-dock.is-punch.is-shake {
+  animation: rr-dock-punch 417ms linear, var(--_shake) 267ms linear;
+}
+
+/* 8) 툴팁. 독 안에 들어 있지만 원본에서는 독과 따로 놉니다(상쇄하는 식은 tooltip.css 의 translate / scale).
+      떨림  독과 한 몸으로 떨지 않고 버튼을 한 프레임 늦게 따라갑니다: 묶음이 떠는 동안 같은 궤적을 17ms 늦게 틉니다.
+            그래서 누른 프레임에는 독만 움직이고 툴팁은 제자리입니다.
+      펀치  산 버튼의 칸(.is-punch)에서는 제 크기와 기울기가 출렁입니다. 크기의 축은 버튼 중심, 기울기의 축은 아랫변 가운데.
+      나타날 때의 rr-tip-in 을 목록에 그대로 두는 것은, 펀치나 떨림이 끝난 뒤 그것이 다시 재생되지 않게 하려는 것입니다. */
+.is-shake .rr-tip {
+  animation: var(--_shake) 267ms linear 17ms;
+}
+.is-shake .rr-dock__item:hover > .rr-tip,
+.is-shake .rr-dock__item:focus-within > .rr-tip,
+.is-shake .rr-tip.is-open {
+  animation: rr-tip-in var(--rr-dur-tip) linear, var(--_shake) 267ms linear 17ms;
+}
 .rr-dock__item.is-punch > .rr-tip {
-  transform-origin: calc(100% - var(--_half)) calc(100% + var(--_pivot));
-  animation: rr-punch 400ms linear;
+  animation: rr-tip-in var(--rr-dur-tip) linear, rr-tip-punch 533ms linear;
+}
+.is-shake .rr-dock__item.is-punch > .rr-tip {
+  animation: rr-tip-in var(--rr-dur-tip) linear, rr-tip-punch 533ms linear, var(--_shake) 267ms linear 17ms;
 }
 
-/* 6) 독 흔들림 */
-.is-jolt {
-  animation: rr-jolt 300ms linear;
-}
-
-/* 7) 살 수 있게 된 순간: 버튼이 톡 튀고(.is-afford) 눈길 끌기 링이 한 번 퍼집니다(.is-ping).
+/* 9) 살 수 있게 된 순간: 버튼이 톡 튀고(.is-afford) 눈길 끌기 링이 한 번 퍼집니다(.is-ping).
       RR.afford(button, true) 가 둘을 함께 틀어 줍니다. 링만 쓰려면 RR.ping(button). */
 .rr-btn.is-afford .rr-btn__body {
   animation: rr-afford 220ms linear;

@@ -33,6 +33,8 @@
 
 .rr-dock__item {
   --_pivot: calc(var(--rr-tip-offset) + var(--rr-btn-size) / 2);   /* 툴팁 아랫변에서 버튼 중심까지 */
+  --_sx: var(--rr-shake-x);                                        /* 지금 묶음이 떠는 만큼(툴팁이 빼서 씁니다) */
+  --_sy: var(--rr-shake-y);
   position: relative;            /* 툴팁의 기준점. 봉우리(::before)보다 위에 그려지게도 합니다. */
   display: flex;
   flex-direction: column;
@@ -99,30 +101,35 @@
   visibility: hidden;
 }
 
-/* 가운데 큰 버튼의 등장: 먼저 자리가 벌어지고(독이 그만큼 넓어짐), 옆 버튼들이 거의 다 앉은 뒤에
-   독 안에서 구르며 솟아올라 폭발과 함께 자리를 잡습니다. 터지는 순간 독 전체가 움찔하고(.is-boom),
-   봉우리는 그 뒤에 솟습니다. 솟기 전에는 독 윗선 위로 나온 부분이 잘려 보입니다(--_cut).          */
+/* 독 상자의 크기 변화(원본 계측, 시간은 묶음이 바뀐 순간부터):
+     0ms      새 묶음의 너비로 한 번에 바뀝니다(너비가 미끄러지듯 변하지 않음). 큰 버튼이 있는 묶음이면
+              그 자리만 닫힌 채로, 윗선은 이미 봉우리 묶음의 높이(--_pt)로 바뀌어 있습니다.
+     117ms~   큰 버튼의 자리가 벌어지며 독이 넓어집니다. 9.5% 지나쳤다 돌아옵니다(rr-slot-open 533ms).
+     500ms~   옆 버튼들이 다 앉은 뒤, 큰 버튼이 독 안에서 구르며 솟아오릅니다(rr-center-in 600ms).
+     617ms    큰 버튼이 터지며 내려앉는 순간 독이 통째로 눌렸다 늘어납니다(.is-boom, rr-dock-boom 417ms).
+     750ms~   봉우리가 솟고, 값 표시와 꼬리표가 이어서 나타납니다.
+   솟기 전의 큰 버튼은 독 윗선 위로 나온 부분이 잘려 보입니다(--_cut).                                  */
 .rr-dock__item--center.is-entering {
   --_w: var(--rr-btn-lg-size);
   --_m: 6px;
-  animation: rr-slot-open 550ms linear 85ms backwards;
+  animation: rr-slot-open 533ms linear 117ms backwards;
 }
 .rr-dock__item--center.is-entering .rr-btn {
   --_cut: calc(var(--_rise) + 1px - var(--_pt));
-  animation: rr-center-clip 600ms linear 470ms backwards;
+  animation: rr-center-clip 600ms linear 500ms backwards;
 }
 .rr-dock__item--center.is-entering .rr-btn__body {
-  animation: rr-center-in 600ms linear 470ms backwards;
+  animation: rr-center-in 600ms linear 500ms backwards;
 }
 .rr-dock__item--center.is-entering > .rr-price {
-  animation: rr-fade-in 60ms linear 800ms backwards;
+  animation: rr-fade-in 60ms linear 830ms backwards;
 }
 .rr-dock.is-rising::before {
   transform-origin: 50% 43.5px;          /* 윗선의 중심선을 축으로 */
-  animation: rr-hump-in 110ms var(--rr-ease-out) 720ms backwards;
+  animation: rr-hump-in 110ms var(--rr-ease-out) 750ms backwards;
 }
 .rr-dock.is-boom {
-  animation: rr-dock-boom 220ms linear;
+  animation: rr-dock-boom 417ms linear;
 }
 
 /* ── 가운데 봉우리 ─────────────────────────────────────────────────────────

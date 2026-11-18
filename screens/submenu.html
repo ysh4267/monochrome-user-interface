@@ -366,7 +366,7 @@
 
       function buy(item, btn) {
         if (item.level >= item.max) return;
-        if (money < item.cost) { RR.jolt('#dock'); return; }
+        if (money < item.cost) { RR.shake('.rr-dockwrap'); return; }   // 돈이 모자라면 아래 묶음만 떱니다(화면 예제의 연출)
         money -= item.cost;
         item.level += 1;
         item.cost = Math.round(item.cost * item.grow);

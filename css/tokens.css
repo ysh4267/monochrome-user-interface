@@ -62,7 +62,7 @@
   --rr-dur-hover: 220ms;          /* 버튼 hover 확대 */
   --rr-dur-hover-out: 120ms;      /* hover 해제 */
   --rr-dur-press: 66ms;           /* 누름 */
-  --rr-dur-tip: 110ms;            /* 툴팁 페이드 */
+  --rr-dur-tip: 183ms;            /* 툴팁 나타남(rr-tip-in) */
   --rr-dur-invert: 80ms;          /* 닫기 버튼 반전 */
   --rr-dur-sweep: 85ms;           /* 사각 버튼 채움 */
   --rr-dur-hold: 950ms;           /* 길게 눌러 확인 */

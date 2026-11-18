@@ -79,10 +79,12 @@
   /* ── 구매 효과 ────────────────────────────────────────────────────────────
      RR.burst(host, { stars: 8, dots: 8, squares: 0 })  host 한가운데에서 터뜨립니다.
      RR.levelTag(host, 'Lv.3')                           host 위에 레벨 표를 띄웁니다.
-     RR.jolt(node)                                       node 를 한 번 덜컹.
+     RR.shake(node)                                      node 를 한 번 떱니다(크기·기울기 없이 좌우·위아래로만, 매번 다르게).
      RR.ping(button)                                     버튼 둘레에 눈길 끄는 링을 한 번 퍼뜨립니다.
      RR.afford(button, true)                             살 수 있게 됨: 검게 바뀌며 톡 튀고 링이 퍼집니다.
-     RR.purchase(button, { level: 3 })                   버튼 펀치(툴팁도 버튼에 붙어 함께) + 위의 폭발·레벨 표·덜컹.   */
+     RR.purchase(button, { level: 3 })                   아래의 움직임을 한꺼번에 틉니다. 원본처럼 넷이 각자 움직입니다.
+         버튼의 펀치 · 독 상자의 부풂 · 아래 묶음(독 + 게이지)의 떨림 · 툴팁의 펀치  +  폭발과 레벨 표
+         { punch: false } 독의 부풂 없이,  { shake: false } 떨림 없이.                                    */
 
   RR.burst = function (target, opts) {
     var host = resolve(target);
@@ -142,10 +144,18 @@
     return t;
   };
 
-  RR.jolt = function (target) {
+  /* 떨림은 살 때마다 다릅니다: 원본에서 잰 궤적 셋(a·b·c) 가운데 하나를 골라 좌우·위아래를 무작위로 뒤집습니다.
+     RR.shake(node, { track: 'a', flipX: false, flipY: false }) 처럼 정해 줄 수도 있습니다. */
+  RR.shake = function (target, opts) {
     var n = resolve(target);
-    if (n) replay(n, 'is-jolt', 320);
+    if (!n) return;
+    opts = opts || {};
+    n.setAttribute('data-rr-shake', opts.track || 'abc'.charAt(Math.floor(Math.random() * 3)));
+    n.style.setProperty('--rr-shake-flip-x', (opts.flipX == null ? Math.random() < 0.5 : opts.flipX) ? -1 : 1);
+    n.style.setProperty('--rr-shake-flip-y', (opts.flipY == null ? Math.random() < 0.5 : opts.flipY) ? -1 : 1);
+    replay(n, 'is-shake', 300);
   };
+  RR.jolt = RR.shake;                                      /* 예전 이름 */
 
   RR.ping = function (target) {
     var n = resolve(target);
@@ -171,13 +181,14 @@
     var btn = resolve(target);
     if (!btn) return;
     opts = opts || {};
-    replay(btn, 'is-bought', 420);
-    /* 툴팁은 독이 아니라 버튼에 붙어 있습니다: 버튼과 같은 펀치를 버튼 중심을 축으로 따라 합니다 */
     var item = btn.closest('.rr-dock__item');
-    if (item) replay(item, 'is-punch', 420);
+    var dock = btn.closest('.rr-dock');
+    replay(btn, 'is-bought', 690);                          /* 버튼: 색 + 제 크기의 펀치 */
+    if (item) replay(item, 'is-punch', 600);                /* 그 칸의 툴팁: 제 펀치(독과 따로) */
+    if (dock && opts.punch !== false) replay(dock, 'is-punch', 440);   /* 독 상자: 부풀었다 움츠러듦 */
+    if (opts.shake !== false && opts.jolt !== false) RR.shake(btn.closest('.rr-dockwrap') || dock);   /* 독 + 게이지: 떨림 */
     RR.burst(btn, opts);
     if (opts.level != null) RR.levelTag(btn, opts.max ? 'MAX!' : 'Lv.' + opts.level, opts);
-    if (opts.jolt !== false) RR.jolt(btn.closest('.rr-dockwrap') || btn.closest('.rr-dock'));
     emit(btn, 'rr:buy', opts);
   };
 
@@ -297,7 +308,7 @@
     var OUT_STEP = 20, OUT_MS = 117;                       /* 떠날 때: 버튼 간격, 하나가 흐려지는 시간 */
     var GAP = 50;                                          /* 비어 있는 틈 */
     var IN_STEP = 35, IN_LEAD = 20, IN_MS = 320;           /* 들어올 때: 버튼 간격, 첫 버튼까지의 여유, 날아오는 시간 */
-    var CENTER_AT = 470, CENTER_MS = 600, BOOM_AT = 120;   /* 가운데 큰 버튼: 시작, 길이, 폭발 시점 */
+    var CENTER_AT = 500, CENTER_MS = 600, BOOM_AT = 117;   /* 가운데 큰 버튼: 시작, 길이, 폭발 시점 */
 
     function isItem(n) { return n.classList.contains('rr-dock__item'); }
     function isCenter(n) { return n.classList.contains('rr-dock__item--center'); }
@@ -372,13 +383,13 @@
         dock.classList.add('is-swapping');
         var clipMs = last;
         if (center) {
-          /* 큰 버튼이 독 안에서 솟아올라 터지는 순간: 폭발 + 독 전체의 움찔 */
+          /* 큰 버튼이 독 안에서 솟아올라 터지는 순간: 폭발 + 독이 통째로 눌렸다 늘어남 */
           dock.classList.add('is-rising');
           clipMs = Math.min(last, CENTER_AT + BOOM_AT);
           setTimeout(function () {
             var big = center.querySelector('.rr-btn');
             if (big) RR.burst(big, { stars: 14, squares: 12, dots: 10, reach: 1.5 });
-            replay(dock, 'is-boom', 240);
+            replay(dock, 'is-boom', 440);
           }, CENTER_AT + BOOM_AT);
           last = Math.max(last, CENTER_AT + CENTER_MS + 60);
         }
